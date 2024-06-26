@@ -1,0 +1,51 @@
+stages:
+  - "testing"
+  - "formatting"
+test:latest:
+  image: "julia:latest"
+  stage: "testing"
+  script:
+    - |-
+      julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
+  except:
+    - "main"
+test:master:
+  stage: "testing"
+  image: "julia:latest"
+  script:
+    - |
+      julia --project=@. --eval '
+      import Pkg; Pkg.test(; coverage = true); Pkg.add("Coverage"); Pkg.instantiate()
+      using Coverage
+      processed = process_folder()
+      covered_lines, total_lines = get_summary(processed)
+      percentage = covered_lines / total_lines * 100
+      return println("($(percentage)%) covered")'
+
+  coverage: "/\\(\\d+.\\d+\\%\\) covered/"
+  only:
+    - "main"
+    - "merge_requests"
+formatting:
+  image: "julia:latest"
+  stage: "formatting"
+  script:
+    - |-
+      julia -e '@info "Verifying formatting"'
+    - |
+      julia --eval '
+      import Pkg
+      Pkg.add("JuliaFormatter")
+      using JuliaFormatter
+      properly_formatted = format("./src"; verbose = true)
+
+      if properly_formatted
+        @info "Formatting verified"
+      else
+        @info "Formatting failed - some files have not yet been formatted"
+      end
+      exit(properly_formatted ? 0 : 1)'
+
+  only:
+    - "main"
+    - "merge_requests"
