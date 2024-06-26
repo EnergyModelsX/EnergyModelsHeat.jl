@@ -1,6 +1,6 @@
 stages:
-  - "testing"
   - "formatting"
+  - "testing"
 test:latest:
   image: "julia:latest"
   stage: "testing"

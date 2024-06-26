@@ -15,12 +15,12 @@ energy that can be used in the District Heating network.
 `data` is conditional through usage of a constructor.
 """
 struct HeatConversion <: EnergyModelsBase.NetworkNode
-    id
+    id::Any
     cap::TimeProfile
     opex_var::TimeProfile
     opex_fixed::TimeProfile
-    input::Dict{<:Resource, <:Real}
-    output::Dict{<:Resource, <:Real}
+    input::Dict{<:Resource,<:Real}
+    output::Dict{<:Resource,<:Real}
     data::Vector{Data}
 end
 
@@ -39,7 +39,6 @@ struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
     T_cold::TP
 end
 
-
 """
     ψ(pd::PinchData)
 
@@ -47,25 +46,24 @@ Calculate fraction of heat available for district heating at pinch point `T_cold
 """
 ψ(pd::PinchData, t) = ψ(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
 function ψ(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-	if (T_COLD - ΔT_min) ≥ T_cold
-		(T_HOT - T_COLD + ΔT_min ) / (T_hot - T_cold)	
-	else
-		(T_HOT - T_cold + ΔT_min ) / (T_hot - T_cold)	
-	end
+    if (T_COLD - ΔT_min) ≥ T_cold
+        (T_HOT - T_COLD + ΔT_min) / (T_hot - T_cold)
+    else
+        (T_HOT - T_cold + ΔT_min) / (T_hot - T_cold)
+    end
 end
-
 
 # function EnergyModelsBase.constraints_data(m, n, 𝒯, 𝒫, modeltype, data::PinchData)
 
 # end
 
-pinch_data(n::HeatConversion) = only(filter(data->typeof(data)<:PinchData, node_data(n)))
-
+pinch_data(n::HeatConversion) =
+    only(filter(data -> typeof(data) <: PinchData, node_data(n)))
 
 function EnergyModelsBase.constraints_flow_out(m, n::HeatConversion, 𝒯, modeltype)
     # Declaration of the required subsets, excluding CO2, if specified
     # 𝒫ᵒᵘᵗ = res_not(outputs(n), co2_instance(modeltype))
-    
+
     pd = pinch_data(n)
 
     # TODO: Check that input/output are correct heat products
