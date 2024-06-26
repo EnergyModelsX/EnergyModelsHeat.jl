@@ -1,5 +1,10 @@
 module EnergyModelsHeat
 
-# Write your package code here.
+# import EnergyModelsBase: 
+using EnergyModelsBase
+using JuMP
+using TimeStruct
+
+include("model.jl")
 
 end
