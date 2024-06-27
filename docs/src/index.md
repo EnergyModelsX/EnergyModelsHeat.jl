@@ -1,9 +1,5 @@
 # EnergyModelsHeat
 
-![pipeline](https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/badges/main/pipeline.svg)
-![coverage](https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/badges/main/coverage.svg)
-[![Docs: stable](https://img.shields.io/badge/docs-stable-4495d1.svg)](https://zeesa-wp3.pages.sintef.no/EnergyModelsHeat.jl)
-
 `EnergyModelsHeat` extends [EnergyModelsX](https://github.com/EnergyModelsX) with functionality to model heat flows and district heating network with higher accuracy.
 
 
