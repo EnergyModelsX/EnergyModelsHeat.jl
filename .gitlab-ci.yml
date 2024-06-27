@@ -1,15 +1,19 @@
 stages:
-  - "formatting"
-  - "testing"
-test:latest:
-  image: "julia:latest"
-  stage: "testing"
+- formatting
+- testing
+- deploy
+formatting:
+  stage: formatting
+  image: julia:latest
   script:
-    - |-
-      julia --project=@. -e "import Pkg; Pkg.test(; coverage = true)"
-  except:
-    - "main"
-test:master:
+    - |
+      julia --eval '
+      import Pkg
+      Pkg.add("JuliaFormatter")
+      using JuliaFormatter
+      properly_formatted = format("./src"; verbose = true)
+      exit(properly_formatted ? 0 : 1)'
+test:latest:
   stage: "testing"
   image: "julia:latest"
   script:
@@ -21,31 +25,14 @@ test:master:
       covered_lines, total_lines = get_summary(processed)
       percentage = covered_lines / total_lines * 100
       return println("($(percentage)%) covered")'
-
   coverage: "/\\(\\d+.\\d+\\%\\) covered/"
-  only:
-    - "main"
-    - "merge_requests"
-formatting:
-  image: "julia:latest"
-  stage: "formatting"
+pages:
+  stage: deploy
+  image: julia:latest
   script:
-    - |-
-      julia -e '@info "Verifying formatting"'
-    - |
-      julia --eval '
-      import Pkg
-      Pkg.add("JuliaFormatter")
-      using JuliaFormatter
-      properly_formatted = format("./src"; verbose = true)
-
-      if properly_formatted
-        @info "Formatting verified"
-      else
-        @info "Formatting failed - some files have not yet been formatted"
-      end
-      exit(properly_formatted ? 0 : 1)'
-
-  only:
-    - "main"
-    - "merge_requests"
+    - julia --project=docs -e 'import Pkg; Pkg.develop(;path=".");Pkg.instantiate()' # Initialize environment
+    - julia --project=docs docs/make.jl                       # Build documentation
+    - mv docs/build public  # move to the directory picked up by Gitlab pages
+  artifacts:
+    paths:
+      - public
