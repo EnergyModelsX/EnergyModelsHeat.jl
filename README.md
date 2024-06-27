@@ -1,5 +1,8 @@
 # EnergyModelsHeat
 
-[![Build Status](https://github.com/lars.hellemo/EnergyModelsHeat.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/lars.hellemo/EnergyModelsHeat.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Build Status](https://gitlab.sintef.no/lars.hellemo/EnergyModelsHeat.jl/badges/main/pipeline.svg)](https://gitlab.sintef.no/lars.hellemo/EnergyModelsHeat.jl/pipelines)
-[![Coverage](https://gitlab.sintef.no/lars.hellemo/EnergyModelsHeat.jl/badges/main/coverage.svg)](https://gitlab.sintef.no/lars.hellemo/EnergyModelsHeat.jl/commits/main)
+`EnergyModelsHeat` extends [EnergyModelsX](https://github.com/EnergyModelsX) with functionality to model heat flows and district heating network with higher accuracy.
+
+
+## Project Funding
+
+The development of `EnergyModelsHeat` was funded by the Norwegian Research Council in the project [ZEESA](https://www.sintef.no/en/projects/2023/zeesa-zero-emission-energy-systems-for-the-arctic/), project number [336342](https://prosjektbanken.forskningsradet.no/project/FORISS/336342)
