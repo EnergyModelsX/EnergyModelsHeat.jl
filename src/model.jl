@@ -60,7 +60,7 @@ end
 pinch_data(n::HeatConversion) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
 
-function EnergyModelsBase.constraints_flow_out(m, n::HeatConversion, 𝒯, modeltype)
+function EnergyModelsBase.constraints_flow_out(m, n::HeatConversion, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Declaration of the required subsets, excluding CO2, if specified
     # 𝒫ᵒᵘᵗ = res_not(outputs(n), co2_instance(modeltype))
 
