@@ -1,9 +1,9 @@
 @testitem "Pinch calculation" begin
     using TimeStruct
-    const EMH = EnergyModelsHeat   
-    
-    @test EMH.ψ(80, 60, 8,  80, 40) ≈ 0.7 atol = 0.01
-    
+    const EMH = EnergyModelsHeat
+
+    @test EMH.ψ(80, 60, 8, 80, 40) ≈ 0.7 atol = 0.01
+
     pd = EMH.PinchData(
         FixedProfile(80),    # PEM FC
         FixedProfile(60),
