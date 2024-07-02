@@ -46,8 +46,8 @@
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
                 Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
             ),
-            HeatConversion(
-                "heat converter",
+            HeatExchanger(
+                "heat exchanger",
                 FixedProfile(1.0),
                 FixedProfile(0),
                 FixedProfile(0),
@@ -66,8 +66,8 @@
 
         # Connect all nodes with the availability node for the overall energy/mass balance
         links = [
-            Direct("source-convert", nodes[1], nodes[2], Linear()),
-            Direct("convert-demand", nodes[2], nodes[3], Linear()),
+            Direct("source-exchange", nodes[1], nodes[2], Linear()),
+            Direct("exchange-demand", nodes[2], nodes[3], Linear()),
         ]
 
         # WIP data structure

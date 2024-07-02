@@ -7,6 +7,6 @@ using TimeStruct
 include("model.jl")
 
 export PinchData
-export HeatConversion
+export HeatExchanger
 
 end
