@@ -2,6 +2,6 @@
 
 
 ```@docs
-HeatConversion
+HeatExchanger
 PinchData
 ```

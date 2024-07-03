@@ -1,7 +1,7 @@
 """ 
-    HeatConversion
+    HeatExchanger
 
-A `HeatConversion` node to convert "raw" surplus energy from other processes to "available"
+A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
 energy that can be used in the District Heating network.
 
 # Fields
@@ -14,7 +14,7 @@ energy that can be used in the District Heating network.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
 """
-struct HeatConversion <: EnergyModelsBase.NetworkNode
+struct HeatExchanger <: EnergyModelsBase.NetworkNode
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -57,12 +57,12 @@ end
 
 # end
 
-pinch_data(n::HeatConversion) =
+pinch_data(n::HeatExchanger) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
 
 function EnergyModelsBase.constraints_flow_out(
     m,
-    n::HeatConversion,
+    n::HeatExchanger,
     𝒯::TimeStructure,
     modeltype::EnergyModel,
 )
