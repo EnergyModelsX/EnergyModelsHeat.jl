@@ -25,8 +25,14 @@ struct DHPipe <: EnergyModelsBase.Direct
     data::Vector{Data}                      # Optional Investment/Emission Data
 end
 
-
-DHPipe(id::Any, from::Node, to::Node, length::Float64, heatlossfactor::Float64, t_ground::Float64, resource_heat::ResourceHeat) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear(), Data[])
+DHPipe(
+    id::Any,
+    from::Node,
+    to::Node,
+    length::Float64,
+    heatlossfactor::Float64,
+    t_ground::Float64,
+) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear())
 
 
 pipelength(l::DHPipe) = l.length
@@ -34,5 +40,3 @@ heatlossfactor(l::DHPipe) = l.heatlossfactor
 t_ground(l::DHPipe) = l.t_ground
 res_heat(l::DHPipe) = l.resource_heat
 t_supply(l::DHPipe) = t_supply(res_heat(l))
-
-
