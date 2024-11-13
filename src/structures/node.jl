@@ -20,36 +20,50 @@ A `HeatPump` node to convert low temp heat to high(er) temp heat by utilizing en
 `data` is conditional through usage of a constructor.
 """
 struct HeatPump <: EMB.NetworkNode
-	id::Any
-	cap::TimeProfile                        # Heat Capacity
-	cap_lower_bound::Union{Real, Nothing}    # Lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity 
-	t_source::TimeProfile                   # Temperature profile of the heat source
-	t_sink::TimeProfile                     # Sink temperature of the condensator in Celsius
-	eff_carnot::TimeProfile                 # Carnot Efficiency COP_real/COP_carnot
-	input_heat::Resource                     # Resource for the low temperature heat
-	driving_force::Resource                  # Resource of the driving force, e.g. electricity
-	opex_var::TimeProfile                   # Variable OPEX in EUR/MWh
-	opex_fixed::TimeProfile                 # Fixed OPEX in EUR/h
-	input::Dict{<:Resource, <:Real}          # Input Resource, number irrelevant: COP is calculated seperately
-	output::Dict{<:Resource, <:Real}         # Output Resource (Heat), number irrelevant: COP is calculated seperately
-	data::Vector{Data}                      # Optional Investment/Emission Data
+    id::Any
+    cap::TimeProfile                        # Heat Capacity
+    cap_lower_bound::Union{Real,Nothing}    # Lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity 
+    t_source::TimeProfile                   # Temperature profile of the heat source
+    t_sink::TimeProfile                     # Sink temperature of the condensator in Celsius
+    eff_carnot::TimeProfile                 # Carnot Efficiency COP_real/COP_carnot
+    input_heat::Resource                     # Resource for the low temperature heat
+    driving_force::Resource                  # Resource of the driving force, e.g. electricity
+    opex_var::TimeProfile                   # Variable OPEX in EUR/MWh
+    opex_fixed::TimeProfile                 # Fixed OPEX in EUR/h
+    input::Dict{<:Resource,<:Real}          # Input Resource, number irrelevant: COP is calculated seperately
+    output::Dict{<:Resource,<:Real}         # Output Resource (Heat), number irrelevant: COP is calculated seperately
+    data::Vector{Data}                      # Optional Investment/Emission Data
 end
 
 function HeatPump(
-	id::Any,
-	cap::TimeProfile,
-	cap_lower_bound::Union{Real, Nothing},
-	t_source::TimeProfile,
-	t_sink::TimeProfile,
-	eff_carnot::TimeProfile,
-	input_heat::Resource,
-	driving_force::Resource,
-	opex_var::TimeProfile,
-	opex_fixed::TimeProfile,
-	input::Dict{<:Resource, <:Real},
-	output::Dict{<:Resource, <:Real},
+    id::Any,
+    cap::TimeProfile,
+    cap_lower_bound::Union{Real,Nothing},
+    t_source::TimeProfile,
+    t_sink::TimeProfile,
+    eff_carnot::TimeProfile,
+    input_heat::Resource,
+    driving_force::Resource,
+    opex_var::TimeProfile,
+    opex_fixed::TimeProfile,
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
 )
-	return HeatPump(id, cap, cap_lower_bound, t_source, t_sink, eff_carnot, input_heat, driving_force, opex_var, opex_fixed, input, output, Data[])
+    return HeatPump(
+        id,
+        cap,
+        cap_lower_bound,
+        t_source,
+        t_sink,
+        eff_carnot,
+        input_heat,
+        driving_force,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        Data[],
+    )
 end
 
 eff_carnot(n::HeatPump, t) = n.eff_carnot[t]
@@ -127,4 +141,3 @@ println(all_timesteps[2], all_timesteps[1])
 	println("Finished setting up ramping constraints!")
 
 =#
-

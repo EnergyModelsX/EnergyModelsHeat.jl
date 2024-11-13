@@ -8,10 +8,9 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat = EMH.ResourceHeat("DHheat", 0.0, 70)
+        dh_heat  = EMH.ResourceHeat("DHheat", 0.0, 70)
         CO₂      = ResourceEmit("CO₂", 1.0)
         products = [dh_heat, CO₂]
-
 
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
@@ -26,7 +25,6 @@
             Dict(CO₂ => FixedProfile(0)),   # Emission price for CO₂ in EUR/t
             CO₂,                            # CO₂ instance
         )
-
 
         # Create the individual test nodes for a system with 
         # 1) a heat surplus source
@@ -66,5 +64,4 @@
     case, model, nodes, products, T = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
-
 end

@@ -24,8 +24,14 @@ struct DHPipe <: EnergyModelsBase.Direct
     formulation::Formulation
 end
 
-
-DHPipe(id::Any, from::Node, to::Node, length::Float64, heatlossfactor::Float64, t_ground::Float64) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear())
+DHPipe(
+    id::Any,
+    from::Node,
+    to::Node,
+    length::Float64,
+    heatlossfactor::Float64,
+    t_ground::Float64,
+) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear())
 
 """
     create_link(m, 𝒯, 𝒫, l, formulation::Formulation)
@@ -38,5 +44,3 @@ heatlossfactor(l::DHPipe) = l.heatlossfactor
 t_ground(l::DHPipe) = l.t_ground
 res_heat(l::DHPipe) = l.resource_heat
 t_supply(l::DHPipe) = t_supply(res_heat(l))
-
-
