@@ -13,7 +13,8 @@ using EnergyModelsBase
 using JuMP
 using TimeStruct
 
-
+const EMB = EnergyModelsBase
+const EMH = EnergyModelsHeat
 
 # Different introduced types
 include(joinpath("structures", "resource.jl"))
@@ -22,6 +23,8 @@ include(joinpath("structures", "link.jl"))
 
 include("model.jl")
 include("constraint_functions.jl")
+
+
 
 
 # Export the general classes

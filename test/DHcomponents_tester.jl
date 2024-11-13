@@ -4,11 +4,13 @@
     using JuMP
     using TimeStruct
     using EnergyModelsHeat
+
     const EMH = EnergyModelsHeat
+
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat  = EMH.ResourceHeat("DHheat", 0.0, 70)
+        dh_heat  = ResourceHeat("DHheat", 0.0, 70.0)
         CO₂      = ResourceEmit("CO₂", 1.0)
         products = [dh_heat, CO₂]
 
@@ -49,7 +51,7 @@
 
         # Connect all nodes with the availability node for the overall energy/mass balance
         links = [
-            DHPipe("source-exchange", nodes[1], nodes[2], Linear()),
+            EMH.DHPipe("DH pipe 1", nodes[1], nodes[2], 100.0, 4.0, 10.0, dh_heat),
         ]
 
         # WIP data structure
