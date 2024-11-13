@@ -3,16 +3,17 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
 
     # Generic link in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
-        m[:link_out][l, t, p] == m[:link_in][l, t, p] - pipelength(l)*heatlossfactor(l)*(t_supply(l)-t_ground(l))
+        m[:link_out][l, t, p] ==
+        m[:link_in][l, t, p] -
+        pipelength(l) * heatlossfactor(l) * (t_supply(l) - t_ground(l))
         #m[:link_out][l, t, p] == m[:link_in][l, t, p]*HEATLOSSFACTOR
     )
-    
+
     # Call of the function for limiting the capacity to the maximum installed capacity
     #if EMB.has_capacity(l::DHPipe)
     #    EMB.constraints_capacity_installed(m, l, 𝒯, modeltype)
     #end
 end
-
 
 """ 
     HeatExchanger
