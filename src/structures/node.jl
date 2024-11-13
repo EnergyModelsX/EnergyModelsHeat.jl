@@ -114,30 +114,4 @@ struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
     T_cold::TP
 end
 
-#=
-# Extract timesteps from the TwoLevel object
-all_timesteps = [t for t in 𝒯]
 
-# Define indices for valid timesteps (from 2 to end)
-indices = 2:length(all_timesteps)
-
-println(all_timesteps[2], all_timesteps[1])
-
-@constraint(m, [i in indices],
-	m[:cap_use][n, all_timesteps[i]] <= (100 * m[:cap_use][n, all_timesteps[i - 1]])
-)
-=#
-
-#=
-	# This ramping constraint is not suitable for larger models with higher resolution
-
-	println("Starting setting up ramping constraints...")
-	for (prev_t, t) ∈ withprev(𝒯)
-		if prev_t !== nothing
-			@constraint(m, [t ∈ 𝒯], m[:cap_use][n, t] <= (1.2 * m[:cap_use][n, prev_t]))    # !!! hard coded ramping factor !!!
-			#@constraint(m, [t ∈ 𝒯], m[:cap_use][n, t] >= (0.8 * m[:cap_use][n, prev_t]))
-		end
-	end
-	println("Finished setting up ramping constraints!")
-
-=#
