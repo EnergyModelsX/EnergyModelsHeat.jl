@@ -113,5 +113,3 @@ struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
     T_hot::TP
     T_cold::TP
 end
-
-
