@@ -1,11 +1,24 @@
+"""
+    create_link(m, 𝒯, 𝒫, l::Link, formulation::Formulation)
 
-function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::Formulation)
+Set the constraints for a simple `Link` (input = output). Can serve as fallback option for
+all unspecified subtypes of `Link`.
+
+All links with capacity, as indicated through the function [`has_capacity`](@ref) call
+furthermore the function [`constraints_capacity_installed`](@ref) for limiting the capacity
+to the installed capacity.
+"""
+function create_link(m, 𝒯, 𝒫, l::Link, modeltype::EnergyModel, formulation::Formulation)
 
     # Generic link in which each output corresponds to the input
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
-        m[:link_out][l, t, p] == m[:link_in][l, t, p]
-        #m[:link_out][l, t, p] == m[:link_in][l, t, p]*HEATLOSSFACTOR
+        m[:link_out][l, t, p] == m[:link_in][l, t, p]-pipelength(l)*heatlossfactor(l)*(t_supply(l)-t_ground(l))
     )
+    
+    # Call of the function for limiting the capacity to the maximum installed capacity
+    if has_capacity(l)
+        constraints_capacity_installed(m, l, 𝒯, modeltype)
+    end
 end
 
 """ 

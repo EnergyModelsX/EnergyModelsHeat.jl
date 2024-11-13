@@ -22,17 +22,13 @@ struct DHPipe <: EnergyModelsBase.Direct
     t_ground::Float64 # kan også bruke \theta (tab), kan også være tidsprofil
     resource_heat::ResourceHeat
     formulation::Formulation
+    data::Vector{Data}                      # Optional Investment/Emission Data
 end
 
 
-DHPipe(id::Any, from::Node, to::Node, length::Float64, heatlossfactor::Float64, t_ground::Float64) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear())
+DHPipe(id::Any, from::Node, to::Node, length::Float64, heatlossfactor::Float64, t_ground::Float64, resource_heat::ResourceHeat) = DHPipe(id, from, to, length, heatlossfactor, t_ground, Linear(), Data[])
 
-"""
-    create_link(m, 𝒯, 𝒫, l, formulation::Formulation)
 
-Set the constraints for a simple `Link` (input = output). Can serve as fallback option for
-all unspecified subtypes of `Link`.
-"""
 pipelength(l::DHPipe) = l.length
 heatlossfactor(l::DHPipe) = l.heatlossfactor
 t_ground(l::DHPipe) = l.t_ground
