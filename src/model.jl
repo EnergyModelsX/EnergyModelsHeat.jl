@@ -1,3 +1,13 @@
+
+function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::Formulation)
+
+    # Generic link in which each output corresponds to the input
+    @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
+        m[:link_out][l, t, p] == m[:link_in][l, t, p]
+        #m[:link_out][l, t, p] == m[:link_in][l, t, p]*HEATLOSSFACTOR
+    )
+end
+
 """ 
     HeatExchanger
 
