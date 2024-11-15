@@ -74,6 +74,64 @@ heat_input_resource(n::HeatPump) = n.input_heat
 drivingforce_resource(n::HeatPump) = n.driving_force
 
 """ 
+    ThermalEnergyStorage
+
+A `ThermalEnergyStorage` that functions mostly like a RefStorage with the additional option to include thermal energy losses. 
+Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod.
+The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero, the heat losses are constant. 
+
+# Fields
+- **`id`** is the name/identifier of the node.
+- **`charge::AbstractStorageParameters`** are the charging parameters of the [`Storage`](@ref) node.
+  Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX,
+  and/or a capacity.
+- **`level::AbstractStorageParameters`** are the level parameters of the [`Storage`](@ref) node.
+  Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
+- **`stor_res::Resource`** is the stored [`Resource`](@ref).
+- **`heatlossfactor::Float64`** are the heat losses relative to the installed storage capacity in percent. 
+- **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@ref)s with conversion
+  value `Real`.
+- **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@ref)s with conversion
+  value `Real`. Only relevant for linking and the stored [`Resource`](@ref) as the output
+  value is not utilized in the calculations.
+- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
+  is conditional through usage of a constructor.
+"""
+struct ThermalEnergyStorage{T} <: Storage{T}
+    id::Any
+    charge::EMB.AbstractStorageParameters
+    level::EMB.UnionCapacity
+    stor_res::Resource
+    heatlossfactor::Float64
+    input::Dict{<:Resource,<:Real}
+    output::Dict{<:Resource,<:Real}
+    data::Vector{<:Data}
+end
+
+function ThermalEnergyStorage{T}(
+    id,
+    charge::EMB.AbstractStorageParameters,
+    level::EMB.UnionCapacity,
+    stor_res::Resource,
+    heatlossfactor::Float64,
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+) where {T<:EMB.StorageBehavior}
+    return ThermalEnergyStorage{T}(
+        id,
+        charge,
+        level,
+        stor_res,
+        heatlossfactor,
+        input,
+        output,
+        Data[],
+    )
+end
+
+heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
+
+""" 
     HeatExchanger
 
 A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
