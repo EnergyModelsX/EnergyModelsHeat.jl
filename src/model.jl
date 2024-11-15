@@ -104,6 +104,7 @@ end
 Set all constraints for a `HeatPump`.
 Calculates the input flows for various resources based on the COP of the HeatPump. 
 The COP is based on Source and Sink temperature profiles and the carnot efficiency. 
+It is also possible to inlude a lower capacity bound which the HeatPump cannot cross. This means, however, that cap_use cannot be zero either. 
 
 # Called constraint functions
 - [`constraints_data`](@ref) for all `node_data(n)`,
@@ -170,26 +171,14 @@ Calculates the input flows for various resources based on the COP of the HeatPum
 The COP is based on Source and Sink temperature profiles and the carnot efficiency. 
 
 # Called constraint functions
+- [`constraints_level`](@ref)
 - [`constraints_data`](@ref) for all `node_data(n)`,
+- [`constraints_flow_in`](@ref),
 - [`constraints_flow_out`](@ref),
 - [`constraints_capacity`](@ref),
 - [`constraints_opex_fixed`](@ref), and
 - [`constraints_opex_var`](@ref).
 """
-function EMB.constraints_level_aux(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
-    # Declaration of the required subsets
-    p_stor = storage_resource(n)
-
-    # Constraint for the change in the level in a given operational period
-    @constraint(
-        m,
-        [t ∈ 𝒯],
-        m[:stor_level_Δ_op][n, t] ==
-        m[:stor_charge_use][n, t] - m[:stor_discharge_use][n, t] 
-        # - m[:stor_level_inst][n, t] * heatlossfactor(n)
-    )
-end
-
 function EMB.constraints_level(
     m,
     n::ThermalEnergyStorage,
@@ -210,7 +199,15 @@ function EMB.constraints_level(
         prev_pers = PreviousPeriods(t_inv_prev, nothing, nothing)
         cyclic_pers = CyclicPeriods(t_inv, t_inv)
         ts = t_inv.operational
-        EMB.constraints_level_iterate(m, n::ThermalEnergyStorage, prev_pers, cyclic_pers, t_inv, ts, modeltype)
+        EMB.constraints_level_iterate(
+            m,
+            n::ThermalEnergyStorage,
+            prev_pers,
+            cyclic_pers,
+            t_inv,
+            ts,
+            modeltype,
+        )
     end
 end
 
@@ -234,7 +231,8 @@ function EMB.constraints_level_iterate(
         # Mass balance constraint in the storage
         @constraint(m,
             m[:stor_level][n, t] ==
-            prev_level + m[:stor_level_Δ_op][n, t] * duration(t) - prev_level * heatlossfactor(n)
+            prev_level + m[:stor_level_Δ_op][n, t] * duration(t) -
+            prev_level * heatlossfactor(n)
         )
 
         # Constraint for avoiding starting below 0 if the previous operational level is
@@ -242,7 +240,6 @@ function EMB.constraints_level_iterate(
         EMB.constraints_level_bounds(m, n, t, cyclic_pers, modeltype)
     end
 end
-
 
 function create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
 
@@ -265,7 +262,6 @@ function create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyMo
     #constraints_capacity(m, n, 𝒯, modeltype)
 
     constraints_capacity(m, n, 𝒯, modeltype)
-
 
     # Call of the functions for both fixed and variable OPEX constraints introduction
     constraints_opex_fixed(m, n, 𝒯ᴵⁿᵛ, modeltype)

@@ -78,7 +78,7 @@ drivingforce_resource(n::HeatPump) = n.driving_force
 
 A `ThermalEnergyStorage` that functions mostly like a RefStorage with the additional option to include thermal energy losses. 
 Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod.
-The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero, the heat losses are constant. 
+The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero. 
 
 # Fields
 - **`id`** is the name/identifier of the node.
@@ -88,7 +88,7 @@ The main difference to RefStorage is that these heat losses occur independently 
 - **`level::AbstractStorageParameters`** are the level parameters of the [`Storage`](@ref) node.
   Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
 - **`stor_res::Resource`** is the stored [`Resource`](@ref).
-- **`heatlossfactor::Float64`** are the heat losses relative to the installed storage capacity in percent. 
+- **`heatlossfactor::Float64`** are the relative heat losses in percent. 
 - **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@ref)s with conversion
   value `Real`.
 - **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@ref)s with conversion
