@@ -24,9 +24,6 @@ include(joinpath("structures", "link.jl"))
 include("model.jl")
 include("constraint_functions.jl")
 
-
-
-
 # Export the general classes
 export ResourceHeat
 
