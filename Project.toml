@@ -1,7 +1,7 @@
 name = "EnergyModelsHeat"
 uuid = "ad1b8b27-e232-4da9-b498-bea9c19a30d7"
 authors = ["Lars Hellemo <Lars.Hellemo@sintef.no> and contributors"]
-version = "1.0.0-DEV"
+version = "0.1.0"
 
 [deps]
 EnergyModelsBase = "5d7e687e-f956-46f3-9045-6f5a5fd49f50"
