@@ -66,4 +66,17 @@
     case, model, nodes, products, T = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
+
+    source, sink = case[:nodes]
+    #pretty_table(
+    #    JuMP.Containers.rowtable(
+    #        value,
+    #        m[:cap_use][source, :];
+    #        header = [:t, :Value],
+    #    ),
+    #)
+    #print("Heat in: ")
+    #println(source(output))
+    #print("Heat out: ")
+    #println(sink(output))
 end
