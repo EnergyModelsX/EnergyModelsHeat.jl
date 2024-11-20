@@ -3,6 +3,10 @@
     using HiGHS
     using JuMP
     using TimeStruct
+    using EnergyModelsHeat
+
+    const EMH = EnergyModelsHeat
+    
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
@@ -41,7 +45,7 @@
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
                 Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
             ),
-            HeatPump(
+            EMH.HeatPump(
                 "HeatPump",
                 FixedProfile(3),
                 0,

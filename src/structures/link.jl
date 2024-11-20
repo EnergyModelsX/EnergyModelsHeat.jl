@@ -39,7 +39,7 @@ pipelength(l::DHPipe) = l.length
 heatlossfactor(l::DHPipe) = l.heatlossfactor
 t_ground(l::DHPipe) = l.t_ground
 resource_heat(l::DHPipe) = l.resource_heat
-t_supply(l::DHPipe) = resource_heat(l).t
+t_supply(l::DHPipe) = resource_heat(l).t_supply
 
 """
     link_res(l::Link)

@@ -4,6 +4,7 @@
     using JuMP
     using TimeStruct
     using EnergyModelsHeat
+    #using PrettyTables
 
     const EMH = EnergyModelsHeat
 
@@ -11,8 +12,8 @@
 
         # Define the different resources and their emission intensity in tCO2/MWh
         dh_heat  = ResourceHeat("DHheat", 0.0, 70.0)
-        CO₂      = ResourceEmit("CO₂", 1.0)
-        products = [dh_heat, CO₂]
+        CO₂      = ResourceEmit("CO₂", 0.0)
+        products = [dh_heat]
 
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
@@ -38,7 +39,7 @@
                 FixedProfile(0.85),         # Capacity in MW
                 FixedProfile(0),            # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
-                Dict(dh_heat => 1),        # Output from the Node, in this gase, heat_sur
+                Dict(dh_heat => 1),        # Output from the Node, in this gase, dh_heat
             ),
             RefSink(
                 "heat demand",              # Node id
@@ -51,7 +52,7 @@
 
         # Connect all nodes with the availability node for the overall energy/mass balance
         links = [
-            EMH.DHPipe("DH pipe 1", nodes[1], nodes[2], 100.0, 4.0, 10.0, dh_heat),
+            EMH.DHPipe("DH pipe 1", nodes[1], nodes[2], 1000.0, 4.0, 10.0, dh_heat),
         ]
 
         # WIP data structure
@@ -67,16 +68,29 @@
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
+    # Display some results
     source, sink = case[:nodes]
-    #pretty_table(
-    #    JuMP.Containers.rowtable(
-    #        value,
-    #        m[:cap_use][source, :];
-    #        header = [:t, :Value],
-    #    ),
-    #)
-    #print("Heat in: ")
-    #println(source(output))
-    #print("Heat out: ")
-    #println(sink(output))
+
+    
+    # TODO: sjekk at varmetapet er innen ok range
+        # Initialize variables for accumulation
+    heat_supply = 0.0
+    heat_delivered = 0.0
+
+    # Calculate total power uptake and heat delivered over all time periods
+    for t ∈ T
+        heat_supply += JuMP.value(m[:flow_in][nodes[1], t, dh_heat])
+        heat_delivered += JuMP.value(m[:flow_out][nodes[2], t, dh_heat])
+    end
+
+    heat_loss = heat_supply - heat_delivered
+
+    heat_loss_assumed = 0.03
+    # Check the calculated relative heat loss
+    calculated_loss = heat_loss/ heat_supply
+    println(calculated_loss)
+    @test heat_loss_assumed  ≈ calculated_loss atol = 0.1
+
+
+
 end
