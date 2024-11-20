@@ -3,6 +3,8 @@
     using HiGHS
     using JuMP
     using TimeStruct
+    using EnergyModelsHeat
+    const EMH = EnergyModelsHeat
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
@@ -42,7 +44,7 @@
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
             ),
-            ThermalEnergyStorage(
+            EMH.ThermalEnergyStorage(
                 "TES",
                 StorCap(FixedProfile(1)),
                 StorCap(FixedProfile(1)),
