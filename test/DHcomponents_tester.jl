@@ -46,7 +46,7 @@
                 OperationalProfile([0.2, 0.3, 0.4, 0.3]), # Demand in MW
                 Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
                 # Line above: Surplus and deficit penalty for the node in EUR/MWh
-                Dict(dh_heat => 1),           # Energy demand and corresponding ratio
+                Dict(dh_heat => 1),           # Input to the Node, in this gase, dh_heat
             ),
         ]
 
@@ -71,9 +71,8 @@
     # Display some results
     source, sink = case[:nodes]
 
-    
     # TODO: sjekk at varmetapet er innen ok range
-        # Initialize variables for accumulation
+    # Initialize variables for accumulation
     heat_supply = 0.0
     heat_delivered = 0.0
 
@@ -87,10 +86,7 @@
 
     heat_loss_assumed = 0.03
     # Check the calculated relative heat loss
-    calculated_loss = heat_loss/ heat_supply
+    calculated_loss = heat_loss / heat_supply
     println(calculated_loss)
-    @test heat_loss_assumed  ≈ calculated_loss atol = 0.1
-
-
-
+    @test heat_loss_assumed ≈ calculated_loss atol = 0.1
 end

@@ -15,8 +15,6 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
     #end
 end
 
-
-
 """
     ψ(pd::PinchData)
 

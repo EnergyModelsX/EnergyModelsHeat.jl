@@ -6,7 +6,7 @@
     using EnergyModelsHeat
 
     const EMH = EnergyModelsHeat
-    
+
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
