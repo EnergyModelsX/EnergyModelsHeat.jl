@@ -51,7 +51,7 @@
                 0,
                 FixedProfile(29.475), # source temperature that leads to a COP of 3
                 FixedProfile(90),
-                0.5,
+                FixedProfile(0.5),
                 heat_sur,
                 power,
                 FixedProfile(0),
