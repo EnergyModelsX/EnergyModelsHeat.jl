@@ -2,4 +2,4 @@ using TestItemRunner
 using EnergyModelsHeat
 using PrettyTables
 
-@run_package_testsimport
+@run_package_tests

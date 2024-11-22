@@ -11,6 +11,8 @@
         FixedProfile(80),    # 80-90°C at Isfjord Radio according to schematics
         FixedProfile(40),    # ca 40°C depending on load according to schematics
     )
-    t = SimpleTimes(1, 1)
-    @test EMH.ψ(pd, t) ≈ 0.7 atol = 0.01
+    T = SimpleTimes(1, 1)
+    for t ∈ T
+        @test EMH.ψ(pd, t) ≈ 0.7 atol = 0.01
+    end
 end
