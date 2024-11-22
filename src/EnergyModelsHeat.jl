@@ -32,5 +32,6 @@ export DHPipe
 export HeatPump
 export PinchData
 export HeatExchanger
+export ThermalEnergyStorage
 
 end
