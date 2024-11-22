@@ -112,8 +112,18 @@ Hence, if you do not have to call additional functions, but only plan to include
 - `constraints_cap_bound`:
 
   ```math
-  \texttt{flow\_in}[n, t, p] = inputs(n, p) \times \texttt{cap\_use}[n, t]
-  \qquad \forall p \in inputs(n)
+  \texttt{cap\_use}[n, t] >= cap_lower_bound(n) \times \texttt{cap\_inst}[n, t]
+  ```
+
+- `constraints_COP_Heat`:
+
+  ```math
+  \texttt{flow\_in}[n, t, heat_input_resource(n)] == \texttt{cap\_use}[n, t] \times ( 1 - \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)})
+  ```
+- `constraints_COP_Power`:
+
+  ```math
+  \texttt{flow\_in}[n, t, drivingforce_resource(n)] == \texttt{cap\_use}[n, t] \times \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)}
   ```
 
 
