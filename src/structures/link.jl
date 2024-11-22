@@ -7,7 +7,7 @@ A DH pipe between two nodes.
 - **`from::Node`** is the node from which there is flow into the link.
 - **`to::Node`** is the node to which there is flow out of the link.
 - **`length::Float64`** is the pipe length in meters
-- **`heatlossfactor::Float64`** is the heat loss factor in [W m−2 K−1 ] 
+- **`heatlossfactor::Float64`** is the heat loss factor in [W m−1 K−1 ] 
 - **`t_ground::Float64`** is the ground temperature in Celsius
 - **`resource_heat::ResourceHeat` is the resource used by DHPipe
 - **`formulation::Formulation`** is the used formulation of links. If not specified, a
