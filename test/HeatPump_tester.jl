@@ -1,4 +1,4 @@
-@testitem "TEStest" begin
+@testitem "HPtest" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
@@ -43,7 +43,7 @@
                 FixedProfile(1),         # Capacity in MW
                 FixedProfile(0),            # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
-                Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
+                Dict(power => 1),        # Output from the Node, in this gase, heat_sur
             ),
             EMH.HeatPump(
                 "HeatPump",
@@ -51,12 +51,12 @@
                 0,
                 FixedProfile(29.475), # source temperature that leads to a COP of 3
                 FixedProfile(90),
-                0.5,
+                FixedProfile(0.5),
                 heat_sur,
                 power,
                 FixedProfile(0),
                 FixedProfile(0),
-                Dict(heat_sur => 1),
+                Dict(heat_sur => 1, power => 1),
                 Dict(heat_use => 1),
             ),
             RefSink(
@@ -84,6 +84,7 @@
         )
         return (; case, model, nodes, products, T)
     end
+    
     case, model, nodes, products, T = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
@@ -91,20 +92,17 @@
     surplus = products[2]
     usable = products[3]
 
-    # Test that the expected COP ratio is calculated
-    @test COP ≈ 3 atol = 0.01
-
     # Initialize variables for accumulation
     power_uptake = 0.0
     heat_delivered = 0.0
 
     # Calculate total power uptake and heat delivered over all time periods
-    for t ∈ T
+    for t in T
         power_uptake += JuMP.value(m[:flow_in][nodes[3], t, power])
         heat_delivered += JuMP.value(m[:flow_out][nodes[3], t, heat_use])
     end
 
     # Check the calculated COP
     calculated_COP = heat_delivered / power_uptake
-    @test COP ≈ calculated_COP atol = 0.01
+    @test calculated_COP ≈ 3 atol = 0.01
 end

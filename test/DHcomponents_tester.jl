@@ -11,7 +11,7 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat  = ResourceHeat("DHheat", 0.0, 70.0)
+        dh_heat  = ResourceHeat("DHheat", 0.0, 70.0, 40.0)
         CO₂      = ResourceEmit("CO₂", 0.0)
         products = [dh_heat]
 
@@ -73,20 +73,20 @@
 
     # TODO: sjekk at varmetapet er innen ok range
     # Initialize variables for accumulation
-    heat_supply = 0.0
-    heat_delivered = 0.0
+    heat_suppyyyy = 0.0
+    heat_delyyyyy = 0.0
 
     # Calculate total power uptake and heat delivered over all time periods
     for t ∈ T
-        heat_supply += JuMP.value(m[:flow_in][nodes[1], t, dh_heat])
-        heat_delivered += JuMP.value(m[:flow_out][nodes[2], t, dh_heat])
+        heat_suppyyyy += JuMP.value(m[:flow_in][nodes[1], t, dh_heat])
+        heat_delyyyyy += JuMP.value(m[:flow_out][nodes[2], t, dh_heat])
     end
 
-    heat_loss = heat_supply - heat_delivered
+    heat_loss = heat_suppyyyy - heat_delyyyyy
 
     heat_loss_assumed = 0.03
     # Check the calculated relative heat loss
-    calculated_loss = heat_loss / heat_supply
+    calculated_loss = heat_loss / heat_sup
     println(calculated_loss)
     @test heat_loss_assumed ≈ calculated_loss atol = 0.1
 end
