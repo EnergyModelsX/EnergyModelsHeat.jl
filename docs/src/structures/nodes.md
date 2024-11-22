@@ -2,15 +2,15 @@
 
 ### Heat pump
 
-A `HeatPump` node convert low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity). The node allows time-varying coefficient of performance (COP).
+A `HeatPump` node to convert low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity). The node allows time-varying coefficient of performance (COP).
 
 HeatPump has the following fields:
 - **`id`** :\
      The field `id` is only used for providing a name to the storage.
 - **`cap::TimeProfile`** :\
-    The installed heating capacity.\n
+    The installed heating capacity.
 - **`cap_lower_bound`** :\
-    The lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity 
+    The lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity. 
 - **`t_source`** :\
     The temperature profile of the heat source
 - **`t_sink`** :\
@@ -20,22 +20,22 @@ HeatPump has the following fields:
 - **`input_heat`** :\
     The resource for the low-temperature heat
 - **`driving_force`** :\
-    The resource of the driving force, e.g. electricity
+    The resource of the driving force, e.g. electricity.
 - **`opex_var::TimeProfile`** :\
-    The variable operating expense per energy unit produced.\n
+    The variable operating expense per energy unit produced.
 - **`opex_fixed::TimeProfile`** :\
-    The fixed operating expense.\n
+    The fixed operating expense.
 - **`input::Dict{<:Resource, <:Real}`** :\
-    The input `Resource`s.\n
-- **`output::Dict{<:Resource, <:Real}`** :\ 
-    The generated `Resource`.\n
+    The input `Resource`s.
+- **`output::Dict{<:Resource,<:Real}`** :\
+    The generated `Resource`.
 - **`data::Vector{Data}`** :\
     The additional data (e.g. for investments). The field `data` is conditional through usage of a constructor.
 
 
 ### Thermal energy storage
 
-The node `c` functions mostly like a RefStorage with the additional option to include thermal energy losses. 
+The node `ThermalEnergyStorage` functions mostly like a RefStorage with the additional option to include thermal energy losses. 
 Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod. The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero. 
 
 ThermalEnergyStorage has the following fields:
