@@ -36,9 +36,9 @@ The fields of a [`HeatPump`](@ref) are given as:
 - **`data::Vector{Data}`** :\
     The additional data (e.g. for investments). The field `data` is conditional through usage of a constructor.
 
-## [Mathematical description](@id nodes-HeatPump-math)
+### [Mathematical description](@id nodes-HeatPump-math)
 
-### [Variables](@id nodes-HeatPump-math-var)
+#### [Variables](@id nodes-HeatPump-math-var)
 
 The variables of [`HeatPump`](@ref)s include:
 
@@ -50,7 +50,7 @@ The variables of [`HeatPump`](@ref)s include:
 - [``\texttt{flow\_out}``](@ref man-opt_var-flow)
 - [``\texttt{emissions\_node}``](@ref man-opt_var-emissions) if `EmissionsData` is added to the field `data`
 
-### [Constraints](@id nodes-HeatPump-math-con)
+#### [Constraints](@id nodes-HeatPump-math-con)
 
 The following standard constraints are implemented for a [`HeatPump`](@ref) node.
 [`HeatPump`](@ref) nodes utilize the declared method for all nodes 𝒩.

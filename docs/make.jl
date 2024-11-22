@@ -1,4 +1,4 @@
-using Documenter, DocumenterCitations, EnergyModelsHeat
+using Documenter, DocumenterCitations, DocumenterInterLinks, EnergyModelsHeat
 
 pages = [
     "Introduction" => "index.md",

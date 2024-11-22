@@ -11,9 +11,9 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat_in  = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
-        dh_heat_out  = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
-        CO₂      = ResourceEmit("CO₂", 0.0)
+        dh_heat_in = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
+        dh_heat_out = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
+        CO₂ = ResourceEmit("CO₂", 0.0)
         products = [dh_heat_in, dh_heat_out]
 
         op_duration = 2 # Each operational period has a duration of 2
@@ -53,7 +53,15 @@
 
         # Connect all nodes with the availability node for the overall energy/mass balance
         links = [
-            EMH.DHPipe("DH pipe 1", nodes[1], nodes[2], 1000.0, 0.25*10^(-6), 10.0, dh_heat_in),
+            EMH.DHPipe(
+                "DH pipe 1",
+                nodes[1],
+                nodes[2],
+                1000.0,
+                0.25 * 10^(-6),
+                10.0,
+                dh_heat_in,
+            ),
         ]
 
         # WIP data structure
@@ -68,14 +76,12 @@
     case, model, nodes, products, T = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
-    
+
     dh_heat_in = products[1]
     dh_heat_out = products[2]
 
-
     total_heat_in = sum(JuMP.value(m[:flow_out][nodes[1], t, dh_heat_in]) for t ∈ T)
     total_heat_out = sum(JuMP.value(m[:flow_in][nodes[2], t, dh_heat_out]) for t ∈ T)
-    
 
     heat_loss = total_heat_in - total_heat_out
 

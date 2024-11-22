@@ -84,7 +84,7 @@
         )
         return (; case, model, nodes, products, T)
     end
-    
+
     case, model, nodes, products, T = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
