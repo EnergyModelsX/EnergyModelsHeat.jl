@@ -126,19 +126,19 @@ ThermalEnergyStorage has the following fields:
 - **`id`** :\
      The field `id` is only used for providing a name to the storage.
 - **`charge::AbstractStorageParameters`** :\
-    The charging parameters of the [`Storage`](@ref) node. Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX,
+    The charging parameters of the ThermalEnergyStorage. Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX,
   and/or a capacity.
 - **`level::AbstractStorageParameters`** :\
-    The level parameters of the [`Storage`](@ref) node. Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
+    The level parameters of the ThermalEnergyStorage. Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
 - **`stor_res::Resource`** :\
-    The stored [`Resource`](@ref).
+    The stored ThermalEnergyStorage.
 - **`heatlossfactor::Float64`** :\
     The relative heat losses in percent. 
 - **`input::Dict{<:Resource,<:Real}`** :\
-    The input [`Resource`](@ref)s with conversion
+    The input Resources with conversion
   value `Real`.
 - **`output::Dict{<:Resource,<:Real}`** :\
-    The generated [`Resource`](@ref)s with conversion  value `Real`. Only relevant for linking and the stored [`Resource`](@ref) as the output
+    The generated Resources with conversion  value `Real`. Only relevant for linking and the stored Resources as the output
   value is not utilized in the calculations.
 - **`data::Vector{<:Data}`** :\
     The additional data (*e.g.*, for investments). The field `data` is conditional through usage of a constructor.
