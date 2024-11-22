@@ -112,18 +112,18 @@ Hence, if you do not have to call additional functions, but only plan to include
 - `constraints_cap_bound`:
 
   ```math
-  \texttt{cap\_use}[n, t] >= cap\_lower_bound(n) \times \texttt{cap\_inst}[n, t]
+  \texttt{cap\_use}[n, t] >= cap\_lower\_bound(n) \times \texttt{cap\_inst}[n, t]
   ```
 
 - `constraints_COP_Heat`:
 
   ```math
-  \texttt{flow\_in}[n, t, heat\_input_resource(n)] == \texttt{cap\_use}[n, t] \times ( 1 - \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff\_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)})
+  \texttt{flow\_in}[n, t, heat\_input\_resource(n)] = \texttt{cap\_use}[n, t] \times ( 1 - \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff\_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)})
   ```
 - `constraints_COP_Power`:
 
   ```math
-  \texttt{flow\_in}[n, t, drivingforce\_resource(n)] == \texttt{cap\_use}[n, t] \times \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff\_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)}
+  \texttt{flow\_in}[n, t, drivingforce\_resource(n)] = \texttt{cap\_use}[n, t] \times \frac{(\texttt{t\_sink}(n, t) - \texttt{t\_source}(n, t))}{eff\_carnot(n,t) \times (\texttt{t\_sink}(n, t) + 273.15)}
   ```
 
 
