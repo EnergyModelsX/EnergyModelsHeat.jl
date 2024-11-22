@@ -98,13 +98,13 @@ function EMB.create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::E
     constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
 
     # Call the function for the minimum used capacity (lower capacity bound)
-    constraints_cap_bound(m,n,𝒯,modeltype)
+    constraints_cap_bound(m, n, 𝒯, modeltype)
 
     # Constraint for the COP - Heat
-    constraints_COP_Heat(m,n,𝒯,modeltype)
+    constraints_COP_Heat(m, n, 𝒯, modeltype)
 
     # Constraint for the COP - Electricity
-    constraints_COP_Power(m,n,𝒯,modeltype)
+    constraints_COP_Power(m, n, 𝒯, modeltype)
 end
 
 """
