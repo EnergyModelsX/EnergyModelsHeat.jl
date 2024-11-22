@@ -91,7 +91,8 @@
     heatloss = nodes[3].heatlossfactor
 
     heat_input = sum(JuMP.value(m[:flow_in][nodes[3], t, heat_use]) for t ∈ T) * op_duration
-    heat_output = sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T) * op_duration
+    heat_output =
+        sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T) * op_duration
     heat_stored = sum(JuMP.value(m[:stor_level][nodes[3], t]) for t ∈ T)
 
     # Check that the heat delivered matches the expected ratio of heat stored
