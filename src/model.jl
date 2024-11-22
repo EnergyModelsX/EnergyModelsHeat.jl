@@ -69,8 +69,11 @@ It is also possible to inlude a lower capacity bound which the HeatPump cannot c
 - [`constraints_data`](@ref) for all `node_data(n)`,
 - [`constraints_flow_out`](@ref),
 - [`constraints_capacity`](@ref),
-- [`constraints_opex_fixed`](@ref), and
-- [`constraints_opex_var`](@ref).
+- [`constraints_opex_fixed`](@ref),
+- [`constraints_opex_var`](@ref),
+- [`constraints_cap_bound`](@ref),
+- [`constraints_COP_Heat`](@ref),
+- [`constraints_COP_Power`](@ref),
 """
 function EMB.create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::EnergyModel)
 
@@ -94,32 +97,14 @@ function EMB.create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::E
     constraints_opex_fixed(m, n, 𝒯ᴵⁿᵛ, modeltype)
     constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
 
-    ## Custom constraints for COP calculation and flexibility
-
-    #Part Load Constraint
-    @constraint(m, [t ∈ 𝒯],
-        m[:cap_use][n, t] >= (m[:cap_inst][n, t] * cap_lower_bound(n))
-    )
+    # Call the function for the minimum used capacity (lower capacity bound)
+    constraints_cap_bound(m,n,𝒯,modeltype)
 
     # Constraint for the COP - Heat
-    @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, heat_input_resource(n)] ==
-        (
-            m[:cap_use][n, t] * (
-                1 - (
-                    (t_sink(n, t) - t_source(n, t)) /
-                    (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
-                )
-            )
-        )
-    )
+    constraints_COP_Heat(m,n,𝒯,modeltype)
 
     # Constraint for the COP - Electricity
-    @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, drivingforce_resource(n)] ==
-        (m[:cap_use][n, t] * (t_sink(n, t) - t_source(n, t))) /
-        (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
-    )
+    constraints_COP_Power(m,n,𝒯,modeltype)
 end
 
 """
