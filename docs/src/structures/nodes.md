@@ -1,12 +1,10 @@
-## Nodes
+# Nodes
 
-### Heat pump
-
-# [HeatPump](@id nodes-HeatPump)
+## [HeatPump](@id nodes-HeatPump)
 
 [`HeatPump`](@ref)s are technologies that convert low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity).
 
-## [Introduced type and its fields](@id nodes-network_node-fields)
+### [Introduced type and its fields](@id nodes-network_node-fields)
 
 The [`HeatPump`](@ref) node allows for variable coefficient of performance (COP) based on a source- and sink-temperature as well as a carnot efficiency. 
 Additionally there is an option to define a lower capacity bound that represents the lowest relative capacity that the heat pump can be regulated down to. Note that there is no option to shut down the heat pump (cap_use = 0) in case of cap_lower_bound > 0. This means that the heat pump must always operate between full capacity and the lower capacity bound. 
@@ -40,9 +38,9 @@ The fields of a [`HeatPump`](@ref) are given as:
 - **`data::Vector{Data}`** :\
     The additional data (e.g. for investments). The field `data` is conditional through usage of a constructor.
 
-## [Mathematical description](@id nodes-HeatPump-math)
+### [Mathematical description](@id nodes-HeatPump-math)
 
-### [Variables](@id nodes-HeatPump-math-var)
+#### [Variables](@id nodes-HeatPump-math-var)
 
 The variables of [`HeatPump`](@ref)s include:
 
@@ -54,7 +52,7 @@ The variables of [`HeatPump`](@ref)s include:
 - [``\texttt{flow\_out}``](@ref man-opt_var-flow)
 - [``\texttt{emissions\_node}``](@ref man-opt_var-emissions) if `EmissionsData` is added to the field `data`
 
-### [Constraints](@id nodes-HeatPump-math-con)
+#### [Constraints](@id nodes-HeatPump-math-con)
 
 The following standard constraints are implemented for a [`HeatPump`](@ref) node.
 [`HeatPump`](@ref) nodes utilize the declared method for all nodes 𝒩.
@@ -127,7 +125,7 @@ Hence, if you do not have to call additional functions, but only plan to include
   ```
 
 
-### Thermal energy storage
+## Thermal energy storage
 
 The node `ThermalEnergyStorage` functions mostly like a RefStorage with the additional option to include thermal energy losses. 
 Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod. The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero. 
@@ -154,4 +152,4 @@ ThermalEnergyStorage has the following fields:
     The additional data (*e.g.*, for investments). The field `data` is conditional through usage of a constructor.
 
 
-### Heat exchanger
+## Heat exchanger
