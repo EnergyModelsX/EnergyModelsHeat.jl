@@ -10,7 +10,8 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        power    = ResourceCarrier("Power", 0.0)
+        power_source    = ResourceCarrier("Power", 0.0)
+        power_input    = ResourceCarrier("Power", 0.0)
         heat_sur = ResourceCarrier("Heat_surplus", 0.0)
         heat_use = ResourceCarrier("Heat_usable", 0.0)
         CO₂      = ResourceEmit("CO₂", 1.0)
@@ -43,7 +44,7 @@
                 FixedProfile(1),         # Capacity in MW
                 FixedProfile(0),            # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
-                Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
+                Dict(power => 1),        # Output from the Node, in this gase, heat_sur
             ),
             EMH.HeatPump(
                 "HeatPump",
@@ -88,21 +89,15 @@
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
+    power = products[1]
     surplus = products[2]
-    usable = products[3]
+    heat_use = products[3]
 
     # Test that the expected COP ratio is calculated
     @test COP ≈ 3 atol = 0.01
 
-    # Initialize variables for accumulation
-    power_uptake = 0.0
-    heat_delivered = 0.0
-
-    # Calculate total power uptake and heat delivered over all time periods
-    for t ∈ T
-        power_uptake += JuMP.value(m[:flow_in][nodes[3], t, power])
-        heat_delivered += JuMP.value(m[:flow_out][nodes[3], t, heat_use])
-    end
+    power_uptake = sum(JuMP.value(m[:flow_in][nodes[3], t, power]) for t ∈ T)
+    heat_delivered = sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T)
 
     # Check the calculated COP
     calculated_COP = heat_delivered / power_uptake
