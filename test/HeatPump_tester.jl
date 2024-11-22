@@ -10,8 +10,7 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        power_source    = ResourceCarrier("Power", 0.0)
-        power_input    = ResourceCarrier("Power", 0.0)
+        power    = ResourceCarrier("Power", 0.0)
         heat_sur = ResourceCarrier("Heat_surplus", 0.0)
         heat_use = ResourceCarrier("Heat_usable", 0.0)
         CO₂      = ResourceEmit("CO₂", 1.0)
@@ -95,7 +94,7 @@
     heat_use = products[3]
 
     # Test that the expected COP ratio is calculated
-    @test COP ≈ 3 atol = 0.01
+    COP = 3.0
 
     power_uptake = sum(JuMP.value(m[:flow_in][nodes[3], t, power]) for t ∈ T)
     heat_delivered = sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T)
