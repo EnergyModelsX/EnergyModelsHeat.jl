@@ -1,7 +1,12 @@
-using Documenter, DocumenterCitations, EnergyModelsHeat
+using Documenter, DocumenterCitations, DocumenterInterLinks, EnergyModelsHeat
 
 pages = [
     "Introduction" => "index.md",
+    "Structures" => [
+        "Resources" => "structures/resources.md",
+        "Links" => "structures/links.md",
+        "Nodes" => "structures/nodes.md",
+    ],
     "How to" => [
         "Use surplus heat for DH" => "howto/simple_conversion.md",
     ],
