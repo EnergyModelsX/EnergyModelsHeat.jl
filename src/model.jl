@@ -1,4 +1,10 @@
 
+"""
+    create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
+
+Calculates the heat losses occurring in a `DHPipe`
+"""
+
 function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
 
     # Generic link in which each output corresponds to the input
@@ -7,11 +13,6 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
         m[:link_in][l, t, p] -
         pipelength(l) * heatlossfactor(l) * (t_supply(l) - t_ground(l))
     )
-
-    # Call of the function for limiting the capacity to the maximum installed capacity
-    #if EMB.has_capacity(l::DHPipe)
-    #    EMB.constraints_capacity_installed(m, l, 𝒯, modeltype)
-    #end
 end
 
 """

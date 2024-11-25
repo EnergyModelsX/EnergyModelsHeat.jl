@@ -1,6 +1,6 @@
 # [HeatPump](@id nodes-HeatPump)
 
-['HeatPump`](@ref)s are technologies that convert low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity).
+['HeatPump`](@ref) is a technology that converts low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity).
 
 ## [Introduced type and its fields](@id nodes-HeatPump-fields)
 
