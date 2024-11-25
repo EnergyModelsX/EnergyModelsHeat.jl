@@ -1,7 +1,6 @@
-# [District heating pipe] (@id links-DHpipe)
+# [DHPipe](@id links-DHPipe)
 
-[`HeatPump`](@ref)
-EnergyModelsHeat introduces a new link for DH pipes, called DHPipe, exending on the abstract type link from EnergyModelsBase. 
+[`DHPipe`](@ref) enables to model transport of heat in the form of hot water in thermal energy systems, including district heating (DH) networks, taking into account the supply temperature level and related heat losses. [`DHPipe`](@ref) extends on the abstract type [Link](https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/src/structures/link.jl) from [EnergyModelsBase](https://github.com/EnergyModelsX/EnergyModelsBase.jl/tree/main). 
 
 DHPipe has the following fields:
 - **`id`** :\
@@ -13,7 +12,7 @@ DHPipe has the following fields:
 - **`length::Float64`** :\
     The pipe length in meters
 - **`heatlossfactor::Float64`** :\
-    The heat loss factor per meter pipe in [W/(m*K)], [kW/(m*K)] or [MW/(m*K)], depending on the applied unit for energy. Typical values for heat loss factors in DH pipes can be found at the website of the DH pipe manufacturer [LOGSTOR](@cite). 
+    The heat loss factor per meter pipe in [W/(m*K)], [kW/(m*K)] or [MW/(m*K)], depending on the applied unit for energy. Typical values for heat loss factors in DH pipes can be found at the website of the DH pipe manufacturer [LOGSTOR](https://www.logstor.com/district-heating/logstor-lab/lambda-values). 
 - **`t_ground::Float64`** :\
     The ground temperature in Celsius
 - **`resource_heat::ResourceHeat`** :\ 
@@ -21,12 +20,9 @@ DHPipe has the following fields:
 - **`formulation::Formulation`** :\
     The used formulation of links. If not specified, a `Linear` link is assumed.
 
-The heat losses for pipe $l$  are included through the following constraint:
+The heat losses for [`DHPipe`](@ref) $l$  are included through the following constraint:
   ```math
   \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heatlossfactor}[l] * (\texttt{t\_supply}[l] - \texttt{t\_ground}[l])
   ```
  As an example, for a pipe with a length of 1000 m, a heat loss factor of 0.25 W/(m*K) will result in a relative heat loss of 1.7 % for a 1000 m pipe, at a supply temperature of $70^oC$ and ground temperature of $10^oC$.
 
-## References
-```@bibliography
-```

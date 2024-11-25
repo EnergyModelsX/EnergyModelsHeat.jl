@@ -6,7 +6,6 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
         m[:link_out][l, t, p] ==
         m[:link_in][l, t, p] -
         pipelength(l) * heatlossfactor(l) * (t_supply(l) - t_ground(l))
-        #m[:link_out][l, t, p] == m[:link_in][l, t, p]*HEATLOSSFACTOR
     )
 
     # Call of the function for limiting the capacity to the maximum installed capacity
@@ -36,7 +35,7 @@ end
 pinch_data(n::HeatExchanger) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
 
-function EnergyModelsBase.constraints_flow_out(
+function EMB.constraints_flow_out(
     m,
     n::HeatExchanger,
     𝒯::TimeStructure,
@@ -123,7 +122,7 @@ Calls the constraint function constraints_level_iterate that includes the heatlo
 - [`constraints_opex_fixed`](@ref), and
 - [`constraints_opex_var`](@ref).
 """
-function create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
+function EMB.create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
 
     # Declaration of the required subsets.
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
