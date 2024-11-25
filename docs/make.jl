@@ -2,10 +2,16 @@ using Documenter, DocumenterCitations, DocumenterInterLinks, EnergyModelsHeat
 
 pages = [
     "Introduction" => "index.md",
-    "Structures" => [
-        "Resources" => "structures/resources.md",
-        "Links" => "structures/links.md",
-        "Nodes" => "structures/nodes.md",
+    "Resources" => [
+        "ResourceHeat" => "resources/resourceheat.md",
+    ],
+    "Links" => [
+        "DHPipe" => "links/dhpipe.md",
+    ],
+    "Nodes" => [
+        "HeatPump" => "nodes/heatpump.md",
+        "ThermalEnergyStorage" => "nodes/thermalenergystorage.md",
+        "HeatExchanger" => "nodes/heatexchanger.md",
     ],
     "How to" => [
         "Use surplus heat for DH" => "howto/simple_conversion.md",
