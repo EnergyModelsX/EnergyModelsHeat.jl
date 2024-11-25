@@ -1,4 +1,4 @@
-# EnergyModelsHeat
+# [EnergyModelsHeat](@id EnergyModelsHeat)
 
 `EnergyModelsHeat` extends [EnergyModelsX](https://github.com/EnergyModelsX) with functionality to model heat flows and district heating network with higher accuracy.
 

@@ -1,7 +1,8 @@
-# Structures
 
-## Resources
-EnergyModelsHeat introduces the new resource ResourceHeat, extending on Resource from EnergyModelsBase. The fields of ResourceHeat are given as:
+# [ResourceHeat](@id resources-ResourceHeat)
+
+Thermal energy has the special feature that the quality or usefulness of the energy depends not just on the amount but also on the temperature level. 
+`ResourceHeat` is introduced to be able to model thermal energy components and systems with specific temperature levels in [EnergyModelsX](https://github.com/EnergyModelsX), and is applied in technology models for generation, conversion, storage and transport of heat, introduced in the 'EnergyModelsHeat' package. `ResourceHeat` extends on ['Resource'](https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/src/structures/resource.jl) from ['EnergyModelsBase'](https://github.com/EnergyModelsX/EnergyModelsBase.jl/tree/main), with the two additional fields for supply and return temperature:
 
 - **`id`** :\
      The field `id` is only used for providing a name to the resource.

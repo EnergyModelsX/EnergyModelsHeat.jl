@@ -1,4 +1,6 @@
-## Links
+# [District heating pipe] (@id links-DHpipe)
+
+[`HeatPump`](@ref)
 EnergyModelsHeat introduces a new link for DH pipes, called DHPipe, exending on the abstract type link from EnergyModelsBase. 
 
 DHPipe has the following fields:
