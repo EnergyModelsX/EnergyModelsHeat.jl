@@ -15,15 +15,6 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
     #end
 end
 
-struct Heat{T} <: EnergyModelsBase.Resource
-    id::Any
-    T_supply::T
-    T_return::T
-    co2_int::T
-end
-Heat(id, T_supply, T_return) = Heat(id, T_supply, T_return, zero(T_return))
-isheat(r) = false
-isheat(r::Heat) = true
 
 """
     ψ(pd::PinchData)
@@ -32,30 +23,58 @@ Calculate fraction of heat available for district heating at pinch point `T_cold
 """
 ψ(pd::PinchData, t) = ψ(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
 
+# Assuming equal mass flows
 function ψ(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-    if (T_COLD - ΔT_min) ≥ T_cold
-        (T_HOT - T_COLD - ΔT_min) / (T_hot - T_cold)
+    if T_hot ≤ (T_HOT - ΔT_min)
+        if ((T_hot - T_cold) > (T_HOT - T_COLD)) || (T_COLD < T_cold + ΔT_min)
+            zero(T_HOT)
+        else
+            (T_hot - T_cold) / (T_HOT - T_COLD)
+        end
     else
-        (T_HOT - T_cold - ΔT_min) / (T_hot - T_cold)
+        zero(T_HOT)
+    end
+end
+
+
+# Allowing different mass flows
+ψ2(pd::PinchData, t) = ψ2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
+function ψ2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
+    if (T_hot > (T_HOT - ΔT_min))
+        zero(T_HOT)
+    elseif (T_COLD < (T_cold + ΔT_min))
+        (T_HOT - (T_cold + ΔT_min)) / (T_HOT - T_COLD)
+    else
+        one(T_HOT)
     end
 end
 
 """
-    
+Assuming equal mass flows    
 """
 upgrade(pd::PinchData, t) =
     upgrade(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
 function upgrade(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
     if T_hot > (T_HOT - ΔT_min)
         if T_COLD < (T_cold + ΔT_min)
-            (T_hot - T_HOT + ΔT_min) / (T_HOT - T_COLD)
+            (T_hot - T_HOT + ΔT_min) / (T_hot - T_cold)
         else
-            (T_hot - T_HOT + ΔT_min) / (T_HOT - ΔT_min - T_cold)
+            (T_hot - (T_cold + T_HOT - T_COLD)) / (T_hot - T_cold)
         end
+    end
+    zero(T_HOT)
+end
+
+upgrade2(pd::PinchData, t) =
+    upgrade2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
+function upgrade2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
+    if (T_COLD < (T_cold + ΔT_min))
+        (T_hot - T_HOT + ΔT_min) / (T_hot - T_cold)
     else
-        0.0
+        zero(T_HOT)
     end
 end
+
 
 pinch_data(n::AbstractHeatExchanger) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
@@ -187,12 +206,12 @@ function EnergyModelsBase.constraints_flow_out(
     # Available heat output is a fraction `ψ` of heat input and the upgrade
     @constraint(m, [t ∈ 𝒯],
         m[:flow_out][n, t, heat_available] ≤
-        (ψ(pd, t) + upgrade(pd, t)) * m[:flow_in][n, t, heat_surplus]
+        upgrade(pd, t) + m[:flow_in][n, t, heat_surplus]
     )
     # Upgrade is powered by power in according to how much is used of the surplus heat in the updgraded flow out
     @constraint(m, [t ∈ 𝒯],
         m[:flow_in][n, t, power] ==
-        upgrade_fraction(pd, t) * m[:flow_out][n, t, heat_available]
+        upgrade(pd, t) * m[:flow_out][n, t, heat_available]
     )
 end
 

@@ -140,10 +140,10 @@ end
 
     surplus = products[2]
     usable = products[3]
-    ratio = EnergyModelsHeat.ψ(80, 60, 8, 80, 40)
+    ratio = EnergyModelsHeat.ψ(90, 60, 8, 80, 40)
 
     # Test that ratio is calculated as expected
-    @test ratio ≈ 0.3 atol = 0.01
+    @test ratio ≈ 2/3
     # Test that EMX model gives correct ratio of usable energy for all time periods
     for t ∈ T
         @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
@@ -173,7 +173,7 @@ end
     for t ∈ T
         # Check that actual power flow matches specified fraction of upgraded output heat flow
         @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
-              EnergyModelsHeat.upgrade_fraction(pd, t) *
+              EnergyModelsHeat.upgrade(pd, t) *
               JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
     end
 end

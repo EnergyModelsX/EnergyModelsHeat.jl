@@ -15,3 +15,14 @@ struct ResourceHeat{T<:Real} <: Resource
     t_supply::Float64
     t_return::Float64
 end
+
+# From heat upgrade, to be reconciled
+struct Heat{T} <: EnergyModelsBase.Resource
+    id::Any
+    T_supply::T
+    T_return::T
+    co2_int::T
+end
+Heat(id, T_supply, T_return) = Heat(id, T_supply, T_return, zero(T_return))
+isheat(r) = false
+isheat(r::Heat) = true
