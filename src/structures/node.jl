@@ -73,6 +73,10 @@ cap_lower_bound(n::HeatPump) = n.cap_lower_bound[1]
 heat_input_resource(n::HeatPump) = n.input_heat
 drivingforce_resource(n::HeatPump) = n.driving_force
 
+abstract type HeatExchangerAssumptions end
+struct EqualMassFlows <: HeatExchangerAssumptions end
+struct DifferentMassFlows <: HeatExchangerAssumptions end
+
 abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
 """ 
     HeatExchanger
@@ -90,7 +94,7 @@ energy that can be used in the District Heating network.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
 """
-struct HeatExchanger <: AbstractHeatExchanger
+struct HeatExchanger{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -99,7 +103,9 @@ struct HeatExchanger <: AbstractHeatExchanger
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
 end
-
+# Default to different mass flows assumptions for heat exchanger
+HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data) =
+    HeatExchanger{DifferentMassFlows}(id, cap, opex_var, opex_fixed, input, output, data)
 """
     PinchData{T}
 
@@ -190,7 +196,7 @@ Valid inputs are: one `Heat` resource and one power resource.
 Valid output is a single `Heat` resource
 - **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
 """
-struct DirectHeatUpgrade <: AbstractHeatExchanger
+struct DirectHeatUpgrade{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -199,3 +205,14 @@ struct DirectHeatUpgrade <: AbstractHeatExchanger
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
 end
+# Default to different mass flows assumptions for heat exchange
+DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
+    DirectHeatUpgrade{DifferentMassFlows}(
+        id,
+        cap,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        data,
+    )

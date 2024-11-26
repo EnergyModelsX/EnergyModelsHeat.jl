@@ -49,35 +49,35 @@ end
     const EMH = EnergyModelsHeat
 
     # Circuits at same intervals:
-    @test EMH.updgrade_equal_mass(70, 60, 0, 70, 60) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 60, 0, 70, 60) ≈ 0.0
-    @test EMH.updgrade_equal_mass(70, 60, 10, 70, 60) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 60, 10, 70, 60) ≈ 1.0
-    @test EMH.updgrade_equal_mass(70, 60, 20, 70, 60) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 60, 20, 70, 60) ≈ 2.0 # TODO: Check if this makes sense?
+    @test EMH.upgrade_equal_mass(70, 60, 0, 70, 60) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 60, 0, 70, 60) ≈ 0.0
+    @test EMH.upgrade_equal_mass(70, 60, 10, 70, 60) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 60, 10, 70, 60) ≈ 1.0
+    @test EMH.upgrade_equal_mass(70, 60, 20, 70, 60) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 60, 20, 70, 60) ≈ 2.0 # TODO: Check if this makes sense?
 
-    @test EMH.updgrade_equal_mass(70, 40, 0, 70, 40) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 40, 0, 70, 40) ≈ 0.0
-    @test EMH.updgrade_equal_mass(70, 40, 10, 70, 40) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 40, 10, 70, 40) ≈ 1 / 3
+    @test EMH.upgrade_equal_mass(70, 40, 0, 70, 40) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 40, 0, 70, 40) ≈ 0.0
+    @test EMH.upgrade_equal_mass(70, 40, 10, 70, 40) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 40, 10, 70, 40) ≈ 1 / 3
 
     # Lower cold T at surplus heat source (40 < 50)
-    @test EMH.updgrade_equal_mass(70, 40, 10, 70, 50) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 40, 10, 70, 50) ≈ 0.5
+    @test EMH.upgrade_equal_mass(70, 40, 10, 70, 50) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 40, 10, 70, 50) ≈ 0.5
     # Lower cold T at district heating (40 < 50)
-    @test EMH.updgrade_equal_mass(70, 50, 10, 70, 40) ≈ 0.0
-    @test EMH.updgrade_different_mass(70, 50, 10, 70, 40) ≈ 0.0
+    @test EMH.upgrade_equal_mass(70, 50, 10, 70, 40) ≈ 0.0
+    @test EMH.upgrade_different_mass(70, 50, 10, 70, 40) ≈ 0.0
 
     # No need for upgrade when heat source less ΔT ≥ DH supply T
-    @test EMH.updgrade_equal_mass(90, 40, 5, 70, 60) ≈ 0
-    @test EMH.updgrade_different_mass(90, 40, 5, 70, 60) ≈ -1.5 # TODO: Should be 0.0? (max(upgrade,0))?
+    @test EMH.upgrade_equal_mass(90, 40, 5, 70, 60) ≈ 0
+    @test EMH.upgrade_different_mass(90, 40, 5, 70, 60) ≈ -1.5 # TODO: Should be 0.0? (max(upgrade,0))?
     # T_SH_cold < (T_DH_cold + ΔT_min) : 40 < 50 + 5
-    @test EMH.updgrade_equal_mass(60, 40, 5, 70, 50) ≈ 0.0
-    @test EMH.updgrade_different_mass(60, 40, 5, 70, 50) ≈ 0.75
+    @test EMH.upgrade_equal_mass(60, 40, 5, 70, 50) ≈ 0.0
+    @test EMH.upgrade_different_mass(60, 40, 5, 70, 50) ≈ 0.75
     # T_SH_cold == (T_DH_cold + ΔT_min) : 55 == 50 + 5
-    @test EMH.updgrade_equal_mass(60, 55, 5, 70, 50) ≈ 0.0
-    @test EMH.updgrade_different_mass(60, 55, 5, 70, 50) ≈ 0.0
+    @test EMH.upgrade_equal_mass(60, 55, 5, 70, 50) ≈ 0.0
+    @test EMH.upgrade_different_mass(60, 55, 5, 70, 50) ≈ 0.0
     # T_SH_cold > (T_DH_cold + ΔT_min) : 
-    @test EMH.updgrade_equal_mass(60, 56, 5, 70, 50) ≈ 0.0
-    @test EMH.updgrade_different_mass(60, 56, 5, 70, 50) ≈ 0.0
+    @test EMH.upgrade_equal_mass(60, 56, 5, 70, 50) ≈ 0.0
+    @test EMH.upgrade_different_mass(60, 56, 5, 70, 50) ≈ 0.0
 end

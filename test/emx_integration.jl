@@ -4,6 +4,7 @@
     using JuMP
     using TimeStruct
     using EnergyModelsHeat
+    const EMH = EnergyModelsHeat
 
     # Define the different resources and their emission intensity in tCO2/MWh
     power    = ResourceCarrier("Power", 0.0)
@@ -13,20 +14,22 @@
     CO₂      = ResourceEmit("CO₂", 1.0)
     products = [power, heat_sur, heat_use, CO₂]
 
-    pd = PinchData(
-        FixedProfile(80),    # PEM FC
-        FixedProfile(60),
-        FixedProfile(8),     # Depends on size of heat exchanger (Ask Davide?)
-        FixedProfile(80),    # 80-90°C at Isfjord Radio according to schematics
-        FixedProfile(40),    # ca 40°C depending on load according to schematics
-    )
-
-    function generate_data()
+    function generate_data(; equal_mass = true)
+        pd = PinchData(
+            FixedProfile(80),
+            FixedProfile(60),
+            FixedProfile(8),
+            FixedProfile(80),
+            FixedProfile(40),
+        )
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
         operational_periods = SimpleTimes(op_number, op_duration)
 
         op_per_strat = op_duration * op_number
+
+        # Assumptions for heat exchange
+        A = equal_mass ? EMH.EqualMassFlows : EMH.DifferentMassFlows
 
         # Creation of the time structure and global data
         T = TwoLevel(2, 1, operational_periods; op_per_strat)
@@ -48,7 +51,7 @@
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
                 Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
             ),
-            HeatExchanger(
+            HeatExchanger{A}(
                 "heat exchanger",
                 FixedProfile(1.0),
                 FixedProfile(0),
@@ -82,12 +85,24 @@
         return (; case, model, nodes, products, T)
     end
 
-    function generate_upgrade_data()
+    function generate_upgrade_data(; equal_mass = true)
         # Base case
         case, model, nodes, products, T = TestData.generate_data()
 
+        # Assumptions for heat exchange
+        A = equal_mass ? EMH.EqualMassFlows : EMH.DifferentMassFlows
+
+        # Use temperatures that discriminate results for equal/different mass flows
+        pd = PinchData(
+            FixedProfile(80),
+            FixedProfile(50),
+            FixedProfile(12),
+            FixedProfile(70),
+            FixedProfile(45),
+        )
+
         # Define upgrade node
-        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade(
+        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
             "heat upgrade",
             FixedProfile(1.0),
             FixedProfile(0),
@@ -134,7 +149,25 @@ end
     using EnergyModelsBase
     using EnergyModelsHeat
 
-    case, model, nodes, products, T = TestData.generate_data()
+    # Different mass flow assumption
+    case, model, nodes, products, T = TestData.generate_data(; equal_mass = false)
+    optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
+    m = run_model(case, model, optimizer)
+
+    surplus = products[2]
+    usable = products[3]
+    ratio = EnergyModelsHeat.fraction_different_mass(90, 60, 8, 60, 40)
+
+    # Test that ratio is calculated as expected
+    @test ratio ≈ 1
+    # Test that EMX model gives correct ratio of usable energy for all time periods
+    for t ∈ T
+        @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
+              JuMP.value(m[:flow_out][nodes[2], t, usable])
+    end
+
+    # Equal mass flow assumption
+    case, model, nodes, products, T = TestData.generate_data(; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
@@ -157,7 +190,35 @@ end
     using EnergyModelsBase
     using EnergyModelsHeat
 
-    case, model, nodes, products, T = TestData.generate_upgrade_data()
+    # Allow different mass flows
+    case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
+    optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
+
+    m = run_model(case, model, optimizer)
+
+    power = products[1]
+    usable_heat = products[3]
+    upgrade_node = nodes[4]
+    surplus_source = nodes[1]
+
+    pd = EnergyModelsHeat.pinch_data(upgrade_node)
+
+    # Check that pd discriminates between equal and different mass flows
+    for t ∈ T
+        @test EnergyModelsHeat.upgrade_different_mass(pd, t) !=
+              EnergyModelsHeat.upgrade_equal_mass(pd, t)
+    end
+
+    # Test that EMX model gives correct ratio of usable energy for all time periods
+    for t ∈ T
+        # Check that actual power flow matches specified fraction of upgraded output heat flow
+        @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
+              EnergyModelsHeat.upgrade_different_mass(pd, t) *
+              JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
+    end
+
+    # Assume equal mass flows
+    case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
     m = run_model(case, model, optimizer)
@@ -173,7 +234,7 @@ end
     for t ∈ T
         # Check that actual power flow matches specified fraction of upgraded output heat flow
         @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
-              EnergyModelsHeat.updgrade_equal_mass(pd, t) *
+              EnergyModelsHeat.upgrade_equal_mass(pd, t) *
               JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
     end
 end
