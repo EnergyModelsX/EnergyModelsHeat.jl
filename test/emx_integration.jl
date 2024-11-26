@@ -101,7 +101,7 @@
             FixedProfile(70),
             FixedProfile(40),
         )
-        
+
         # Define upgrade node
         heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
             "heat upgrade",
