@@ -20,12 +20,19 @@ end
 
 Calculate fraction of heat available for district heating at pinch point `T_DH_cold`
 """
-fraction_equal_mass(pd::PinchData, t) = fraction_equal_mass(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+fraction_equal_mass(pd::PinchData, t) = fraction_equal_mass(
+    pd.T_SH_hot[t],
+    pd.T_SH_cold[t],
+    pd.ΔT_min[t],
+    pd.T_DH_hot[t],
+    pd.T_DH_cold[t],
+)
 
 # Assuming equal mass flows
 function fraction_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot ≤ (T_SH_hot - ΔT_min)
-        if ((T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)) || (T_SH_cold < T_DH_cold + ΔT_min)
+        if ((T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)) ||
+           (T_SH_cold < T_DH_cold + ΔT_min)
             zero(T_SH_hot)
         else
             (T_DH_hot - T_DH_cold) / (T_SH_hot - T_SH_cold)
@@ -37,7 +44,13 @@ end
 
 # Allowing different mass flows
 fraction_different_mass(pd::PinchData, t) =
-    fraction_different_mass(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+    fraction_different_mass(
+        pd.T_SH_hot[t],
+        pd.T_SH_cold[t],
+        pd.ΔT_min[t],
+        pd.T_DH_hot[t],
+        pd.T_DH_cold[t],
+    )
 function fraction_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if (T_DH_hot > (T_SH_hot - ΔT_min))
         zero(T_SH_hot)
@@ -52,7 +65,13 @@ end
 Assuming equal mass flows    
 """
 updgrade_equal_mass(pd::PinchData, t) =
-    updgrade_equal_mass(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+    updgrade_equal_mass(
+        pd.T_SH_hot[t],
+        pd.T_SH_cold[t],
+        pd.ΔT_min[t],
+        pd.T_DH_hot[t],
+        pd.T_DH_cold[t],
+    )
 function updgrade_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot > (T_SH_hot - ΔT_min)
         if T_SH_cold < (T_DH_cold + ΔT_min)
@@ -65,7 +84,13 @@ function updgrade_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
 end
 
 updgrade_different_mass(pd::PinchData, t) =
-    updgrade_different_mass(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+    updgrade_different_mass(
+        pd.T_SH_hot[t],
+        pd.T_SH_cold[t],
+        pd.ΔT_min[t],
+        pd.T_DH_hot[t],
+        pd.T_DH_cold[t],
+    )
 function updgrade_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if (T_SH_cold < (T_DH_cold + ΔT_min))
         (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
@@ -89,7 +114,8 @@ function EMB.constraints_flow_out(
 
     # Available heat output is a fraction `ψ` of heat input
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_out][n, t, heat_available] == fraction_equal_mass(pd, t) * m[:flow_in][n, t, heat_surplus]
+        m[:flow_out][n, t, heat_available] ==
+        fraction_equal_mass(pd, t) * m[:flow_in][n, t, heat_surplus]
     )
 end
 
@@ -184,7 +210,8 @@ function EMB.create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::Ener
     constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
 end
 
-upgrade_fraction(pd, t) = updgrade_equal_mass(pd, t) / (updgrade_equal_mass(pd, t) + fraction_equal_mass(pd, t))
+upgrade_fraction(pd, t) =
+    updgrade_equal_mass(pd, t) / (updgrade_equal_mass(pd, t) + fraction_equal_mass(pd, t))
 
 function EnergyModelsBase.constraints_flow_out(
     m,
