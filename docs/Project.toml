@@ -2,5 +2,6 @@
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
 DocumenterInterLinks = "d12716ef-a0f6-4df4-a9f1-a5a34e75c656"
+EnergyModelsBase = "5d7e687e-f956-46f3-9045-6f5a5fd49f50"
 EnergyModelsHeat = "ad1b8b27-e232-4da9-b498-bea9c19a30d7"
 TimeStruct = "f9ed5ce0-9f41-4eaa-96da-f38ab8df101c"
