@@ -143,7 +143,7 @@ end
     ratio = EnergyModelsHeat.ψ(90, 60, 8, 60, 40)
 
     # Test that ratio is calculated as expected
-    @test ratio ≈ 2/3
+    @test ratio ≈ 2 / 3
     # Test that EMX model gives correct ratio of usable energy for all time periods
     for t ∈ T
         @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈

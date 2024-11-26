@@ -12,15 +12,15 @@
     @test EMH.ψ(90, 60, 30, 80, 60) ≈ 0.0
     @test EMH.ψ(90, 60, 20, 80, 60) ≈ 0.0
     @test EMH.ψ(90, 60, 10, 80, 60) ≈ 0.0
-    @test EMH.ψ(90, 60,  0, 80, 60) ≈ 2/3
+    @test EMH.ψ(90, 60, 0, 80, 60) ≈ 2 / 3
     @test EMH.ψ(90, 70, 10, 80, 60) ≈ 1.0
-    @test EMH.ψ(100, 70, 10, 80, 60) ≈ 2/3 # Equal mass flow -> loss
+    @test EMH.ψ(100, 70, 10, 80, 60) ≈ 2 / 3 # Equal mass flow -> loss
     @test EMH.ψ2(100, 70, 10, 80, 60) ≈ 1  # Adjusting mass flow to recover energy
 
     # Lower cold T in surplus heat source
     @test EMH.ψ(90, 50, 10, 80, 60) ≈ 0.0
     @test EMH.ψ2(90, 50, 10, 80, 60) ≈ 0.5
-    
+
     # Lower cold T in district heating circuit
     @test EMH.ψ(90, 60, 10, 80, 50) ≈ 1
     @test EMH.ψ2(90, 60, 10, 80, 50) ≈ 1
@@ -33,15 +33,15 @@
 
     # Test with PinchData and TimeStruct
     pd = EMH.PinchData(
-        FixedProfile(100),   
+        FixedProfile(100),
         FixedProfile(70),
-        FixedProfile(10),    
-        FixedProfile(80),    
-        FixedProfile(60),    
+        FixedProfile(10),
+        FixedProfile(80),
+        FixedProfile(60),
     )
     T = SimpleTimes(1, 1)
     for t ∈ T
-        @test EMH.ψ(pd, t) ≈ 2/3
+        @test EMH.ψ(pd, t) ≈ 2 / 3
     end
 end
 
@@ -53,7 +53,7 @@ end
     @test EMH.upgrade2(70, 60, 0, 70, 60) ≈ 0.0
     @test EMH.upgrade(70, 60, 10, 70, 60) ≈ 0.0
     @test EMH.upgrade2(70, 60, 10, 70, 60) ≈ 1.0
-    @test EMH.upgrade(70, 60, 20, 70, 60) ≈ 0.0 
+    @test EMH.upgrade(70, 60, 20, 70, 60) ≈ 0.0
     @test EMH.upgrade2(70, 60, 20, 70, 60) ≈ 2.0 # TODO: Check if this makes sense?
 
     @test EMH.upgrade(70, 40, 0, 70, 40) ≈ 0.0

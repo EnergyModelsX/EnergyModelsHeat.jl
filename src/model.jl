@@ -15,7 +15,6 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
     #end
 end
 
-
 """
     ψ(pd::PinchData)
 
@@ -36,9 +35,9 @@ function ψ(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
     end
 end
 
-
 # Allowing different mass flows
-ψ2(pd::PinchData, t) = ψ2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
+ψ2(pd::PinchData, t) =
+    ψ2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
 function ψ2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
     if (T_hot > (T_HOT - ΔT_min))
         zero(T_HOT)
@@ -74,7 +73,6 @@ function upgrade2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
         zero(T_HOT)
     end
 end
-
 
 pinch_data(n::AbstractHeatExchanger) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
