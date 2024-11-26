@@ -1,42 +1,18 @@
-""" 
-    HeatExchanger
-
-A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
-energy that can be used in the District Heating network.
-
-# Fields
-- **`id`** is the name/identifier of the node.\n
-- **`cap::TimeProfile`** is the installed capacity.\n
-- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.\n
-- **`opex_fixed::TimeProfile`** is the fixed operating expense.\n
-- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.\n
-- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.\n
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
-`data` is conditional through usage of a constructor.
-"""
-struct HeatExchanger <: EnergyModelsBase.NetworkNode
-    id::Any
-    cap::TimeProfile
-    opex_var::TimeProfile
-    opex_fixed::TimeProfile
-    input::Dict{<:Resource,<:Real}
-    output::Dict{<:Resource,<:Real}
-    data::Vector{Data}
-end
 
 """
-    PinchData{T}
+    create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
 
-Data for fixed temperature intervals used to calculate available energy from surplus energy source 
-operating at `T_HOT` and `T_COLD`, with `ΔT_min` between surplus source and the district heating
-network operating at `T_hot` and `T_cold`.
+Calculates the heat losses occurring in a `DHPipe`
 """
-struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_HOT::TP
-    T_COLD::TP
-    ΔT_min::TP
-    T_hot::TP
-    T_cold::TP
+
+function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
+
+    # DH pipe in which each output corresponds to the input minus heat losses
+    @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
+        m[:link_out][l, t, p] ==
+        m[:link_in][l, t, p] -
+        pipelength(l) * pipelossfactor(l) * (t_supply(l) - t_ground(l))
+    )
 end
 
 """
@@ -60,7 +36,7 @@ end
 pinch_data(n::HeatExchanger) =
     only(filter(data -> typeof(data) <: PinchData, node_data(n)))
 
-function EnergyModelsBase.constraints_flow_out(
+function EMB.constraints_flow_out(
     m,
     n::HeatExchanger,
     𝒯::TimeStructure,
@@ -79,4 +55,95 @@ function EnergyModelsBase.constraints_flow_out(
     @constraint(m, [t ∈ 𝒯],
         m[:flow_out][n, t, heat_available] == ψ(pd, t) * m[:flow_in][n, t, heat_surplus]
     )
+end
+
+"""
+    create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::EnergyModel)
+
+Set all constraints for a `HeatPump`.
+Calculates the input flows for various resources based on the COP of the HeatPump. 
+The COP is based on Source and Sink temperature profiles and the carnot efficiency. 
+It is also possible to inlude a lower capacity bound which the HeatPump cannot cross. This means, however, that cap_use cannot be zero either. 
+
+# Called constraint functions
+- [`constraints_data`](@ref) for all `node_data(n)`,
+- [`constraints_flow_out`](@ref),
+- [`constraints_capacity`](@ref),
+- [`constraints_opex_fixed`](@ref),
+- [`constraints_opex_var`](@ref),
+- [`constraints_cap_bound`](@ref),
+- [`constraints_COP_Heat`](@ref),
+- [`constraints_COP_Power`](@ref),
+"""
+function EMB.create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::EnergyModel)
+
+    ## Use the same constraint functions as for a normal Network Node
+
+    # Declaration of the required subsets
+    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+
+    # Iterate through all data and set up the constraints corresponding to the data
+    for data ∈ node_data(n)
+        constraints_data(m, n, 𝒯, 𝒫, modeltype, data)
+    end
+
+    # Call of the function for the outlet flow from the `NetworkNode` node
+    constraints_flow_out(m, n, 𝒯, modeltype)
+
+    # Call of the function for limiting the capacity to the maximum installed capacity
+    constraints_capacity(m, n, 𝒯, modeltype)
+
+    # Call of the functions for both fixed and variable OPEX constraints introduction
+    constraints_opex_fixed(m, n, 𝒯ᴵⁿᵛ, modeltype)
+    constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
+
+    # Call the function for the minimum used capacity (lower capacity bound)
+    constraints_cap_bound(m, n, 𝒯, modeltype)
+
+    # Constraint for the COP - Heat
+    constraints_COP_Heat(m, n, 𝒯, modeltype)
+
+    # Constraint for the COP - Electricity
+    constraints_COP_Power(m, n, 𝒯, modeltype)
+end
+
+"""
+    create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
+
+Set all constraints for a `ThermalEnergyStorage`.
+Calls the constraint function constraints_level_iterate that includes the heatlossfactor in the calculation of the storage level. 
+!!!Currently this Node is only available in combination with CyclicPeriods!!!
+
+# Called constraint functions
+- [`constraints_level`](@ref)
+- [`constraints_data`](@ref) for all `node_data(n)`,
+- [`constraints_flow_in`](@ref),
+- [`constraints_flow_out`](@ref),
+- [`constraints_capacity`](@ref),
+- [`constraints_opex_fixed`](@ref), and
+- [`constraints_opex_var`](@ref).
+"""
+function EMB.create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
+
+    # Declaration of the required subsets.
+    𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+
+    # Mass/energy balance constraints for stored energy carrier.
+    constraints_level(m, n, 𝒯, 𝒫, modeltype)
+
+    # Iterate through all data and set up the constraints corresponding to the data
+    for data ∈ node_data(n)
+        constraints_data(m, n, 𝒯, 𝒫, modeltype, data)
+    end
+
+    # Call of the function for the inlet flow to and outlet flow from the `Storage` node
+    constraints_flow_in(m, n, 𝒯, modeltype)
+    constraints_flow_out(m, n, 𝒯, modeltype)
+
+    # Call of the function for limiting the capacity to the maximum installed capacity
+    constraints_capacity(m, n, 𝒯, modeltype)
+
+    # Call of the functions for both fixed and variable OPEX constraints introduction
+    constraints_opex_fixed(m, n, 𝒯ᴵⁿᵛ, modeltype)
+    constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
 end
