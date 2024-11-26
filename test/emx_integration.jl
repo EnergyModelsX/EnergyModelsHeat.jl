@@ -140,7 +140,7 @@ end
 
     surplus = products[2]
     usable = products[3]
-    ratio = EnergyModelsHeat.ψ(90, 60, 8, 60, 40)
+    ratio = EnergyModelsHeat.fraction_fixed(90, 60, 8, 60, 40)
 
     # Test that ratio is calculated as expected
     @test ratio ≈ 2 / 3
@@ -173,7 +173,7 @@ end
     for t ∈ T
         # Check that actual power flow matches specified fraction of upgraded output heat flow
         @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
-              EnergyModelsHeat.upgrade(pd, t) *
+              EnergyModelsHeat.updgrade_fixed(pd, t) *
               JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
     end
 end

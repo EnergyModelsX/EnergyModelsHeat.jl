@@ -16,14 +16,14 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
 end
 
 """
-    ψ(pd::PinchData)
+    fraction_fixed(pd::PinchData)
 
 Calculate fraction of heat available for district heating at pinch point `T_DH_cold`
 """
-ψ(pd::PinchData, t) = ψ(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+fraction_fixed(pd::PinchData, t) = fraction_fixed(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
 
 # Assuming equal mass flows
-function ψ(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+function fraction_fixed(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot ≤ (T_SH_hot - ΔT_min)
         if ((T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)) || (T_SH_cold < T_DH_cold + ΔT_min)
             zero(T_SH_hot)
@@ -36,9 +36,9 @@ function ψ(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
 end
 
 # Allowing different mass flows
-ψ2(pd::PinchData, t) =
-    ψ2(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
-function ψ2(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+fraction_free(pd::PinchData, t) =
+    fraction_free(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function fraction_free(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if (T_DH_hot > (T_SH_hot - ΔT_min))
         zero(T_SH_hot)
     elseif (T_SH_cold < (T_DH_cold + ΔT_min))
@@ -51,9 +51,9 @@ end
 """
 Assuming equal mass flows    
 """
-upgrade(pd::PinchData, t) =
-    upgrade(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
-function upgrade(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+updgrade_fixed(pd::PinchData, t) =
+    updgrade_fixed(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function updgrade_fixed(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot > (T_SH_hot - ΔT_min)
         if T_SH_cold < (T_DH_cold + ΔT_min)
             (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
@@ -64,9 +64,9 @@ function upgrade(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     zero(T_SH_hot)
 end
 
-upgrade2(pd::PinchData, t) =
-    upgrade2(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
-function upgrade2(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+updgrade_free(pd::PinchData, t) =
+    updgrade_free(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function updgrade_free(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if (T_SH_cold < (T_DH_cold + ΔT_min))
         (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
     else
@@ -89,7 +89,7 @@ function EMB.constraints_flow_out(
 
     # Available heat output is a fraction `ψ` of heat input
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_out][n, t, heat_available] == ψ(pd, t) * m[:flow_in][n, t, heat_surplus]
+        m[:flow_out][n, t, heat_available] == fraction_fixed(pd, t) * m[:flow_in][n, t, heat_surplus]
     )
 end
 
@@ -184,7 +184,7 @@ function EMB.create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::Ener
     constraints_opex_var(m, n, 𝒯ᴵⁿᵛ, modeltype)
 end
 
-upgrade_fraction(pd, t) = upgrade(pd, t) / (upgrade(pd, t) + ψ(pd, t))
+upgrade_fraction(pd, t) = updgrade_fixed(pd, t) / (updgrade_fixed(pd, t) + fraction_fixed(pd, t))
 
 function EnergyModelsBase.constraints_flow_out(
     m,
@@ -199,17 +199,17 @@ function EnergyModelsBase.constraints_flow_out(
     # Only allow one output, must be heat
     heat_available = only(filter(isheat, outputs(n)))
 
-    # usable_fraction(pd, t) = EMH.ψ(pd, t) / (EMH.upgrade(pd, t) + ψ(pd, t))
+    # usable_fraction(pd, t) = EMH.fraction_fixed(pd, t) / (EMH.updgrade_fixed(pd, t) + fraction_fixed(pd, t))
 
     # Available heat output is a fraction `ψ` of heat input and the upgrade
     @constraint(m, [t ∈ 𝒯],
         m[:flow_out][n, t, heat_available] ≤
-        upgrade(pd, t) + m[:flow_in][n, t, heat_surplus]
+        updgrade_fixed(pd, t) + m[:flow_in][n, t, heat_surplus]
     )
     # Upgrade is powered by power in according to how much is used of the surplus heat in the updgraded flow out
     @constraint(m, [t ∈ 𝒯],
         m[:flow_in][n, t, power] ==
-        upgrade(pd, t) * m[:flow_out][n, t, heat_available]
+        updgrade_fixed(pd, t) * m[:flow_out][n, t, heat_available]
     )
 end
 
