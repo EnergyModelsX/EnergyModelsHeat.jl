@@ -36,7 +36,6 @@ DHPipe(
     resource_heat::EMH.ResourceHeat,
 ) = DHPipe(id, from, to, length, pipelossfactor, t_ground, resource_heat, Linear(), Data[])
 
-
 """
     pipelength(l::DHPipe)
 
