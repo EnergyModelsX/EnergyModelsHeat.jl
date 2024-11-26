@@ -7,7 +7,7 @@ Calculates the heat losses occurring in a `DHPipe`
 
 function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
 
-    # Generic link in which each output corresponds to the input
+    # DH pipe in which each output corresponds to the input minus heat losses
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
         m[:link_out][l, t, p] ==
         m[:link_in][l, t, p] -

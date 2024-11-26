@@ -5,7 +5,7 @@
 
 ## [Introduced type and its fields](@id nodes-ThermalEnergyStorage-fields)
 
-The [`HeatPump`](@ref) is implemented as equivalent to a [`RefStorage`](@extref EnergyModelsBase.RefStorage).
+[`ThermalEnergyStorage`](@ref) is implemented as equivalent to a [`RefStorage`](@extref EnergyModelsBase.RefStorage).
 Hence, it utilizes the same functions declared in `EnergyModelsBase`. For the [`ThermalEnergyStorage`](@ref) node, heat losses are additionally quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective timeperiod. The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. in every operational period unless the storage level is zero.  
 
 !!!This node is currently only available with the StorageBehaviour CyclicPeriods!!!
@@ -36,7 +36,7 @@ The fields of a [`ThermalEnergyStorage`](@ref) are given as:
 
 ### [Variables](@id nodes-ThermalEnergyStorage-math-var)
 
-The [`ThermalEnergyStorage`](@ref) nodes utilize all standard variables from [`RefStorage`](@extref EnergyModelsBase.RefStorage), as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*.
+The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefStorage`](@extref EnergyModelsBase.RefStorage), as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*:
 
 - [``\texttt{opex\_var}``](@extref man-opt_var-opex)
 - [``\texttt{opex\_fixed}``](@extref man-opt_var-opex)
@@ -54,10 +54,10 @@ The [`ThermalEnergyStorage`](@ref) nodes utilize all standard variables from [`R
 
 ### [Constraints](@id nodes-ThermalEnergyStorage-math-con)
 
-The following standard constraints are implemented for a [`ThermalEnergyStorage`](@ref) node.
+[`ThermalEnergyStorage`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*. 
 [`ThermalEnergyStorage`](@ref) nodes utilize the declared method for all nodes 𝒩.
 The constraint functions are called within the function [`create_node`](@ref).
-Hence, if you do not have to call additional functions, but only plan to include a method for one of the existing functions, you do not have to specify a new [`create_node`](@ref) method.
+Hence, if you do not have to call additional functions, but only plan to include a method for one of the existing functions, you do not have to specify a new [`create_node`](@ref) method. The following standard constraints are implemented for a [`ThermalEnergyStorage`](@ref) node.
 
 - `constraints_capacity`:
 

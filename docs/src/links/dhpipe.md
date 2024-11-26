@@ -1,6 +1,8 @@
 # [DHPipe](@id links-DHPipe)
 
-[`DHPipe`](@ref) enables to model transport of heat in the form of hot water in thermal energy systems, including district heating (DH) networks, taking into account the supply temperature level and related heat losses. [`DHPipe`](@ref) extends on the abstract type [Link](https://github.com/EnergyModelsX/EnergyModelsBase.jl/blob/main/src/structures/link.jl) from [EnergyModelsBase](https://github.com/EnergyModelsX/EnergyModelsBase.jl/tree/main). 
+## [Introduced type and its fields](@id nodes-DHPipe-fields)
+
+[`DHPipe`](@ref) enables to model transport of heat in the form of hot water in thermal energy systems, including district heating (DH) networks, taking into account the supply temperature level and related heat losses. The [`DHPipe`](@ref) is implemented as equivalent to an abstract type [`Link`](@extref EnergyModelsBase.Link). Hence, it utilizes the same functions declared in `EnergyModelsBase`.
 
 DHPipe has the following fields:
 - **`id`** :\
@@ -20,7 +22,17 @@ DHPipe has the following fields:
 - **`formulation::Formulation`** :\
     The used formulation of links. If not specified, a `Linear` link is assumed.
 
-The heat losses for [`DHPipe`](@ref) $l$  are included through the following constraint:
+
+### [Mathematical description](@id nodes-DHPipe-math)
+
+[`DHPipe`](@ref) utilizes standard variables from the [`Link`](@extref EnergyModelsBase.Link) type, as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*. The variables include:
+
+- [``\texttt{flow\_in}``](@extref man-opt_var-flow)
+- [``\texttt{flow\_out}``](@extref man-opt_var-flow)
+
+#### [Constraints](@id nodes-DHPipe-math-con)
+
+The constraint functions are called within the function [`create_link`](@ref), including the calculation of the heat losses, which is included as follows:
   ```math
   \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heatlossfactor}[l] * (\texttt{t\_supply}[l] - \texttt{t\_ground}[l])
   ```

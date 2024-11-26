@@ -4,8 +4,7 @@
 
 ## [Introduced type and its fields](@id nodes-HeatPump-fields)
 
-The [`HeatPump`](@ref) is implemented as equivalent to a [`NetworkNode`](@extref EnergyModelsBase.NetworkNode).
-Hence, it utilizes the same functions declared in `EnergyModelsBase`. The [`HeatPump`](@ref) node allows for variable coefficient of performance (COP) based on a source- and sink-temperature as well as a carnot efficiency.  Additionally there is an option to define a lower capacity bound that represents the lowest relative capacity that the heat pump can be regulated down to. Note that there is no option to shut down the heat pump (cap_use = 0) in case of cap_lower_bound > 0. This means that the heat pump must always operate between full capacity and the lower capacity bound. 
+The [`HeatPump`](@ref) is implemented as equivalent to a [`NetworkNode`](@extref EnergyModelsBase.NetworkNode). Hence, it utilizes the same functions declared in `EnergyModelsBase`. The [`HeatPump`](@ref) node allows for variable coefficient of performance (COP) based on a source- and sink-temperature as well as a carnot efficiency.  Additionally there is an option to define a lower capacity bound that represents the lowest relative capacity that the heat pump can be regulated down to. Note that there is no option to shut down the heat pump (cap_use = 0) in case of cap_lower_bound > 0. This means that the heat pump must always operate between full capacity and the lower capacity bound. 
 
 The fields of a [`HeatPump`](@ref) are given as:
 
