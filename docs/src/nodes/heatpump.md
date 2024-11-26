@@ -1,11 +1,11 @@
 # [HeatPump](@id nodes-HeatPump)
 
-['HeatPump`](@ref) is a technology that converts low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity).
+[`HeatPump`](@ref) is a technology that converts low temperature heat to high(er) temperature heat by utilizing en exergy driving force (e.g. electricity).
 
 ## [Introduced type and its fields](@id nodes-HeatPump-fields)
 
-The [`HeatPump`](@ref) node allows for variable coefficient of performance (COP) based on a source- and sink-temperature as well as a carnot efficiency. 
-Additionally there is an option to define a lower capacity bound that represents the lowest relative capacity that the heat pump can be regulated down to. Note that there is no option to shut down the heat pump (cap_use = 0) in case of cap_lower_bound > 0. This means that the heat pump must always operate between full capacity and the lower capacity bound. 
+The [`HeatPump`](@ref) is implemented as equivalent to a [`NetworkNode`](@extref EnergyModelsBase.NetworkNode).
+Hence, it utilizes the same functions declared in `EnergyModelsBase`. The [`HeatPump`](@ref) node allows for variable coefficient of performance (COP) based on a source- and sink-temperature as well as a carnot efficiency.  Additionally there is an option to define a lower capacity bound that represents the lowest relative capacity that the heat pump can be regulated down to. Note that there is no option to shut down the heat pump (cap_use = 0) in case of cap_lower_bound > 0. This means that the heat pump must always operate between full capacity and the lower capacity bound. 
 
 The fields of a [`HeatPump`](@ref) are given as:
 
@@ -40,15 +40,15 @@ The fields of a [`HeatPump`](@ref) are given as:
 
 #### [Variables](@id nodes-HeatPump-math-var)
 
-The variables of [`HeatPump`](@ref)s include:
+The [`HeatPump`](@ref) node utilizes all standard variables from the [`NetworkNode`](@extref EnergyModelsBase.NetworkNode) node type, as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*. The variables include:
 
-- [``\texttt{opex\_var}``](@ref man-opt_var-opex)
-- [``\texttt{opex\_fixed}``](@ref man-opt_var-opex)
-- [``\texttt{cap\_use}``](@ref man-opt_var-cap)
-- [``\texttt{cap\_inst}``](@ref man-opt_var-cap)
-- [``\texttt{flow\_in}``](@ref man-opt_var-flow)
-- [``\texttt{flow\_out}``](@ref man-opt_var-flow)
-- [``\texttt{emissions\_node}``](@ref man-opt_var-emissions) if `EmissionsData` is added to the field `data`
+- [``\texttt{opex\_var}``](@extref man-opt_var-opex)
+- [``\texttt{opex\_fixed}``](@extref man-opt_var-opex)
+- [``\texttt{cap\_use}``](@extref man-opt_var-cap)
+- [``\texttt{cap\_inst}``](@extref man-opt_var-cap)
+- [``\texttt{flow\_in}``](@extref man-opt_var-flow)
+- [``\texttt{flow\_out}``](@extref man-opt_var-flow)
+- [``\texttt{emissions\_node}``](@extref man-opt_var-emissions) if `EmissionsData` is added to the field `data`
 
 #### [Constraints](@id nodes-HeatPump-math-con)
 

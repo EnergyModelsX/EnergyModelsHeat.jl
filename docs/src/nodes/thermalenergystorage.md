@@ -5,7 +5,8 @@
 
 ## [Introduced type and its fields](@id nodes-ThermalEnergyStorage-fields)
 
-For the [`ThermalEnergyStorage`](@ref) node, heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective timeperiod. The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. in every operational period unless the storage level is zero.  
+The [`HeatPump`](@ref) is implemented as equivalent to a [`RefStorage`](@extref EnergyModelsBase.RefStorage).
+Hence, it utilizes the same functions declared in `EnergyModelsBase`. For the [`ThermalEnergyStorage`](@ref) node, heat losses are additionally quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective timeperiod. The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. in every operational period unless the storage level is zero.  
 
 !!!This node is currently only available with the StorageBehaviour CyclicPeriods!!!
 
@@ -35,21 +36,21 @@ The fields of a [`ThermalEnergyStorage`](@ref) are given as:
 
 ### [Variables](@id nodes-ThermalEnergyStorage-math-var)
 
-The variables of [`ThermalEnergyStorage`](@ref)s include:
+The [`ThermalEnergyStorage`](@ref) nodes utilize all standard variables from [`RefStorage`](@extref EnergyModelsBase.RefStorage), as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*.
 
-- [``\texttt{opex\_var}``](@ref man-opt_var-opex)
-- [``\texttt{opex\_fixed}``](@ref man-opt_var-opex)
-- [``\texttt{stor\_level}``](@ref man-opt_var-cap)
-- [``\texttt{stor\_level\_inst}``](@ref man-opt_var-cap) if the `ThermalEnergyStorage` has the field `charge` with a capacity
-- [``\texttt{stor\_charge\_use}``](@ref man-opt_var-cap)
-- [``\texttt{stor\_charge\_inst}``](@ref man-opt_var-cap)
-- [``\texttt{stor\_discharge\_inst}``](@ref man-opt_var-cap) if the `ThermalEnergyStorage` has the field `discharge` with a capacity
-- [``\texttt{stor\_discharge\_use}``](@ref man-opt_var-cap)
-- [``\texttt{flow\_in}``](@ref man-opt_var-flow)
-- [``\texttt{flow\_out}``](@ref man-opt_var-flow)
-- [``\texttt{stor\_level\_Δ\_op}``](@ref man-opt_var-cap)
-- [``\texttt{stor\_level\_Δ\_rp}``](@ref man-opt_var-cap) if the `TimeStruct` includes `RepresentativePeriods`
-- [``\texttt{emissions\_node}``](@ref man-opt_var-emissions) if specified through the function [`has_emissions`](@ref)
+- [``\texttt{opex\_var}``](@extref man-opt_var-opex)
+- [``\texttt{opex\_fixed}``](@extref man-opt_var-opex)
+- [``\texttt{stor\_level}``](@extref man-opt_var-cap)
+- [``\texttt{stor\_level\_inst}``](@extref man-opt_var-cap) if the `ThermalEnergyStorage` has the field `charge` with a capacity
+- [``\texttt{stor\_charge\_use}``](@extref man-opt_var-cap)
+- [``\texttt{stor\_charge\_inst}``](@extref man-opt_var-cap)
+- [``\texttt{stor\_discharge\_inst}``](@extref man-opt_var-cap) if the `ThermalEnergyStorage` has the field `discharge` with a capacity
+- [``\texttt{stor\_discharge\_use}``](@extref man-opt_var-cap)
+- [``\texttt{flow\_in}``](@extref man-opt_var-flow)
+- [``\texttt{flow\_out}``](@extref man-opt_var-flow)
+- [``\texttt{stor\_level\_Δ\_op}``](@extref man-opt_var-cap)
+- [``\texttt{stor\_level\_Δ\_rp}``](@extref man-opt_var-cap) if the `TimeStruct` includes `RepresentativePeriods`
+- [``\texttt{emissions\_node}``](@extref man-opt_var-emissions) if specified through the function [`has_emissions`](@extref EnergyModelsBase.has_emissions)
 
 ### [Constraints](@id nodes-ThermalEnergyStorage-math-con)
 

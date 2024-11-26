@@ -6,6 +6,18 @@
 EnergyModelsHeat
 ```
 
+## [`Resource` types](@id lib-pub-res-types)
+
+```@docs
+ResourceHeat
+```
+
+## [`Link` types](@id lib-pub-links-types)
+
+```@docs
+DHPipe
+```
+
 ## [Node types](@id lib-pub-node)
 
 ### [Abstract types](@id lib-pub-node-abstract)
@@ -13,6 +25,7 @@ EnergyModelsHeat
 ```@docs
 HeatPump
 HeatExchanger
+PinchData
 ```
 
 ### [Concrete types](@id lib-pub-node-concrete)

@@ -1,4 +1,5 @@
-""" `DHPipe <: EnergyModelsBase.Link`
+""" 
+    DHPipe
 
 A DH pipe between two nodes.
 
