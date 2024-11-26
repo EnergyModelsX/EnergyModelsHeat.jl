@@ -73,7 +73,6 @@ cap_lower_bound(n::HeatPump) = n.cap_lower_bound[1]
 heat_input_resource(n::HeatPump) = n.input_heat
 drivingforce_resource(n::HeatPump) = n.driving_force
 
-
 """ 
     HeatExchanger
 
@@ -172,4 +171,3 @@ function ThermalEnergyStorage{T}(
 end
 
 heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
-

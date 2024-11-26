@@ -44,10 +44,10 @@ Documenter.makedocs(
             ],
         ],
         "Background" => "background/background.md",
-        ],
+    ],
     doctest = false,
     remotes = nothing,
-    plugins=[links, bib],
+    plugins = [links, bib],
 )
 
 # Documenter.deploydocs(; repo = "github.com/sintefore/PiecewiseAffineApprox.jl.git")
