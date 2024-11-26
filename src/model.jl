@@ -85,12 +85,13 @@ upgrade_equal_mass(pd::PinchData, t) =
 function upgrade_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot > (T_SH_hot - ΔT_min)
         if T_SH_cold < (T_DH_cold + ΔT_min)
-            (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
+            return (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
         else
-            (T_DH_hot - (T_DH_cold + T_SH_hot - T_SH_cold)) / (T_DH_hot - T_DH_cold)
+            return (T_DH_hot - (T_DH_cold + T_SH_hot - T_SH_cold)) / (T_DH_hot - T_DH_cold)
         end
+    else
+        return zero(T_SH_hot)
     end
-    zero(T_SH_hot)
 end
 
 upgrade_different_mass(pd::PinchData, t) =
@@ -102,10 +103,14 @@ upgrade_different_mass(pd::PinchData, t) =
         pd.T_DH_cold[t],
     )
 function upgrade_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
-    if (T_SH_cold < (T_DH_cold + ΔT_min))
-        (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
+    if (T_DH_hot > (T_SH_hot - ΔT_min))
+        if (T_SH_cold < (T_DH_cold + ΔT_min))
+            return (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
+        else
+            return zero(T_SH_hot)
+        end
     else
-        zero(T_SH_hot)
+        return zero(T_SH_hot)
     end
 end
 

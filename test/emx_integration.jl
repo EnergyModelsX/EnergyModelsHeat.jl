@@ -95,13 +95,13 @@
 
         # Use temperatures that discriminate results for equal/different mass flows
         pd = PinchData(
-            FixedProfile(80),
-            FixedProfile(50),
-            FixedProfile(12),
             FixedProfile(70),
-            FixedProfile(45),
+            FixedProfile(50),
+            FixedProfile(10),
+            FixedProfile(70),
+            FixedProfile(40),
         )
-
+        
         # Define upgrade node
         heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
             "heat upgrade",
