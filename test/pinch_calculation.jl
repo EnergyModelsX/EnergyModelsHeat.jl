@@ -5,41 +5,43 @@
     # Same T intervals in both circuits
     @test EMH.ψ(80, 60, 20, 80, 60) ≈ 0.0
     @test EMH.ψ(80, 60, 10, 80, 60) ≈ 0.0
-    # @test EMH.ψ(80, 60, 0, 80, 60) ≈ 1.0
+    @test EMH.ψ(80, 60, 0, 80, 60) ≈ 1.0
 
     # Higher T in surplus heat source
     @test EMH.ψ(90, 60, 40, 80, 60) ≈ 0.0
     @test EMH.ψ(90, 60, 30, 80, 60) ≈ 0.0
-    # @test EMH.ψ(90, 60, 20, 80, 60) ≈ 0.5
-    # @test EMH.ψ(90, 60, 10, 80, 60) ≈ 1.0
-    # @test EMH.ψ(90, 60, 0, 80, 60) ≈ 1.5
+    @test EMH.ψ(90, 60, 20, 80, 60) ≈ 0.0
+    @test EMH.ψ(90, 60, 10, 80, 60) ≈ 0.0
+    @test EMH.ψ(90, 60,  0, 80, 60) ≈ 2/3
+    @test EMH.ψ(90, 70, 10, 80, 60) ≈ 1.0
+    @test EMH.ψ(100, 70, 10, 80, 60) ≈ 2/3 # Equal mass flow -> loss
+    @test EMH.ψ2(100, 70, 10, 80, 60) ≈ 1  # Adjusting mass flow to recover energy
 
     # Lower cold T in surplus heat source
-    # @test EMH.ψ(90, 50, 10, 80, 60) ≈ 1.0
-    # @test EMH.ψ(90, 70, 10, 80, 60) ≈ 0.5
-
+    @test EMH.ψ(90, 50, 10, 80, 60) ≈ 0.0
+    @test EMH.ψ2(90, 50, 10, 80, 60) ≈ 0.5
+    
     # Lower cold T in district heating circuit
-    # @test EMH.ψ(90, 60, 10, 80, 50) ≈ 2 / 3
-    # @test EMH.ψ(90, 60, 0, 80, 50) ≈ 1.0
+    @test EMH.ψ(90, 60, 10, 80, 50) ≈ 1
+    @test EMH.ψ2(90, 60, 10, 80, 50) ≈ 1
+    @test EMH.ψ(80, 60, 0, 80, 50) ≈ 0.0
+    @test EMH.ψ2(80, 60, 0, 80, 50) ≈ 1.0 # TODO: Check this
 
     # Higher T in district heating supply temperature (needs upgrade)
-    # @test EMH.ψ(70, 50, 10, 80, 50) ≈ 1 / 3
-    @test EMH.ψ(60, 40, 10, 80, 50) ≈ 0.0
-
-    # Test pinch calculation 
-    @test EMH.ψ(80, 60, 8, 80, 40) ≈ 0.0
+    @test EMH.ψ(70, 50, 10, 80, 50) ≈ 0
+    @test EMH.ψ(60, 40, 10, 80, 50) ≈ 0
 
     # Test with PinchData and TimeStruct
     pd = EMH.PinchData(
-        FixedProfile(80),    # PEM FC
-        FixedProfile(60),
-        FixedProfile(8),     # Depends on size of heat exchanger (Ask Davide?)
-        FixedProfile(80),    # 80-90°C at Isfjord Radio according to schematics
-        FixedProfile(40),    # ca 40°C depending on load according to schematics
+        FixedProfile(100),   
+        FixedProfile(70),
+        FixedProfile(10),    
+        FixedProfile(80),    
+        FixedProfile(60),    
     )
     T = SimpleTimes(1, 1)
     for t ∈ T
-        @test EMH.ψ(pd, t) ≈ 0.0
+        @test EMH.ψ(pd, t) ≈ 2/3
     end
 end
 
