@@ -18,33 +18,33 @@ end
 """
     ψ(pd::PinchData)
 
-Calculate fraction of heat available for district heating at pinch point `T_cold`
+Calculate fraction of heat available for district heating at pinch point `T_DH_cold`
 """
-ψ(pd::PinchData, t) = ψ(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
+ψ(pd::PinchData, t) = ψ(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
 
 # Assuming equal mass flows
-function ψ(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-    if T_hot ≤ (T_HOT - ΔT_min)
-        if ((T_hot - T_cold) > (T_HOT - T_COLD)) || (T_COLD < T_cold + ΔT_min)
-            zero(T_HOT)
+function ψ(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if T_DH_hot ≤ (T_SH_hot - ΔT_min)
+        if ((T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)) || (T_SH_cold < T_DH_cold + ΔT_min)
+            zero(T_SH_hot)
         else
-            (T_hot - T_cold) / (T_HOT - T_COLD)
+            (T_DH_hot - T_DH_cold) / (T_SH_hot - T_SH_cold)
         end
     else
-        zero(T_HOT)
+        zero(T_SH_hot)
     end
 end
 
 # Allowing different mass flows
 ψ2(pd::PinchData, t) =
-    ψ2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
-function ψ2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-    if (T_hot > (T_HOT - ΔT_min))
-        zero(T_HOT)
-    elseif (T_COLD < (T_cold + ΔT_min))
-        (T_HOT - (T_cold + ΔT_min)) / (T_HOT - T_COLD)
+    ψ2(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function ψ2(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if (T_DH_hot > (T_SH_hot - ΔT_min))
+        zero(T_SH_hot)
+    elseif (T_SH_cold < (T_DH_cold + ΔT_min))
+        (T_SH_hot - (T_DH_cold + ΔT_min)) / (T_SH_hot - T_SH_cold)
     else
-        one(T_HOT)
+        one(T_SH_hot)
     end
 end
 
@@ -52,25 +52,25 @@ end
 Assuming equal mass flows    
 """
 upgrade(pd::PinchData, t) =
-    upgrade(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
-function upgrade(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-    if T_hot > (T_HOT - ΔT_min)
-        if T_COLD < (T_cold + ΔT_min)
-            (T_hot - T_HOT + ΔT_min) / (T_hot - T_cold)
+    upgrade(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function upgrade(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if T_DH_hot > (T_SH_hot - ΔT_min)
+        if T_SH_cold < (T_DH_cold + ΔT_min)
+            (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
         else
-            (T_hot - (T_cold + T_HOT - T_COLD)) / (T_hot - T_cold)
+            (T_DH_hot - (T_DH_cold + T_SH_hot - T_SH_cold)) / (T_DH_hot - T_DH_cold)
         end
     end
-    zero(T_HOT)
+    zero(T_SH_hot)
 end
 
 upgrade2(pd::PinchData, t) =
-    upgrade2(pd.T_HOT[t], pd.T_COLD[t], pd.ΔT_min[t], pd.T_hot[t], pd.T_cold[t])
-function upgrade2(T_HOT, T_COLD, ΔT_min, T_hot, T_cold)
-    if (T_COLD < (T_cold + ΔT_min))
-        (T_hot - T_HOT + ΔT_min) / (T_hot - T_cold)
+    upgrade2(pd.T_SH_hot[t], pd.T_SH_cold[t], pd.ΔT_min[t], pd.T_DH_hot[t], pd.T_DH_cold[t])
+function upgrade2(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if (T_SH_cold < (T_DH_cold + ΔT_min))
+        (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
     else
-        zero(T_HOT)
+        zero(T_SH_hot)
     end
 end
 

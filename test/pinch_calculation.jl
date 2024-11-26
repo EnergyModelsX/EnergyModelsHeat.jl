@@ -71,13 +71,13 @@ end
     # No need for upgrade when heat source less ΔT ≥ DH supply T
     @test EMH.upgrade(90, 40, 5, 70, 60) ≈ 0
     @test EMH.upgrade2(90, 40, 5, 70, 60) ≈ -1.5 # TODO: Should be 0.0? (max(upgrade,0))?
-    # T_COLD < (T_cold + ΔT_min) : 40 < 50 + 5
+    # T_SH_cold < (T_DH_cold + ΔT_min) : 40 < 50 + 5
     @test EMH.upgrade(60, 40, 5, 70, 50) ≈ 0.0
     @test EMH.upgrade2(60, 40, 5, 70, 50) ≈ 0.75
-    # T_COLD == (T_cold + ΔT_min) : 55 == 50 + 5
+    # T_SH_cold == (T_DH_cold + ΔT_min) : 55 == 50 + 5
     @test EMH.upgrade(60, 55, 5, 70, 50) ≈ 0.0
     @test EMH.upgrade2(60, 55, 5, 70, 50) ≈ 0.0
-    # T_COLD > (T_cold + ΔT_min) : 
+    # T_SH_cold > (T_DH_cold + ΔT_min) : 
     @test EMH.upgrade(60, 56, 5, 70, 50) ≈ 0.0
     @test EMH.upgrade2(60, 56, 5, 70, 50) ≈ 0.0
 end

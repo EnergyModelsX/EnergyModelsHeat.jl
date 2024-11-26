@@ -104,15 +104,15 @@ end
     PinchData{T}
 
 Data for fixed temperature intervals used to calculate available energy from surplus energy source 
-operating at `T_HOT` and `T_COLD`, with `ΔT_min` between surplus source and the district heating
-network operating at `T_hot` and `T_cold`.
+operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating
+network operating at `T_DH_hot` and `T_DH_cold`.
 """
 struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_HOT::TP
-    T_COLD::TP
+    T_SH_hot::TP
+    T_SH_cold::TP
     ΔT_min::TP
-    T_hot::TP
-    T_cold::TP
+    T_DH_hot::TP
+    T_DH_cold::TP
 end
 
 """ 
