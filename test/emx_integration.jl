@@ -13,7 +13,7 @@
     CO₂      = ResourceEmit("CO₂", 1.0)
     products = [power, heat_sur, heat_use, CO₂]
 
-    pinch_data = PinchData(
+    pd = PinchData(
         FixedProfile(80),    # PEM FC
         FixedProfile(60),
         FixedProfile(8),     # Depends on size of heat exchanger (Ask Davide?)
@@ -55,7 +55,7 @@
                 FixedProfile(0),
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
-                [pinch_data],
+                [pd],
             ),
             RefSink(
                 "heat demand",              # Node id
@@ -94,7 +94,7 @@
             FixedProfile(0),
             Dict(heat_sur => 1, power => 1),
             Dict(heat_use => 1),
-            [pinch_data],
+            [pd],
         )
         power_source = RefSource(
             "power source",             # Node id

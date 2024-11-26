@@ -73,6 +73,7 @@ cap_lower_bound(n::HeatPump) = n.cap_lower_bound[1]
 heat_input_resource(n::HeatPump) = n.input_heat
 drivingforce_resource(n::HeatPump) = n.driving_force
 
+abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
 """ 
     HeatExchanger
 
@@ -89,7 +90,7 @@ energy that can be used in the District Heating network.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
 """
-struct HeatExchanger <: EnergyModelsBase.NetworkNode
+struct HeatExchanger <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -172,34 +173,6 @@ end
 
 heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
 
-abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
-""" 
-    HeatExchanger
-
-A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
-energy that can be used in the District Heating network.
-
-# Fields
-- **`id`** is the name/identifier of the node.
-- **`cap::TimeProfile`** is the installed capacity.
-- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.
-- **`opex_fixed::TimeProfile`** is the fixed operating expense.
-- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`. \
-Here: a `Heat` resource.
-- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`. \
-Here: a `Heat` resource.
-- **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
-"""
-struct HeatExchanger <: AbstractHeatExchanger
-    id::Any
-    cap::TimeProfile
-    opex_var::TimeProfile
-    opex_fixed::TimeProfile
-    input::Dict{<:Resource,<:Real}
-    output::Dict{<:Resource,<:Real}
-    data::Vector{Data}
-end
-
 """ 
     DirectHeatUpgrade
 
@@ -225,19 +198,4 @@ struct DirectHeatUpgrade <: AbstractHeatExchanger
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
-end
-
-"""
-    PinchData{T}
-
-Data for fixed temperature intervals used to calculate available energy from surplus energy source 
-operating at `T_HOT` and `T_COLD`, with `ΔT_min` between surplus source and the district heating
-network operating at `T_hot` and `T_cold`.
-"""
-struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_HOT::TP
-    T_COLD::TP
-    ΔT_min::TP
-    T_hot::TP
-    T_cold::TP
 end
