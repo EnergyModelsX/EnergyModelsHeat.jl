@@ -33,8 +33,12 @@ DHPipe has the following fields:
 #### [Constraints](@id nodes-DHPipe-math-con)
 
 The constraint functions are called within the function [`create_link`](@ref), including the calculation of the heat losses, which is included as follows:
+
   ```math
-  \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heatlossfactor}[l] * (\texttt{t\_supply}[l] - \texttt{t\_ground}[l])
+  \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heatlossfactor}[l] * (\texttt{t_{supply}}[l] - \texttt{t_{ground}}[l])
   ```
+
+
+
  As an example, for a pipe with a length of 1000 m, a heat loss factor of 0.25 W/(m*K) will result in a relative heat loss of 1.7 % for a 1000 m pipe, at a supply temperature of $70^oC$ and ground temperature of $10^oC$.
 

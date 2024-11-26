@@ -11,7 +11,7 @@ function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
         m[:link_out][l, t, p] ==
         m[:link_in][l, t, p] -
-        pipelength(l) * heatlossfactor(l) * (t_supply(l) - t_ground(l))
+        pipelength(l) * pipelossfactor(l) * (t_supply(l) - t_ground(l))
     )
 end
 

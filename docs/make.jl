@@ -39,6 +39,7 @@ Documenter.makedocs(
         "Library" => [
             "Public" => "library/public.md",
             "Internals" => [
+                "library/internals/methods-fields.md",
                 "library/internals/methods-EMH.md",
                 "library/internals/methods-EMB.md",
             ],

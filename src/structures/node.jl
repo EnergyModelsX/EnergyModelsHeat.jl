@@ -66,11 +66,46 @@ function HeatPump(
     )
 end
 
+"""
+    eff_carnot(n::HeatPump, t)
+
+Returns the Carnot efficiency of heat pump `n`.
+"""
 eff_carnot(n::HeatPump, t) = n.eff_carnot[t]
+
+"""
+    t_sink(n::HeatPump, t)
+
+Returns the temperature of the heat sink for heat pump `n`.
+"""
 t_sink(n::HeatPump, t) = n.t_sink[t]
+
+"""
+    t_source(n::HeatPump, t) 
+
+Returns the temperature of the heat source for heat pump `n`.
+"""
 t_source(n::HeatPump, t) = n.t_source[t]
+
+"""
+    cap_lower_bound(n::HeatPump)
+
+Returns the lower capacity bound for heat pump `n`.
+"""
 cap_lower_bound(n::HeatPump) = n.cap_lower_bound[1]
+
+"""
+    heat_input_resource(n::HeatPump)
+
+Returns the resource for heat input for heat pump `n`.
+"""
 heat_input_resource(n::HeatPump) = n.input_heat
+
+"""
+    drivingforce_resource(n::HeatPump)
+
+Returns the resource for driving force, i.e., electricity, for heat pump `n`.
+"""
 drivingforce_resource(n::HeatPump) = n.driving_force
 
 """ 
@@ -170,4 +205,9 @@ function ThermalEnergyStorage{T}(
     )
 end
 
+"""
+    heatlossfactor(n::ThermalEnergyStorage)
+
+Returns the heat loss factor for storage `n`.
+"""
 heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
