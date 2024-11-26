@@ -16,7 +16,9 @@ struct ResourceHeat{T<:Real} <: Resource
     t_return::Float64
 end
 
-# From heat upgrade, to be reconciled
+"""
+TO DO: Reconcile with ResourceHeat (above)
+"""
 struct Heat{T} <: EnergyModelsBase.Resource
     id::Any
     T_supply::T

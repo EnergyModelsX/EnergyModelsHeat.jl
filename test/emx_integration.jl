@@ -140,7 +140,7 @@ end
 
     surplus = products[2]
     usable = products[3]
-    ratio = EnergyModelsHeat.ψ(90, 60, 8, 80, 40)
+    ratio = EnergyModelsHeat.ψ(90, 60, 8, 60, 40)
 
     # Test that ratio is calculated as expected
     @test ratio ≈ 2/3
