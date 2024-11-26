@@ -16,12 +16,13 @@
 
     function generate_data(; equal_mass = true)
         pd = PinchData(
-            FixedProfile(80),
+            FixedProfile(90),
             FixedProfile(60),
             FixedProfile(8),
-            FixedProfile(80),
+            FixedProfile(60),
             FixedProfile(40),
         )
+
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
         operational_periods = SimpleTimes(op_number, op_duration)
@@ -156,7 +157,13 @@ end
 
     surplus = products[2]
     usable = products[3]
-    ratio = EnergyModelsHeat.fraction_different_mass(90, 60, 8, 60, 40)
+    # Verify that test pinch data discriminates between assumptions:
+    pd = EnergyModelsHeat.pinch_data(nodes[2])
+    for t ∈ T
+        @test EnergyModelsHeat.fraction_different_mass(pd, t) !=
+              EnergyModelsHeat.fraction_equal_mass(pd, t)
+    end
+    ratio = EnergyModelsHeat.fraction_different_mass(pd, first(T))
 
     # Test that ratio is calculated as expected
     @test ratio ≈ 1
@@ -173,7 +180,7 @@ end
 
     surplus = products[2]
     usable = products[3]
-    ratio = EnergyModelsHeat.fraction_equal_mass(90, 60, 8, 60, 40)
+    ratio = EnergyModelsHeat.fraction_equal_mass(pd, first(T))
 
     # Test that ratio is calculated as expected
     @test ratio ≈ 2 / 3
