@@ -275,17 +275,25 @@ function EnergyModelsBase.constraints_flow_out(
     # Only allow one output, must be heat
     heat_available = only(filter(isheat, outputs(n)))
 
-    # Available heat output is a fraction `ψ` of heat input and the upgrade
-    @constraint(m, [t ∈ 𝒯],
-        m[:flow_out][n, t, heat_available] ≤
-        m[:flow_in][n, t, power] +
-        upgradeable_fraction(A, pd, t) * m[:flow_in][n, t, heat_surplus]
-    )
-    # Upgrade is powered by power in according to how much is used of the surplus heat in the upgraded flow out
-    @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, power] ==
-        dh_upgrade(A, pd, t) * m[:flow_out][n, t, heat_available]
-    )
+    # Available heat output is a fraction of heat input and the upgrade (using extra power)
+    if dh_upgrade(A, pd, t) > 0
+        @constraint(m, [t ∈ 𝒯],
+            m[:flow_out][n, t, heat_available] ≤
+            m[:flow_in][n, t, power] +
+            upgradeable_fraction(A, pd, t) * m[:flow_in][n, t, heat_surplus]
+        )
+        # Upgrade is powered by power in according to how much is used of the surplus heat in the upgraded flow out
+        @constraint(m, [t ∈ 𝒯],
+            m[:flow_in][n, t, power] ==
+            dh_upgrade(A, pd, t) * m[:flow_out][n, t, heat_available]
+        )
+    else
+        # No need for upgrade, heat can be used directly
+        @constraint(m, [t ∈ 𝒯],
+            m[:flow_out][n, t, heat_available] ≤
+            dh_fraction(A, pd, t) * m[:flow_in][n, t, heat_surplus]
+        )
+    end
 end
 
 function EnergyModelsBase.constraints_flow_in(
