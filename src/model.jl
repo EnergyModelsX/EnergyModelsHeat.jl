@@ -37,6 +37,8 @@ dh_fraction(::Type{EqualMassFlows}, pd, t) = fraction_equal_mass(pd, t)
 dh_fraction(::Type{DifferentMassFlows}, pd, t) = fraction_different_mass(pd, t)
 dh_upgrade(::Type{EqualMassFlows}, pd, t) = upgrade_equal_mass(pd, t)
 dh_upgrade(::Type{DifferentMassFlows}, pd, t) = upgrade_different_mass(pd, t)
+upgradeable_fraction(::Type{EqualMassFlows}, pd, t) = upgradeable_equal_mass(pd, t)
+upgradeable_fraction(::Type{DifferentMassFlows}, pd, t) = upgradeable_different_mass(pd, t)
 
 # Assuming equal mass flows
 function fraction_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
@@ -68,6 +70,42 @@ function fraction_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_co
         return (T_SH_hot - (T_DH_cold + ΔT_min)) / (T_SH_hot - T_SH_cold)
     else
         return one(T_SH_hot)
+    end
+end
+
+upgradeable_equal_mass(pd, t) = upgradeable_equal_mass(
+    pd.T_SH_hot[t],
+    pd.T_SH_cold[t],
+    pd.ΔT_min[t],
+    pd.T_DH_hot[t],
+    pd.T_DH_cold[t],
+)
+function upgradeable_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if (T_SH_cold < (T_DH_cold + ΔT_min))
+        return max(
+            zero(T_SH_hot),
+            (T_SH_hot - (T_DH_cold + ΔT_min)) / (T_SH_hot - T_SH_cold),
+        )
+    else
+        return one(T_DH_hot)
+    end
+end
+
+upgradeable_different_mass(pd, t) = upgradeable_different_mass(
+    pd.T_SH_hot[t],
+    pd.T_SH_cold[t],
+    pd.ΔT_min[t],
+    pd.T_DH_hot[t],
+    pd.T_DH_cold[t],
+)
+function upgradeable_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
+    if (T_SH_cold < (T_DH_cold + ΔT_min))
+        return max(
+            zero(T_DH_hot),
+            (T_SH_hot - (T_DH_cold + ΔT_min)) / (T_SH_hot - T_SH_cold),
+        )
+    else
+        return one(T_DH_hot)
     end
 end
 
@@ -104,11 +142,7 @@ upgrade_different_mass(pd::PinchData, t) =
     )
 function upgrade_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if (T_DH_hot > (T_SH_hot - ΔT_min))
-        if (T_SH_cold < (T_DH_cold + ΔT_min))
-            return (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
-        else
-            return zero(T_SH_hot)
-        end
+        return (T_DH_hot - T_SH_hot + ΔT_min) / (T_DH_hot - T_DH_cold)
     else
         return zero(T_SH_hot)
     end
@@ -244,7 +278,8 @@ function EnergyModelsBase.constraints_flow_out(
     # Available heat output is a fraction `ψ` of heat input and the upgrade
     @constraint(m, [t ∈ 𝒯],
         m[:flow_out][n, t, heat_available] ≤
-        dh_upgrade(A, pd, t) + m[:flow_in][n, t, heat_surplus]
+        m[:flow_in][n, t, power] +
+        upgradeable_fraction(A, pd, t) * m[:flow_in][n, t, heat_surplus]
     )
     # Upgrade is powered by power in according to how much is used of the surplus heat in the upgraded flow out
     @constraint(m, [t ∈ 𝒯],

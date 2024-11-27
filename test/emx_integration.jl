@@ -95,11 +95,11 @@
 
         # Use temperatures that discriminate results for equal/different mass flows
         pd = PinchData(
+            FixedProfile(60),
+            FixedProfile(56),
+            FixedProfile(5),
             FixedProfile(70),
             FixedProfile(50),
-            FixedProfile(10),
-            FixedProfile(70),
-            FixedProfile(40),
         )
 
         # Define upgrade node
@@ -196,7 +196,7 @@ end
     using HiGHS
     using EnergyModelsBase
     using EnergyModelsHeat
-
+    const EMH = EnergyModelsHeat
     # Allow different mass flows
     case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
@@ -204,6 +204,7 @@ end
     m = run_model(case, model, optimizer)
 
     power = products[1]
+    surplus_heat = products[2]
     usable_heat = products[3]
     upgrade_node = nodes[4]
     surplus_source = nodes[1]
@@ -222,6 +223,10 @@ end
         @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
               EnergyModelsHeat.upgrade_different_mass(pd, t) *
               JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
+        @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
+              JuMP.value(m[:flow_in][upgrade_node, t, power]) +
+              EMH.upgradeable_different_mass(pd, t) *
+              JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
     end
 
     # Assume equal mass flows
@@ -243,5 +248,9 @@ end
         @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
               EnergyModelsHeat.upgrade_equal_mass(pd, t) *
               JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
+        @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
+              JuMP.value(m[:flow_in][upgrade_node, t, power]) +
+              EMH.upgradeable_equal_mass(pd, t) *
+              JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
     end
 end

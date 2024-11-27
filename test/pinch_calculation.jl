@@ -45,6 +45,43 @@
     end
 end
 
+@testitem "Upgradeable calculation" begin
+    const EMH = EnergyModelsHeat
+
+    # Circuits at same intervals:
+    @test EMH.upgradeable_equal_mass(70, 60, 0, 70, 60) ≈ 1
+    @test EMH.upgradeable_different_mass(70, 60, 0, 70, 60) ≈ 1
+    @test EMH.upgradeable_equal_mass(70, 60, 10, 70, 60) ≈ 0
+    @test EMH.upgradeable_different_mass(70, 60, 10, 70, 60) ≈ 0
+    @test EMH.upgradeable_equal_mass(70, 60, 20, 70, 60) ≈ 0
+    @test EMH.upgradeable_different_mass(70, 60, 20, 70, 60) ≈ 0
+
+    @test EMH.upgradeable_equal_mass(70, 40, 0, 70, 40) ≈ 1
+    @test EMH.upgradeable_different_mass(70, 40, 0, 70, 40) ≈ 1
+    @test EMH.upgradeable_equal_mass(70, 40, 10, 70, 40) ≈ 2 / 3
+    @test EMH.upgradeable_different_mass(70, 40, 10, 70, 40) ≈ 2 / 3
+
+    # Lower cold T at surplus heat source (40 < 50)
+    @test EMH.upgradeable_equal_mass(70, 40, 10, 70, 50) ≈ 1 / 3
+    @test EMH.upgradeable_different_mass(70, 40, 10, 70, 50) ≈ 1 / 3
+    # Lower cold T at district heating (40 < 50)
+    @test EMH.upgradeable_equal_mass(70, 50, 10, 70, 40) ≈ 1
+    @test EMH.upgradeable_different_mass(70, 50, 10, 70, 40) ≈ 1
+
+    # No need for upgrade when heat source less ΔT ≥ DH supply T
+    @test EMH.upgradeable_equal_mass(90, 40, 5, 70, 60) ≈ 1 / 2
+    @test EMH.upgradeable_different_mass(90, 40, 5, 70, 60) ≈ 1 / 2
+    # T_SH_cold < (T_DH_cold + ΔT_min) : 40 < 50 + 5
+    @test EMH.upgradeable_equal_mass(60, 40, 5, 70, 50) ≈ 1 / 4
+    @test EMH.upgradeable_different_mass(60, 40, 5, 70, 50) ≈ 1 / 4
+    # T_SH_cold == (T_DH_cold + ΔT_min) : 55 == 50 + 5
+    @test EMH.upgradeable_equal_mass(60, 55, 5, 70, 50) ≈ 1
+    @test EMH.upgradeable_different_mass(60, 55, 5, 70, 50) ≈ 1
+    # T_SH_cold > (T_DH_cold + ΔT_min) : 
+    @test EMH.upgradeable_equal_mass(60, 56, 5, 70, 50) ≈ 1
+    @test EMH.upgradeable_different_mass(60, 56, 5, 70, 50) ≈ 1
+end
+
 @testitem "Upgrade calculation" begin
     const EMH = EnergyModelsHeat
 
@@ -53,8 +90,8 @@ end
     @test EMH.upgrade_different_mass(70, 60, 0, 70, 60) ≈ 0
     @test EMH.upgrade_equal_mass(70, 60, 10, 70, 60) ≈ 1
     @test EMH.upgrade_different_mass(70, 60, 10, 70, 60) ≈ 1
-    @test EMH.upgrade_equal_mass(70, 60, 20, 70, 60) ≈ 2     # TODO: Check if upgrade > 1 makes sense?
-    @test EMH.upgrade_different_mass(70, 60, 20, 70, 60) ≈ 2 # TODO: Check if upgrade > 1 makes sense?
+    @test EMH.upgrade_equal_mass(70, 60, 20, 70, 60) ≈ 2     # TODO: Consider warning or error or preferably validate input for upgrade > 1
+    @test EMH.upgrade_different_mass(70, 60, 20, 70, 60) ≈ 2 # TODO: Consider warning or error or preferably validate input for upgrade > 1
 
     @test EMH.upgrade_equal_mass(70, 40, 0, 70, 40) ≈ 0
     @test EMH.upgrade_different_mass(70, 40, 0, 70, 40) ≈ 0
@@ -66,7 +103,7 @@ end
     @test EMH.upgrade_different_mass(70, 40, 10, 70, 50) ≈ 1 / 2
     # Lower cold T at district heating (40 < 50)
     @test EMH.upgrade_equal_mass(70, 50, 10, 70, 40) ≈ 1 / 3
-    @test EMH.upgrade_different_mass(70, 50, 10, 70, 40) ≈ 0
+    @test EMH.upgrade_different_mass(70, 50, 10, 70, 40) ≈ 1 / 3
 
     # No need for upgrade when heat source less ΔT ≥ DH supply T
     @test EMH.upgrade_equal_mass(90, 40, 5, 70, 60) ≈ 0
@@ -76,8 +113,8 @@ end
     @test EMH.upgrade_different_mass(60, 40, 5, 70, 50) ≈ 3 / 4
     # T_SH_cold == (T_DH_cold + ΔT_min) : 55 == 50 + 5
     @test EMH.upgrade_equal_mass(60, 55, 5, 70, 50) ≈ 3 / 4
-    @test EMH.upgrade_different_mass(60, 55, 5, 70, 50) ≈ 0
+    @test EMH.upgrade_different_mass(60, 55, 5, 70, 50) ≈ 3 / 4
     # T_SH_cold > (T_DH_cold + ΔT_min) : 
     @test EMH.upgrade_equal_mass(60, 56, 5, 70, 50) ≈ 4 / 5
-    @test EMH.upgrade_different_mass(60, 56, 5, 70, 50) ≈ 0
+    @test EMH.upgrade_different_mass(60, 56, 5, 70, 50) ≈ 3 / 4
 end
