@@ -50,7 +50,7 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 - [``\texttt{flow\_out}``](@extref man-opt_var-flow)
 - [``\texttt{stor\_level\_Δ\_op}``](@extref man-opt_var-cap)
 - [``\texttt{stor\_level\_Δ\_rp}``](@extref man-opt_var-cap) if the `TimeStruct` includes `RepresentativePeriods`
-- [``\texttt{emissions\_node}``](@extref man-opt_var-emissions) if specified through the function [`has_emissions`](@extref EnergyModelsBase.has_emissions)
+- [``\texttt{emissions\_node}``](@extref man-opt_var-emissions) if specified through the function [`has_emissions`](@extref EnergyModelsBase.has_emissions-Tuple{EnergyModelsBase.Node})
 
 ### [Constraints](@id nodes-ThermalEnergyStorage-math-con)
 
