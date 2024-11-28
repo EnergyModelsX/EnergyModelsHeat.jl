@@ -88,6 +88,6 @@
     heat_loss_assumed = 0.01
 
     calculated_loss = heat_loss / total_heat_in
-    # println(calculated_loss)
-    @test_broken heat_loss_assumed ≈ calculated_loss rtol = 0.5
+
+    @test heat_loss_assumed ≈ calculated_loss rtol = 0.5
 end

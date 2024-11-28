@@ -10,6 +10,6 @@ TimeStruct = "f9ed5ce0-9f41-4eaa-96da-f38ab8df101c"
 
 [compat]
 julia = "1.10"
-EnergyModelsBase = "0.8.1"
+EnergyModelsBase = "0.8.2"
 JuMP = "1.23.5"
 TimeStruct = "0.9.1"

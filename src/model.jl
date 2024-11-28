@@ -1,11 +1,17 @@
 
 """
-    create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
+    create_link(m, 𝒯, 𝒫, l::DHPipe, modeltype::EnergyModel, formulation::EMB.Formulation)
 
 Calculates the heat losses occurring in a `DHPipe`
 """
-
-function EMB.create_link(m, 𝒯, 𝒫, l::DHPipe, formulation::EMB.Formulation)
+function EMB.create_link(
+    m,
+    𝒯,
+    𝒫,
+    l::DHPipe,
+    modeltype::EnergyModel,
+    formulation::EMB.Formulation,
+)
 
     # DH pipe in which each output corresponds to the input minus heat losses
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
