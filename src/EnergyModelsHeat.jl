@@ -24,6 +24,9 @@ include(joinpath("structures", "link.jl"))
 include("model.jl")
 include("constraint_functions.jl")
 
+# Custom input validation
+include("checks.jl")
+
 # Export the general classes
 export ResourceHeat
 

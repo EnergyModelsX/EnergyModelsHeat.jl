@@ -108,6 +108,11 @@ Returns the resource for driving force, i.e., electricity, for heat pump `n`.
 """
 drivingforce_resource(n::HeatPump) = n.driving_force
 
+abstract type HeatExchangerAssumptions end
+struct EqualMassFlows <: HeatExchangerAssumptions end
+struct DifferentMassFlows <: HeatExchangerAssumptions end
+
+abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
 """ 
     HeatExchanger
 
@@ -124,7 +129,7 @@ energy that can be used in the District Heating network.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
 """
-struct HeatExchanger <: EnergyModelsBase.NetworkNode
+struct HeatExchanger{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -133,20 +138,22 @@ struct HeatExchanger <: EnergyModelsBase.NetworkNode
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
 end
-
+# Default to different mass flows assumptions for heat exchanger
+HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data) =
+    HeatExchanger{DifferentMassFlows}(id, cap, opex_var, opex_fixed, input, output, data)
 """
     PinchData{T}
 
 Data for fixed temperature intervals used to calculate available energy from surplus energy source 
-operating at `T_HOT` and `T_COLD`, with `ΔT_min` between surplus source and the district heating
-network operating at `T_hot` and `T_cold`.
+operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating
+network operating at `T_DH_hot` and `T_DH_cold`.
 """
 struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_HOT::TP
-    T_COLD::TP
+    T_SH_hot::TP
+    T_SH_cold::TP
     ΔT_min::TP
-    T_hot::TP
-    T_cold::TP
+    T_DH_hot::TP
+    T_DH_cold::TP
 end
 
 """ 
@@ -211,3 +218,41 @@ end
 Returns the heat loss factor for storage `n`.
 """
 heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
+
+""" 
+    DirectHeatUpgrade
+
+A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to "available"
+energy that can be used in the District Heating network.
+
+# Fields
+- **`id`** is the name/identifier of the node.
+- **`cap::TimeProfile`** is the installed capacity.
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.
+- **`opex_fixed::TimeProfile`** is the fixed operating expense.
+- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`. \
+Valid inputs are: one `Heat` resource and one power resource.
+- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`. \
+Valid output is a single `Heat` resource
+- **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
+"""
+struct DirectHeatUpgrade{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
+    id::Any
+    cap::TimeProfile
+    opex_var::TimeProfile
+    opex_fixed::TimeProfile
+    input::Dict{<:Resource,<:Real}
+    output::Dict{<:Resource,<:Real}
+    data::Vector{Data}
+end
+# Default to different mass flows assumptions for heat exchange
+DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
+    DirectHeatUpgrade{DifferentMassFlows}(
+        id,
+        cap,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        data,
+    )
