@@ -25,7 +25,7 @@
     @test EMH.fraction_equal_mass(90, 60, 10, 80, 50) ≈ 1
     @test EMH.fraction_different_mass(90, 60, 10, 80, 50) ≈ 1
     @test EMH.fraction_equal_mass(80, 60, 0, 80, 50) ≈ 0
-    @test EMH.fraction_different_mass(80, 60, 0, 80, 50) ≈ 1 # TODO: Check this - also assumes can heat from 50->60 due to different flows?
+    @test EMH.fraction_different_mass(80, 60, 0, 80, 50) ≈ 1
 
     # Higher T in district heating supply temperature (needs upgrade)
     @test EMH.fraction_equal_mass(70, 50, 10, 80, 50) ≈ 0
@@ -90,8 +90,8 @@ end
     @test EMH.upgrade_different_mass(70, 60, 0, 70, 60) ≈ 0
     @test EMH.upgrade_equal_mass(70, 60, 10, 70, 60) ≈ 1
     @test EMH.upgrade_different_mass(70, 60, 10, 70, 60) ≈ 1
-    @test EMH.upgrade_equal_mass(70, 60, 20, 70, 60) ≈ 2     # TODO: Consider warning or error or preferably validate input for upgrade > 1
-    @test EMH.upgrade_different_mass(70, 60, 20, 70, 60) ≈ 2 # TODO: Consider warning or error or preferably validate input for upgrade > 1
+    @test EMH.upgrade_equal_mass(70, 60, 20, 70, 60) ≈ 2     # we validate input for upgrade > 1
+    @test EMH.upgrade_different_mass(70, 60, 20, 70, 60) ≈ 2 # we validate input for upgrade > 1
 
     @test EMH.upgrade_equal_mass(70, 40, 0, 70, 40) ≈ 0
     @test EMH.upgrade_different_mass(70, 40, 0, 70, 40) ≈ 0
