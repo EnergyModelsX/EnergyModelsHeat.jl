@@ -49,8 +49,7 @@ upgradeable_fraction(::Type{DifferentMassFlows}, pd, t) = upgradeable_different_
 # Assuming equal mass flows
 function fraction_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
     if T_DH_hot ≤ (T_SH_hot - ΔT_min)
-        if ((T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)) ||
-           (T_SH_cold < T_DH_cold + ΔT_min)
+        if (T_DH_hot - T_DH_cold) > (T_SH_hot - T_SH_cold)
             return zero(T_SH_hot)
         else
             return (T_DH_hot - T_DH_cold) / (T_SH_hot - T_SH_cold)

@@ -11,14 +11,14 @@
     @test EMH.fraction_equal_mass(90, 60, 40, 80, 60) ≈ 0
     @test EMH.fraction_equal_mass(90, 60, 30, 80, 60) ≈ 0
     @test EMH.fraction_equal_mass(90, 60, 20, 80, 60) ≈ 0
-    @test EMH.fraction_equal_mass(90, 60, 10, 80, 60) ≈ 0
+    @test EMH.fraction_equal_mass(90, 60, 10, 80, 60) ≈ 2 / 3
     @test EMH.fraction_equal_mass(90, 60, 0, 80, 60) ≈ 2 / 3
     @test EMH.fraction_equal_mass(90, 70, 10, 80, 60) ≈ 1
     @test EMH.fraction_equal_mass(100, 70, 10, 80, 60) ≈ 2 / 3  # Equal mass flow -> loss
     @test EMH.fraction_different_mass(100, 70, 10, 80, 60) ≈ 1  # Adjusting mass flow to recover energy
 
     # Lower cold T in surplus heat source
-    @test EMH.fraction_equal_mass(90, 50, 10, 80, 60) ≈ 0
+    @test EMH.fraction_equal_mass(90, 50, 10, 80, 60) ≈ 1 / 2
     @test EMH.fraction_different_mass(90, 50, 10, 80, 60) ≈ 1 / 2
 
     # Lower cold T in district heating circuit
