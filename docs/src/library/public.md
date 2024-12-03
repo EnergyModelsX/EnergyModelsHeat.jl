@@ -18,18 +18,30 @@ ResourceHeat
 DHPipe
 ```
 
-## [Node types](@id lib-pub-node)
-
-### [Abstract types](@id lib-pub-node-abstract)
+## [`Node` types](@id lib-pub-node-types)
 
 ```@docs
 HeatPump
+ThermalEnergyStorage
 HeatExchanger
+EnergyModelsHeat.DirectHeatUpgrade
+```
+
+!!! todo "Changes"
+    Once exported, remove `EnergyModelsHeat.` in front of `DirectHeatUpgrade`
+
+### [`Data` types](@id lib-pub-data-types)
+
+```@docs
 PinchData
 ```
 
-### [Concrete types](@id lib-pub-node-concrete)
+### [Auxiliary types](@id lib-pub-aux-types)
 
 ```@docs
-ThermalEnergyStorage
 ```
+
+!!! todo "Changes"
+    To be added, once docstrings are written:
+    - `EqualMassFlows`
+    - `DifferentMassFlows`

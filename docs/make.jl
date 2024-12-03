@@ -15,11 +15,14 @@ bib = CitationBibliography(joinpath(@__DIR__, "src", "references.bib"))
 
 Documenter.makedocs(
     sitename = "EnergyModelsHeat",
+    repo="https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/blob/{commit}{path}#{line}",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
+        canonical="https://zeesa-wp3.pages.sintef.no/EnergyModelsHeat.jl",
         edit_link = "main",
         assets = String[],
     ),
+    modules = [EnergyModelsHeat],
     pages = [
         "Introduction" => "index.md",
         "Resources" => [
@@ -39,6 +42,7 @@ Documenter.makedocs(
         "Library" => [
             "Public" => "library/public.md",
             "Internals" => [
+                "library/internals/types-EMH.md",
                 "library/internals/methods-fields.md",
                 "library/internals/methods-EMH.md",
                 "library/internals/methods-EMB.md",
@@ -46,8 +50,6 @@ Documenter.makedocs(
         ],
         "Background" => "background/background.md",
     ],
-    doctest = false,
-    remotes = nothing,
     plugins = [links, bib],
 )
 
