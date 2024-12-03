@@ -1,8 +1,7 @@
 """
     constraints_cap_bound(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the minimum capacity of a [`HeatPump`](@ref).
-
+Function for creating the constraint on the minimum capacity utilization of a [`HeatPump`](@ref).
 """
 function constraints_cap_bound(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     #Part Load Constraint
@@ -15,7 +14,6 @@ end
     constraints_COP_Heat(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the heat input of a [`HeatPump`](@ref).
-
 """
 function constraints_COP_Heat(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Constraint for the COP - Heat
@@ -36,7 +34,6 @@ end
     constraints_COP_Power(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the power input of a [`HeatPump`](@ref).
-
 """
 function constraints_COP_Power(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Constraint for the COP - Electricity
@@ -49,17 +46,17 @@ end
 
 """
     constraints_level_iterate(
-    m,
-    n::ThermalEnergyStorage,
-    prev_pers::PreviousPeriods,
-    cyclic_pers::CyclicPeriods,
-    per,
-    _::SimpleTimes,
-    modeltype::EnergyModel,
-)
+        m,
+        n::ThermalEnergyStorage,
+        prev_pers::PreviousPeriods,
+        cyclic_pers::CyclicPeriods,
+        per,
+        _::SimpleTimes,
+        modeltype::EnergyModel,
+    )
 
-Function for creating the constraint on the storage level considering the heat loss of  of a [`ThermalEnergyStorage`](@ref).
-
+In the case of a [`ThermalEnergyStorage`](@ref), the lowest level iterator is adjusted as
+the loss is dependent on the level at the beginning of the operational period.
 """
 function EMB.constraints_level_iterate(
     m,

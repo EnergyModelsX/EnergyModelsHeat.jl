@@ -2,7 +2,8 @@
 """
     create_link(m, 𝒯, 𝒫, l::DHPipe, modeltype::EnergyModel, formulation::EMB.Formulation)
 
-Calculates the heat losses occurring in a `DHPipe`
+When the link is a [`DHPipe`](@ref), the constraints for a link include a loss based on the
+difference in the temperature of the district heating resource and the ground.
 """
 function EMB.create_link(
     m,
@@ -115,7 +116,7 @@ function upgradeable_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH
 end
 
 """
-Assuming equal mass flows    
+Assuming equal mass flows
 """
 upgrade_equal_mass(pd::PinchData, t) =
     upgrade_equal_mass(
@@ -177,16 +178,16 @@ end
     create_node(m, n::HeatPump, 𝒯::TimeStructure, 𝒫, modeltype::EnergyModel)
 
 Set all constraints for a `HeatPump`.
-Calculates the input flows for various resources based on the COP of the HeatPump. 
-The COP is based on Source and Sink temperature profiles and the carnot efficiency. 
-It is also possible to inlude a lower capacity bound which the HeatPump cannot cross. This means, however, that cap_use cannot be zero either. 
+Calculates the input flows for various resources based on the COP of the HeatPump.
+The COP is based on Source and Sink temperature profiles and the carnot efficiency.
+It is also possible to inlude a lower capacity bound which the HeatPump cannot cross. This means, however, that cap_use cannot be zero either.
 
 # Called constraint functions
-- [`constraints_data`](@ref) for all `node_data(n)`,
-- [`constraints_flow_out`](@ref),
-- [`constraints_capacity`](@ref),
-- [`constraints_opex_fixed`](@ref),
-- [`constraints_opex_var`](@ref),
+- [`constraints_data`](@extref EnergyModelsBase.constraints_data) for all `node_data(n)`,
+- [`constraints_flow_out`](@extref EnergyModelsBase.constraints_flow_out),
+- [`constraints_capacity`](@extref EnergyModelsBase.constraints_capacity),
+- [`constraints_opex_fixed`](@extref EnergyModelsBase.constraints_opex_fixed), and
+- [`constraints_opex_var`](@extref EnergyModelsBase.constraints_opex_var).
 - [`constraints_cap_bound`](@ref),
 - [`constraints_COP_Heat`](@ref),
 - [`constraints_COP_Power`](@ref),
@@ -227,17 +228,17 @@ end
     create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
 
 Set all constraints for a `ThermalEnergyStorage`.
-Calls the constraint function constraints_level_iterate that includes the heatlossfactor in the calculation of the storage level. 
+Calls the constraint function constraints_level_iterate that includes the heatlossfactor in the calculation of the storage level.
 !!!Currently this Node is only available in combination with CyclicPeriods!!!
 
 # Called constraint functions
-- [`constraints_level`](@ref)
-- [`constraints_data`](@ref) for all `node_data(n)`,
-- [`constraints_flow_in`](@ref),
-- [`constraints_flow_out`](@ref),
-- [`constraints_capacity`](@ref),
-- [`constraints_opex_fixed`](@ref), and
-- [`constraints_opex_var`](@ref).
+- [`constraints_level`](@extref EnergyModelsBase.constraints_level)
+- [`constraints_data`](@extref EnergyModelsBase.constraints_data) for all `node_data(n)`,
+- [`constraints_flow_in`](@extref EnergyModelsBase.constraints_flow_in),
+- [`constraints_flow_out`](@extref EnergyModelsBase.constraints_flow_out),
+- [`constraints_capacity`](@extref EnergyModelsBase.constraints_capacity),
+- [`constraints_opex_fixed`](@extref EnergyModelsBase.constraints_opex_fixed), and
+- [`constraints_opex_var`](@extref EnergyModelsBase.constraints_opex_var).
 """
 function EMB.create_node(m, n::ThermalEnergyStorage, 𝒯, 𝒫, modeltype::EnergyModel)
 

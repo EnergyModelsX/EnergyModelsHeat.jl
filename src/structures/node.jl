@@ -1,38 +1,44 @@
-""" 
-    HeatPump
+"""
+    HeatPump <: EMB.NetworkNode
 
-A `HeatPump` node to convert low temp heat to high(er) temp heat by utilizing en exergy driving force (e.g. electricity).
+A `HeatPump` node to convert low temperature heat to high(er) temperature heat by utilizing
+an exergy driving force (*e.g.*, electricity).
 
 # Fields
-- **`id`** is the name/identifier of the node.\n
-- **`cap::TimeProfile`** is the installed heating capacity.\n
-- **`cap_lower_bound`** is the lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity 
+- **`id`** is the name/identifier of the node.
+- **`cap::TimeProfile`** is the installed heating capacity.
+- **`cap_lower_bound`** is the lower capacity bound for flexibility within [0, 1] reflecting
+  the lowest possible relative capacity use.
 - **`t_source`** is the temperature profile of the heat source
-- **`t_sink`** is the sink temperature of the condensator in Celsius
-- **`eff_carnot`** is the Carnot Efficiency COP_real/COP_carnot
-- **`input_heat`** is the resource for the low temperature heat
-- **`driving_force`** is the resource of the driving force, e.g. electricity
-- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.\n
-- **`opex_fixed::TimeProfile`** is the fixed operating expense.\n
-- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s.\n
-- **`output::Dict{<:Resource, <:Real}`** is the generated `Resource`.\n
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
-`data` is conditional through usage of a constructor.
+- **`t_sink`** is the sink temperature of the condensator. The temperature must be given in
+  °C.
+- **`eff_carnot`** is the Carnot Efficiency COP_real/COP_carnot. The value must be within [0, 1].
+- **`input_heat`** is the resource for the low temperature heat input.
+- **`driving_force`** is the resource of the driving force, *e.g.*, electricity.
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.
+- **`opex_fixed::TimeProfile`** is the fixed operating expense.
+- **`input::Dict{<:Resource, <:Real}`** are the input
+  [`Resource`](@extref EnergyModelsBase.Resource)s with a value `Real`. The chosen value
+  does not play a role as it is not used.
+- **`output::Dict{<:Resource, <:Real}`** are the produced
+  [`Resource`](@extref EnergyModelsBase.Resource)s with conversion value `Real`.
+- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
+  is conditional through usage of a constructor.
 """
 struct HeatPump <: EMB.NetworkNode
     id::Any
-    cap::TimeProfile                        # Heat Capacity
-    cap_lower_bound::Union{Real,Nothing}    # Lower capacity bound for flexibility, value between 0 and 1 reflecting the lowest possible relative capacity 
-    t_source::TimeProfile                   # Temperature profile of the heat source
-    t_sink::TimeProfile                     # Sink temperature of the condensator in Celsius
-    eff_carnot::TimeProfile                 # Carnot Efficiency COP_real/COP_carnot
-    input_heat::Resource                     # Resource for the low temperature heat
-    driving_force::Resource                  # Resource of the driving force, e.g. electricity
-    opex_var::TimeProfile                   # Variable OPEX in EUR/MWh
-    opex_fixed::TimeProfile                 # Fixed OPEX in EUR/h
-    input::Dict{<:Resource,<:Real}          # Input Resource, number irrelevant: COP is calculated seperately
-    output::Dict{<:Resource,<:Real}         # Output Resource (Heat), number irrelevant: COP is calculated seperately
-    data::Vector{Data}                      # Optional Investment/Emission Data
+    cap::TimeProfile
+    cap_lower_bound::Union{Real,Nothing}
+    t_source::TimeProfile
+    t_sink::TimeProfile
+    eff_carnot::TimeProfile
+    input_heat::Resource
+    driving_force::Resource
+    opex_var::TimeProfile
+    opex_fixed::TimeProfile
+    input::Dict{<:Resource,<:Real}
+    output::Dict{<:Resource,<:Real}
+    data::Vector{Data}
 end
 
 function HeatPump(
@@ -67,24 +73,32 @@ function HeatPump(
 end
 
 """
+    eff_carnot(n::HeatPump)
     eff_carnot(n::HeatPump, t)
 
-Returns the Carnot efficiency of heat pump `n`.
+Returns the Carnot efficiency of heat pump `n` as `TimeProfile` or in operational period `t`.
 """
+eff_carnot(n::HeatPump) = n.eff_carnot
 eff_carnot(n::HeatPump, t) = n.eff_carnot[t]
 
 """
+    t_sink(n::HeatPump)
     t_sink(n::HeatPump, t)
 
-Returns the temperature of the heat sink for heat pump `n`.
+Returns the temperature of the heat sink for heat pump `n` as `TimeProfile` or in
+operational period `t`.
 """
+t_sink(n::HeatPump) = n.t_sink
 t_sink(n::HeatPump, t) = n.t_sink[t]
 
 """
-    t_source(n::HeatPump, t) 
+    t_source(n::HeatPump)
+    t_source(n::HeatPump, t)
 
-Returns the temperature of the heat source for heat pump `n`.
+Returns the temperature of the heat source for heat pump `n` as `TimeProfile` or in
+operational period `t`.
 """
+t_source(n::HeatPump) = n.t_sources
 t_source(n::HeatPump, t) = n.t_source[t]
 
 """
@@ -113,19 +127,19 @@ struct EqualMassFlows <: HeatExchangerAssumptions end
 struct DifferentMassFlows <: HeatExchangerAssumptions end
 
 abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
-""" 
+"""
     HeatExchanger
 
 A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
 energy that can be used in the District Heating network.
 
 # Fields
-- **`id`** is the name/identifier of the node.\n
-- **`cap::TimeProfile`** is the installed capacity.\n
-- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.\n
-- **`opex_fixed::TimeProfile`** is the fixed operating expense.\n
-- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.\n
-- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.\n
+- **`id`** is the name/identifier of the node.
+- **`cap::TimeProfile`** is the installed capacity.
+- **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.
+- **`opex_fixed::TimeProfile`** is the fixed operating expense.
+- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.
+- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
 """
@@ -144,7 +158,7 @@ HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data) =
 """
     PinchData{T}
 
-Data for fixed temperature intervals used to calculate available energy from surplus energy source 
+Data for fixed temperature intervals used to calculate available energy from surplus energy source
 operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating
 network operating at `T_DH_hot` and `T_DH_cold`.
 """
@@ -156,27 +170,37 @@ struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
     T_DH_cold::TP
 end
 
-""" 
-    ThermalEnergyStorage
+"""
+    ThermalEnergyStorage{T} <: Storage{T}
 
-A `ThermalEnergyStorage` that functions mostly like a RefStorage with the additional option to include thermal energy losses. 
-Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod.
-The main difference to RefStorage is that these heat losses occur independently of the storage use, i.e. unless the storage level is zero. 
+A `ThermalEnergyStorage` that functions mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage)
+with the additional option to include thermal energy losses. Heat losses are quantified
+through a heat loss factor that describes the amount of thermal energy that is lost in
+relation to the storage level from the previous timeperiod.
+
+The main difference to [`RefStorage`](@extref EnergyModelsBase.RefStorage) is that these heat
+losses occur independently of the storage use, *i.e.*, they are proportional to the storage
+level.
+
+!!! warning "StorageBehavior"
+    `ThermalEnergyStorage` in its current implementation only supports
+    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior.
 
 # Fields
 - **`id`** is the name/identifier of the node.
-- **`charge::AbstractStorageParameters`** are the charging parameters of the [`Storage`](@ref) node.
-  Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX,
-  and/or a capacity.
-- **`level::AbstractStorageParameters`** are the level parameters of the [`Storage`](@ref) node.
+- **`charge::AbstractStorageParameters`** are the charging parameters of the
+  `ThermalEnergyStorage` node. Depending on the chosen type, the charge parameters can
+  include variable OPEX, fixed OPEX, and/or a capacity.
+- **`level::AbstractStorageParameters`** are the level parameters of the `ThermalEnergyStorage`.
   Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
-- **`stor_res::Resource`** is the stored [`Resource`](@ref).
-- **`heatlossfactor::Float64`** are the relative heat losses in percent. 
-- **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@ref)s with conversion
-  value `Real`.
-- **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@ref)s with conversion
-  value `Real`. Only relevant for linking and the stored [`Resource`](@ref) as the output
-  value is not utilized in the calculations.
+- **`stor_res::Resource`** is the stored [`Resource`](@extref EnergyModelsBase.Resource).
+- **`heatlossfactor::Float64`** are the relative heat losses in percent.
+- **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s
+  with conversion value `Real`.
+- **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@extref EnergyModelsBase.Resource)s
+  with conversion value `Real`. Only relevant for linking and the stored
+  [`Resource`](@extref EnergyModelsBase.Resource) as the output value is not utilized in
+  the calculations.
 - **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
@@ -219,7 +243,7 @@ Returns the heat loss factor for storage `n`.
 """
 heatlossfactor(n::ThermalEnergyStorage) = n.heatlossfactor
 
-""" 
+"""
     DirectHeatUpgrade
 
 A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to "available"

@@ -1,11 +1,8 @@
 """
-Main module for `EnergyModelsHeat`: a framework for energy system models with thermal components.
+Main module for `EnergyModelsHeat`:
+a framework for energy system models with thermal components.
 
-It exports the resource ResourceHeat and structures for DH pipe, heat pump and heat exchanger.
-
-You can find the exported types and functions below or on the pages \
-*[Constraint functions](@ref man-con)* and \
-*[Data functions](@ref man-data_fun)*.
+It exports the resource `ResourceHeat` and structures for DH pipe, heat pump and heat exchanger.
 """
 module EnergyModelsHeat
 
