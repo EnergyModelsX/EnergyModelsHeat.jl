@@ -11,8 +11,8 @@
     function generate_data()
 
         # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat_in = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
-        dh_heat_out = ResourceHeat("DHheat", 0.0, 70.0, 30.0)
+        dh_heat_in = ResourceHeat("DHheat", FixedProfile(70.0), FixedProfile(30.0))
+        dh_heat_out = ResourceHeat("DHheat", FixedProfile(70.0), FixedProfile(30.0))
         CO₂ = ResourceEmit("CO₂", 0.0)
         products = [dh_heat_in, dh_heat_out]
 
@@ -59,7 +59,7 @@
                 nodes[2],
                 1000.0,
                 0.25 * 10^(-6),
-                10.0,
+                FixedProfile(10.0),
                 dh_heat_in,
             ),
         ]

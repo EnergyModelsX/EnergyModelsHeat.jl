@@ -18,7 +18,7 @@ function EMB.create_link(
     @constraint(m, [t ∈ 𝒯, p ∈ link_res(l)],
         m[:link_out][l, t, p] ==
         m[:link_in][l, t, p] -
-        pipelength(l) * pipelossfactor(l) * (t_supply(l) - t_ground(l))
+        pipelength(l) * pipelossfactor(l) * (t_supply(l, t) - t_ground(l, t))
     )
 end
 

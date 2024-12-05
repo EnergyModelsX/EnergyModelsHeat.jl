@@ -8,8 +8,8 @@
 
     # Define the different resources and their emission intensity in tCO2/MWh
     power    = ResourceCarrier("Power", 0.0)
-    heat_sur = EnergyModelsHeat.Heat("surplus_heat", 80, 60)
-    heat_use = EnergyModelsHeat.Heat("useable_heat", 80, 40)
+    heat_sur = EnergyModelsHeat.ResourceHeat("surplus_heat", FixedProfile(80), FixedProfile(60))
+    heat_use = EnergyModelsHeat.ResourceHeat("useable_heat", FixedProfile(80), FixedProfile(40))
 
     CO₂      = ResourceEmit("CO₂", 1.0)
     products = [power, heat_sur, heat_use, CO₂]

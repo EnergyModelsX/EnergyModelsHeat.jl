@@ -9,22 +9,26 @@ A resource for heat.
 - **`t_supply::Float64`** is the supply temperature in °C.
 - **`t_return::Float64`** is the return temperature in °C.
 """
-struct ResourceHeat{T<:Real} <: Resource
-    id::Any
-    co2_int::T
-    t_supply::Float64
-    t_return::Float64
+struct ResourceHeat{IDT,T<:TimeProfile} <: EnergyModelsBase.Resource
+    id::IDT
+    # co2_int::T
+    t_supply::T
+    t_return::T
 end
+t_supply(rh::ResourceHeat) = rh.t_supply
+t_supply(rh::ResourceHeat, t) = rh.t_supply[t]
+t_return(rh::ResourceHeat) = rh.t_return
+t_return(rh::ResourceHeat, t) = rh.t_return[t]
 
 """
 TO DO: Reconcile with ResourceHeat (above)
 """
-struct Heat{T} <: EnergyModelsBase.Resource
-    id::Any
-    T_supply::T
-    T_return::T
-    co2_int::T
-end
-Heat(id, T_supply, T_return) = Heat(id, T_supply, T_return, zero(T_return))
+# struct Heat{T} <: EnergyModelsBase.Resource
+#     id::Any
+#     T_supply::T
+#     T_return::T
+#     co2_int::T
+# end
+# Heat(id, T_supply, T_return) = Heat(id, T_supply, T_return, zero(T_return))
 isheat(r) = false
-isheat(r::Heat) = true
+isheat(r::ResourceHeat) = true
