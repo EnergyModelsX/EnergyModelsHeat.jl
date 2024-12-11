@@ -10,12 +10,6 @@ Pages = ["methods-EMH.md"]
 
 ## [Constraint methods](@id lib-int-met_emb-con)
 
-```@docs
-EnergyModelsHeat.constraints_cap_bound
-EnergyModelsHeat.constraints_COP_Heat
-EnergyModelsHeat.constraints_COP_Power
-```
-
 ## [Utility methods](@id lib-int-met-util)
 
 ```@docs

@@ -15,10 +15,10 @@ bib = CitationBibliography(joinpath(@__DIR__, "src", "references.bib"))
 
 Documenter.makedocs(
     sitename = "EnergyModelsHeat",
-    repo="https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/blob/{commit}{path}#{line}",
+    repo = "https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/blob/{commit}{path}#{line}",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical="https://zeesa-wp3.pages.sintef.no/EnergyModelsHeat.jl",
+        canonical = "https://zeesa-wp3.pages.sintef.no/EnergyModelsHeat.jl",
         edit_link = "main",
         assets = String[],
     ),

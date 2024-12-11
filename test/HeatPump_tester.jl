@@ -56,7 +56,6 @@
                 power,
                 FixedProfile(0),
                 FixedProfile(0),
-                Dict(heat_sur => 1, power => 1),
                 Dict(heat_use => 1),
             ),
             RefSink(

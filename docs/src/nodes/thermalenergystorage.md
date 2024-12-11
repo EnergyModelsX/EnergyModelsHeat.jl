@@ -2,6 +2,10 @@
 # [ThermalEnergyStorage](@id nodes-TES)
 
 [`ThermalEnergyStorage`](@ref) works mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
+For the [`ThermalEnergyStorage`](@ref) node, heat losses are additionally quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective operational period.
+The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
+In practice, this approach with a constant relative heat loss factor does not accurately represent heat loss mechanisms based on temperature difference between the inside and outside of the TES.
+However, it is a reasonable approximation that at least reflects the dependence of the SOC on the absolute losses of the storage.
 
 !!! danger "StorageBehavior for ThermalEnergyStorage"
     [`ThermalEnergyStorage`](@ref) can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
@@ -10,32 +14,69 @@
 
 ## [Introduced type and its fields](@id nodes-TES-fields)
 
-[`ThermalEnergyStorage`](@ref) is implemented as equivalent to a [`RefStorage`](@extref EnergyModelsBase.RefStorage).
-Hence, it utilizes the same functions declared in `EnergyModelsBase`. For the [`ThermalEnergyStorage`](@ref) node, heat losses are additionally quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective operational period.
-The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
+[`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage).
+Hence, the majority of the fields are the same.
 
-The fields of a [`ThermalEnergyStorage`](@ref) are given as:
+### [Standard fields](@id nodes-co2_storage-fields-stand)
+
+The standard fields are given as:
 
 - **`id`** :\
   The field `id` is only used for providing a name to the storage.
+  This is similar to the approach utilized in `EnergyModelsBase`.
+
 - **`charge::AbstractStorageParameters`** :\
-  The charging parameters of the `ThermalEnergyStorage`. Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX,
-  and/or a capacity.
-- **`level::AbstractStorageParameters`** :\
-  The level parameters of the `ThermalEnergyStorage`. Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
+  The charging parameters of the `ThermalEnergyStorage`.
+  Depending on the chosen type, the charge parameters can include variable OPEX, fixed OPEX, and/or a capacity.
+  More information can be found on *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
+
+- **`level::UnionCapacity`** :\
+  The level parameters of the `ThermalEnergyStorage`.
+  The level storage parameters must include a capacity.
+  Depending on the chosen type, the level parameters can include in addition variable OPEX and/or fixed OPEX.
+  More information can be found on *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
+  !!! note "Permitted values for storage parameters in `charge` and `level`"
+      If the node should contain investments through the application of [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/), it is important to note that you can only use `FixedProfile` or `StrategicProfile` for the capacity, but not `RepresentativeProfile` or `OperationalProfile`.
+      Similarly, you can only use `FixedProfile` or `StrategicProfile` for the fixed OPEX, but not `RepresentativeProfile` or `OperationalProfile`.
+      The variable operating expenses can be provided as `OperationalProfile` as well.
+      In addition, all capacity and fixed OPEX values have to be non-negative.
+
 - **`stor_res::Resource`** :\
-  The stored `ThermalEnergyStorage`.
-- **`heatlossfactor::Float64`** :\
-  The relative heat losses as fraction.
-- **`input::Dict{<:Resource,<:Real}`** :\
-  The input Resources with conversion value `Real`.
-- **`output::Dict{<:Resource,<:Real}`** :\
-  The generated Resources with conversion  value `Real`. Only relevant for linking and the stored Resources as the output
-  value is not utilized in the calculations.
+  The `stor_res` is the stored [`Resource`](@extref EnergyModelsBase.Resource).
+  In the case of a `ThermalEnergyStorage`, this resource should be a [`ResourceHeat`](@ref).
+
+- **`input::Dict{<:Resource,<:Real}`** and **`output::Dict{<:Resource,<:Real}`**:\
+  Both fields describe the `input` and `output` [`Resource`](@extref EnergyModelsBase.Resource)s with their corresponding conversion factors as dictionaries.
+  All values have to be non-negative.
+  !!! info "Conversion factors"
+      While the field input includes a proper conversion factor and may allow for multiple resources, the value of the `output` [`Resource`](@extref EnergyModelsBase.Resource)s is not relevant.
+
 - **`data::Vector{<:Data}`** :\
-  The additional data (*e.g.*, for investments). The field `data` is conditional through usage of a constructor.
+  An entry for providing additional data to the model.
+  In the current version, it is used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
+  !!! note
+      The field `data` is not required as we include a constructor when the value is excluded.
+
+### [Additional fields](@id nodes-TES-fields-new)
+
+[`ThermalEnergyStorage`](@ref) nodes add one additional field compared to [`RefStorage`](@extref EnergyModelsBase.RefStorage) nodes:
+
+- **`heat_loss_factor::Float64`** :\
+  The heat loss factore describes the heat loss relative to the storage level.
+  It corresponds to the loss between two operational periods for a given operational duration of 1 (see *[Utilize `TimeStruct`](@extref EnergyModelsBase how_to-utilize_TS)* for an explanation).
 
 ## [Mathematical description](@id nodes-TES-math)
+
+In the following mathematical equations, we use the name for variables and functions used in the model.
+Variables are in general represented as
+
+``\texttt{var\_example}[index_1, index_2]``
+
+with square brackets, while functions are represented as
+
+``func\_example(index_1, index_2)``
+
+with paranthesis.
 
 ### [Variables](@id nodes-TES-math-var)
 
@@ -44,9 +85,9 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 - [``\texttt{opex\_var}``](@extref EnergyModelsBase man-opt_var-opex)
 - [``\texttt{opex\_fixed}``](@extref EnergyModelsBase man-opt_var-opex)
 - [``\texttt{stor\_level}``](@extref EnergyModelsBase man-opt_var-cap)
-- [``\texttt{stor\_level\_inst}``](@extref EnergyModelsBase man-opt_var-cap) if the `ThermalEnergyStorage` has the field `charge` with a capacity
+- [``\texttt{stor\_level\_inst}``](@extref EnergyModelsBase man-opt_var-cap)
 - [``\texttt{stor\_charge\_use}``](@extref EnergyModelsBase man-opt_var-cap)
-- [``\texttt{stor\_charge\_inst}``](@extref EnergyModelsBase man-opt_var-cap)
+- [``\texttt{stor\_charge\_inst}``](@extref EnergyModelsBase man-opt_var-cap) if the `ThermalEnergyStorage` has the field `charge` with a capacity
 - [``\texttt{stor\_discharge\_use}``](@extref EnergyModelsBase man-opt_var-cap)
 - [``\texttt{flow\_in}``](@extref EnergyModelsBase man-opt_var-flow)
 - [``\texttt{flow\_out}``](@extref EnergyModelsBase man-opt_var-flow)
@@ -157,7 +198,7 @@ If the time structure includes representative periods, we calculate the change o
 
 ```math
 \texttt{stor\_level\_Δ\_rp}[n, t_{rp}] = \sum_{t \in t_{rp}}
-\texttt{stor\_level\_Δ\_op}[n, t] \times scale_op_sp(t_{rp}, t)
+\texttt{stor\_level\_Δ\_op}[n, t] \times scale\_op\_sp(t_{rp}, t)
 ```
 
 In the case of [`CyclicStrategic`](@extref EnergyModelsBase.CyclicStrategic), we add an additional constraint to the change in the function `constraints_level_rp`:
@@ -179,7 +220,7 @@ The general level constraint is eventually calculated in the function `constrain
 ```math
 \texttt{stor\_level}[n, t] = prev\_level +
 \texttt{stor\_level\_Δ\_op}[n, t] \times duration(t) -
-prev\_level \times heatlossfactor(n)
+prev\_level \times heat\_loss\_factor(n) \times duration(t)
 ```
 
 in which the value ``prev\_level`` is depending on the type of the previous operational (``t_{prev}``) and strategic level (``t_{inv,prev}``) (as well as the previous representative period (``t_{rp,prev}``)).
