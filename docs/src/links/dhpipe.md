@@ -14,7 +14,7 @@ DHPipe has the following fields:
      The node from which there is flow out of the link.
 - **`length::Float64`** :\
     The pipe length in meters
-- **`heatlossfactor::Float64`** :\
+- **`heat_loss_factor::Float64`** :\
     The heat loss factor per meter pipe in [W/(m*K)], [kW/(m*K)] or [MW/(m*K)], depending on the applied unit for energy. Typical values for heat loss factors in district heating pipes can be found at the website of the district heating pipe manufacturer [LOGSTOR](https://www.logstor.com/district-heating/logstor-lab/lambda-values).
 - **`t_ground::Float64`** :\
     The ground temperature in °C
@@ -35,7 +35,7 @@ DHPipe has the following fields:
 The constraint functions are called within the function [`create_link`](@ref EnergyModelsBase.create_link), including the calculation of the heat losses, which is included as follows:
 
   ```math
-  \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heatlossfactor}[l] * (\texttt{t_{supply}}[l] - \texttt{t_{ground}}[l])
+  \texttt{flow\_out}[l, t, link\_res(l)] = \texttt{flow\_in}[l, t, link\_res(l)] - \texttt{pipelength}[l] * \texttt{heat_loss_factor}[l] * (\texttt{t_{supply}}[l] - \texttt{t_{ground}}[l])
   ```
 
  As an example, for a pipe with a length of 1000 m, a heat loss factor of 0.25 W/(m*K) will result in a relative heat loss of 1.7 % for a 1000 m pipe, at a supply temperature of ``70~\degree C`` and ground temperature of ``10~\degree C``.

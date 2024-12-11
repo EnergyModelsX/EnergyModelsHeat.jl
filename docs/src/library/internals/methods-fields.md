@@ -24,15 +24,15 @@ EnergyModelsHeat.eff_carnot
 EnergyModelsHeat.t_sink
 EnergyModelsHeat.t_source
 EnergyModelsHeat.cap_lower_bound
-EnergyModelsHeat.heat_input_resource
-EnergyModelsHeat.drivingforce_resource
+EnergyModelsHeat.heat_in_resource
+EnergyModelsHeat.driving_force_resource
 ```
 
 
 ## [`ThermalEnergyStorage`](@id lib-int-met_field-thermalenergystorage)
 
 ```@docs
-EnergyModelsHeat.heatlossfactor
+EnergyModelsHeat.heat_loss_factor
 ```
 
 ## [`HeatExchanger`](@id lib-int-met_field-heatexchanger)

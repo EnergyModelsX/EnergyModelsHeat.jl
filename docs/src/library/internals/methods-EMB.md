@@ -10,11 +10,19 @@ Pages = ["methods-EMB.md"]
 
 ```@docs
 EnergyModelsBase.create_link
-EnergyModelsBase.create_node
 ```
 
 ## [Constraint methods](@id lib-int-met_emb-con)
 
 ```@docs
 EnergyModelsBase.constraints_level_iterate
+EnergyModelsBase.constraints_capacity
+EnergyModelsBase.constraints_flow_in
+EnergyModelsBase.check_node
+```
+
+## [Field extraction methods](@id lib-int-met_emb-field)
+
+```@docs
+EnergyModelsBase.inputs
 ```
