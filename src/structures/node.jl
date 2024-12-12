@@ -151,10 +151,20 @@ struct HeatExchanger{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
+    delta_t_min::Any
 end
 # Default to different mass flows assumptions for heat exchanger
-HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data) =
-    HeatExchanger{DifferentMassFlows}(id, cap, opex_var, opex_fixed, input, output, data)
+HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
+    HeatExchanger{DifferentMassFlows}(
+        id,
+        cap,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        data,
+        delta_t_min,
+    )
 """
     PinchData{T}
 
@@ -162,12 +172,18 @@ Data for fixed temperature intervals used to calculate available energy from sur
 operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating
 network operating at `T_DH_hot` and `T_DH_cold`.
 """
-struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_SH_hot::TP
-    T_SH_cold::TP
-    ΔT_min::TP
-    T_DH_hot::TP
-    T_DH_cold::TP
+struct PinchData{
+    TP1<:TimeProfile,
+    TP2<:TimeProfile,
+    TP3<:TimeProfile,
+    TP4<:TimeProfile,
+    TP5<:TimeProfile,
+} <: EnergyModelsBase.Data
+    T_SH_hot::TP1
+    T_SH_cold::TP2
+    ΔT_min::TP3
+    T_DH_hot::TP4
+    T_DH_cold::TP5
 end
 
 """
@@ -268,9 +284,10 @@ struct DirectHeatUpgrade{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
+    delta_t_min::Any
 end
 # Default to different mass flows assumptions for heat exchange
-DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
+DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
     DirectHeatUpgrade{DifferentMassFlows}(
         id,
         cap,
@@ -279,4 +296,5 @@ DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
         input,
         output,
         data,
+        delta_t_min,
     )

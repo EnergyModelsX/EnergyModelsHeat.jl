@@ -163,9 +163,12 @@ function EMB.constraints_flow_out(
     𝒯::TimeStructure,
     modeltype::EnergyModel,
 ) where {A}
-    pd = pinch_data(n)
     heat_surplus = only(inputs(n))
     heat_available = only(outputs(n))
+    pd = PinchData(
+        t_supply(heat_surplus), t_return(heat_surplus),
+        FixedProfile(n.delta_t_min),
+        t_supply(heat_available), t_return(heat_available))
 
     # Available heat output is a fraction `ψ` of heat input
     @constraint(m, [t ∈ 𝒯],
@@ -274,12 +277,16 @@ function EnergyModelsBase.constraints_flow_out(
     𝒯::TimeStructure,
     modeltype::EnergyModel,
 ) where {A}
-    pd = pinch_data(n)
     # Only allow two inputs, one heat and one other (power)
     power = only(filter(!isheat, inputs(n)))
     heat_surplus = only(filter(isheat, inputs(n)))
     # Only allow one output, must be heat
     heat_available = only(filter(isheat, outputs(n)))
+
+    pd = PinchData(
+        t_supply(heat_surplus), t_return(heat_surplus),
+        FixedProfile(n.delta_t_min),
+        t_supply(heat_available), t_return(heat_available))
 
     # Available heat output is a fraction of heat input and the upgrade (using extra power)
     for t ∈ 𝒯
