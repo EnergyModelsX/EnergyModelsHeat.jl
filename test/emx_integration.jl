@@ -7,16 +7,23 @@
     const EMH = EnergyModelsHeat
 
     # Define the different resources and their emission intensity in tCO2/MWh
-    power    = ResourceCarrier("Power", 0.0)
-    
-    CO₂      = ResourceEmit("CO₂", 1.0)
-    
-    function generate_data(SH_h=90, SH_c=60, DH_h=60, DH_c=40; equal_mass = true)
-        
-        heat_sur = EnergyModelsHeat.ResourceHeat("surplus_heat", FixedProfile(SH_h), FixedProfile(SH_c))
-        heat_use = EnergyModelsHeat.ResourceHeat("useable_heat", FixedProfile(DH_h), FixedProfile(DH_c))
+    power = ResourceCarrier("Power", 0.0)
+
+    CO₂ = ResourceEmit("CO₂", 1.0)
+
+    function generate_data(SH_h = 90, SH_c = 60, DH_h = 60, DH_c = 40; equal_mass = true)
+        heat_sur = EnergyModelsHeat.ResourceHeat(
+            "surplus_heat",
+            FixedProfile(SH_h),
+            FixedProfile(SH_c),
+        )
+        heat_use = EnergyModelsHeat.ResourceHeat(
+            "useable_heat",
+            FixedProfile(DH_h),
+            FixedProfile(DH_c),
+        )
         products = [power, heat_sur, heat_use, CO₂]
-        
+
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
         operational_periods = SimpleTimes(op_number, op_duration)
@@ -81,21 +88,14 @@
         return (; case, model, nodes, products, T)
     end
 
-    function generate_upgrade_data(t1=60,t2=56,t3=70,t4=50; equal_mass = true)
+    function generate_upgrade_data(t1 = 60, t2 = 56, t3 = 70, t4 = 50; equal_mass = true)
         # Base case
-        case, model, nodes, products, T = TestData.generate_data(t1, t2, t3, t4)
+        case, model, nodes, products, T = TestData.generate_data(t1, t2, t3, t4; equal_mass)
 
         # Assumptions for heat exchange
         A = equal_mass ? EMH.EqualMassFlows : EMH.DifferentMassFlows
         _, heat_sur, heat_use = products
         # Use temperatures that discriminate results for equal/different mass flows
-        # pd = PinchData(
-        #     FixedProfile(60),
-        #     FixedProfile(56),
-        #     FixedProfile(5),
-        #     FixedProfile(70),
-        #     FixedProfile(50),
-        # )
 
         # Define upgrade node
         heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
@@ -155,20 +155,20 @@ end
     surplus = products[2]
     usable = products[3]
     # Verify that test pinch data discriminates between assumptions:
-    # pd = EnergyModelsHeat.pinch_data(nodes[2])
-    # for t ∈ T
-    #     @test EnergyModelsHeat.fraction_different_mass(pd, t) !=
-    #           EnergyModelsHeat.fraction_equal_mass(pd, t)
-    # end
-    # ratio = EnergyModelsHeat.fraction_different_mass(pd, first(T))
+    pd = EnergyModelsHeat.pinch_data(nodes[2])
+    for t ∈ T
+        @test EnergyModelsHeat.fraction_different_mass(pd, t) !=
+              EnergyModelsHeat.fraction_equal_mass(pd, t)
+    end
+    ratio = EnergyModelsHeat.fraction_different_mass(pd, first(T))
 
     # # Test that ratio is calculated as expected
-    # @test ratio ≈ 1
-    # # Test that EMX model gives correct ratio of usable energy for all time periods
-    # for t ∈ T
-    #     @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
-    #           JuMP.value(m[:flow_out][nodes[2], t, usable])
-    # end
+    @test ratio ≈ 1
+    # Test that EMX model gives correct ratio of usable energy for all time periods
+    for t ∈ T
+        @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
+              JuMP.value(m[:flow_out][nodes[2], t, usable])
+    end
 
     # Equal mass flow assumption
     case, model, nodes, products, T = TestData.generate_data(; equal_mass = true)
@@ -177,15 +177,15 @@ end
 
     surplus = products[2]
     usable = products[3]
-    # ratio = EnergyModelsHeat.fraction_equal_mass(pd, first(T))
+    ratio = EnergyModelsHeat.fraction_equal_mass(pd, first(T))
 
     # Test that ratio is calculated as expected
-    # @test ratio ≈ 2 / 3
+    @test ratio ≈ 2 / 3
     # Test that EMX model gives correct ratio of usable energy for all time periods
-    # for t ∈ T
-    #     @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
-    #           JuMP.value(m[:flow_out][nodes[2], t, usable])
-    # end
+    for t ∈ T
+        @test JuMP.value(m[:flow_out][nodes[1], t, surplus]) * ratio ≈
+              JuMP.value(m[:flow_out][nodes[2], t, usable])
+    end
 end
 
 @testitem "Simple Upgrade example" setup = [TestData] begin
@@ -199,6 +199,9 @@ end
     case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
+    @info "inputs:" dump(inputs(nodes[2]))
+    @info "outputs:" dump(outputs(nodes[2]))
+    @info "delta t:" nodes[2].delta_t_min
     m = run_model(case, model, optimizer)
 
     power = products[1]
@@ -207,28 +210,29 @@ end
     upgrade_node = nodes[4]
     surplus_source = nodes[1]
 
-    # pd = EnergyModelsHeat.pinch_data(upgrade_node)
+    pd = EnergyModelsHeat.pinch_data(upgrade_node)
 
     # Check that pd discriminates between equal and different mass flows
-    # for t ∈ T
-    #     @test EnergyModelsHeat.upgrade_different_mass(pd, t) !=
-    #           EnergyModelsHeat.upgrade_equal_mass(pd, t)
-    # end
+    for t ∈ T
+        @test EnergyModelsHeat.upgrade_different_mass(pd, t) !=
+              EnergyModelsHeat.upgrade_equal_mass(pd, t)
+    end
 
     # Test that EMX model gives correct ratio of usable energy for all time periods
-    # for t ∈ T
-    #     # Check that actual power flow matches specified fraction of upgraded output heat flow
-    #     @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
-    #           EnergyModelsHeat.upgrade_different_mass(pd, t) *
-    #           JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
-    #     @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
-    #           JuMP.value(m[:flow_in][upgrade_node, t, power]) +
-    #           EMH.upgradeable_different_mass(pd, t) *
-    #           JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
-    # end
+    for t ∈ T
+        # Check that actual power flow matches specified fraction of upgraded output heat flow
+        @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
+              EnergyModelsHeat.upgrade_different_mass(pd, t) *
+              JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
+        @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
+              JuMP.value(m[:flow_in][upgrade_node, t, power]) +
+              EMH.upgradeable_different_mass(pd, t) *
+              JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
+    end
 
     # Assume equal mass flows
-    case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = true)
+    case, model, nodes, products, T =
+        TestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
     m = run_model(case, model, optimizer)
@@ -237,18 +241,19 @@ end
     usable_heat = products[3]
     upgrade_node = nodes[4]
     surplus_source = nodes[1]
+    surplus_heat = only(outputs(surplus_source))
 
-    # pd = EnergyModelsHeat.pinch_data(upgrade_node)
+    pd = EnergyModelsHeat.pinch_data(upgrade_node)
 
     # Test that EMX model gives correct ratio of usable energy for all time periods
-    # for t ∈ T
-    #     # Check that actual power flow matches specified fraction of upgraded output heat flow
-    #     @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
-    #           EnergyModelsHeat.upgrade_equal_mass(pd, t) *
-    #           JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
-    #     @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
-    #           JuMP.value(m[:flow_in][upgrade_node, t, power]) +
-    #           EMH.upgradeable_equal_mass(pd, t) *
-    #           JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
-    # end
+    for t ∈ T
+        # Check that actual power flow matches specified fraction of upgraded output heat flow
+        @test JuMP.value(m[:flow_in][upgrade_node, t, power]) ≈
+              EnergyModelsHeat.upgrade_equal_mass(pd, t) *
+              JuMP.value(m[:flow_out][upgrade_node, t, usable_heat])
+        @test JuMP.value(m[:flow_out][upgrade_node, t, usable_heat]) ≤
+              JuMP.value(m[:flow_in][upgrade_node, t, power]) +
+              EMH.upgradeable_equal_mass(pd, t) *
+              JuMP.value(m[:flow_in][upgrade_node, t, surplus_heat])
+    end
 end

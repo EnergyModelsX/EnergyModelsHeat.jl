@@ -154,8 +154,15 @@ function upgrade_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_col
     end
 end
 
-pinch_data(n::AbstractHeatExchanger) =
-    only(filter(data -> typeof(data) <: PinchData, node_data(n)))
+function pinch_data(n::AbstractHeatExchanger)
+    heat_surplus = only(filter(isheat, inputs(n)))
+    heat_available = only(outputs(n))
+    pd = PinchData(
+        t_supply(heat_surplus), t_return(heat_surplus),
+        FixedProfile(n.delta_t_min),
+        t_supply(heat_available), t_return(heat_available))
+    return pd
+end
 
 function EMB.constraints_flow_out(
     m,
@@ -165,10 +172,11 @@ function EMB.constraints_flow_out(
 ) where {A}
     heat_surplus = only(inputs(n))
     heat_available = only(outputs(n))
-    pd = PinchData(
-        t_supply(heat_surplus), t_return(heat_surplus),
-        FixedProfile(n.delta_t_min),
-        t_supply(heat_available), t_return(heat_available))
+    # pd = PinchData(
+    #     t_supply(heat_surplus), t_return(heat_surplus),
+    #     FixedProfile(n.delta_t_min),
+    #     t_supply(heat_available), t_return(heat_available))
+    pd = pinch_data(n)
 
     # Available heat output is a fraction `ψ` of heat input
     @constraint(m, [t ∈ 𝒯],
@@ -277,16 +285,12 @@ function EnergyModelsBase.constraints_flow_out(
     𝒯::TimeStructure,
     modeltype::EnergyModel,
 ) where {A}
+    pd = pinch_data(n)
     # Only allow two inputs, one heat and one other (power)
     power = only(filter(!isheat, inputs(n)))
     heat_surplus = only(filter(isheat, inputs(n)))
     # Only allow one output, must be heat
     heat_available = only(filter(isheat, outputs(n)))
-
-    pd = PinchData(
-        t_supply(heat_surplus), t_return(heat_surplus),
-        FixedProfile(n.delta_t_min),
-        t_supply(heat_available), t_return(heat_available))
 
     # Available heat output is a fraction of heat input and the upgrade (using extra power)
     for t ∈ 𝒯
