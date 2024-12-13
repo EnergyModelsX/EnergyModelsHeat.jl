@@ -20,6 +20,7 @@ include(joinpath("structures", "link.jl"))
 
 include("model.jl")
 include("constraint_functions.jl")
+include("utils.jl")
 
 # Custom input validation
 include("checks.jl")
