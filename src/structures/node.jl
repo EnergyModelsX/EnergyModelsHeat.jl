@@ -140,6 +140,10 @@ abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
 A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
 energy that can be used in the District Heating network.
 
+The default heat exchanger assumes that mass flows can be different to optimize heat transfer. This
+is encoded by the type parameter `HeatExchangerAssumptions`. The default value is `DifferentMassFlows`,
+the alternative is to specify `EqualMassFlows` to limit heat exchange to equal mass flow in the two circuits.
+
 # Fields
 - **`id`** is the name/identifier of the node.
 - **`cap::TimeProfile`** is the installed capacity.
@@ -149,8 +153,9 @@ energy that can be used in the District Heating network.
 - **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
 - **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
 `data` is conditional through usage of a constructor.
+- **`delta_t_min`** is the ΔT_min for the heat exchanger
 """
-struct HeatExchanger{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
+struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -158,23 +163,42 @@ struct HeatExchanger{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
+    delta_t_min::T
 end
 # Default to different mass flows assumptions for heat exchanger
-HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data) =
-    HeatExchanger{DifferentMassFlows}(id, cap, opex_var, opex_fixed, input, output, data)
+HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
+    HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
+        id,
+        cap,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        data,
+        delta_t_min,
+    )
 """
     PinchData{T}
 
 Data for fixed temperature intervals used to calculate available energy from surplus energy source
 operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating
 network operating at `T_DH_hot` and `T_DH_cold`.
+
+This struct is used internally, and it is calculated from the supply and return temperatures of the `ResourceHeat` going
+    in and out of the `AbstractHeatExchanger`.
 """
-struct PinchData{TP<:TimeProfile} <: EnergyModelsBase.Data
-    T_SH_hot::TP
-    T_SH_cold::TP
-    ΔT_min::TP
-    T_DH_hot::TP
-    T_DH_cold::TP
+struct PinchData{
+    TP1<:TimeProfile,
+    TP2<:TimeProfile,
+    TP3<:TimeProfile,
+    TP4<:TimeProfile,
+    TP5<:TimeProfile,
+} <: EnergyModelsBase.Data
+    T_SH_hot::TP1
+    T_SH_cold::TP2
+    ΔT_min::TP3
+    T_DH_hot::TP4
+    T_DH_cold::TP5
 end
 
 """
@@ -279,6 +303,10 @@ heat_loss_factor(n::ThermalEnergyStorage) = n.heat_loss_factor
 A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to "available"
 energy that can be used in the District Heating network.
 
+The default `DirectHeatUpgrade` heat exchanger assumes that mass flows can be different to optimize heat transfer. This
+is encoded by the type parameter `HeatExchangerAssumptions`. The default value is `DifferentMassFlows`,
+the alternative is to specify `EqualMassFlows` to limit heat exchange to equal mass flow in the two circuits.
+
 # Fields
 - **`id`** is the name/identifier of the node.
 - **`cap::TimeProfile`** is the installed capacity.
@@ -289,8 +317,9 @@ Valid inputs are: one `Heat` resource and one power resource.
 - **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`. \
 Valid output is a single `Heat` resource
 - **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
+- **`delta_t_min`** is the ΔT_min for the heat exchanger.
 """
-struct DirectHeatUpgrade{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
+struct DirectHeatUpgrade{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -298,10 +327,11 @@ struct DirectHeatUpgrade{A<:HeatExchangerAssumptions} <: AbstractHeatExchanger
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
     data::Vector{Data}
+    delta_t_min::T
 end
 # Default to different mass flows assumptions for heat exchange
-DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
-    DirectHeatUpgrade{DifferentMassFlows}(
+DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
+    DirectHeatUpgrade{DifferentMassFlows,typeof(delta_t_min)}(
         id,
         cap,
         opex_var,
@@ -309,4 +339,5 @@ DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data) =
         input,
         output,
         data,
+        delta_t_min,
     )

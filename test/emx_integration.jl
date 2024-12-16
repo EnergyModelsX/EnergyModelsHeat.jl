@@ -7,21 +7,22 @@
     const EMH = EnergyModelsHeat
 
     # Define the different resources and their emission intensity in tCO2/MWh
-    power    = ResourceCarrier("Power", 0.0)
-    heat_sur = EnergyModelsHeat.Heat("surplus_heat", 80, 60)
-    heat_use = EnergyModelsHeat.Heat("useable_heat", 80, 40)
+    power = ResourceCarrier("Power", 0.0)
 
-    CO₂      = ResourceEmit("CO₂", 1.0)
-    products = [power, heat_sur, heat_use, CO₂]
+    CO₂ = ResourceEmit("CO₂", 1.0)
 
-    function generate_data(; equal_mass = true)
-        pd = PinchData(
-            FixedProfile(90),
-            FixedProfile(60),
-            FixedProfile(8),
-            FixedProfile(60),
-            FixedProfile(40),
+    function generate_data(SH_h = 90, SH_c = 60, DH_h = 60, DH_c = 40; equal_mass = true)
+        heat_sur = EnergyModelsHeat.ResourceHeat(
+            "surplus_heat",
+            FixedProfile(SH_h),
+            FixedProfile(SH_c),
         )
+        heat_use = EnergyModelsHeat.ResourceHeat(
+            "useable_heat",
+            FixedProfile(DH_h),
+            FixedProfile(DH_c),
+        )
+        products = [power, heat_sur, heat_use, CO₂]
 
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
@@ -52,14 +53,15 @@
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
                 Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
             ),
-            HeatExchanger{A}(
+            HeatExchanger{A,Int}(
                 "heat exchanger",
                 FixedProfile(1.0),
                 FixedProfile(0),
                 FixedProfile(0),
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
-                [pd],
+                Data[],
+                8, # delta_t_min
             ),
             RefSink(
                 "heat demand",              # Node id
@@ -86,31 +88,25 @@
         return (; case, model, nodes, products, T)
     end
 
-    function generate_upgrade_data(; equal_mass = true)
+    function generate_upgrade_data(t1 = 60, t2 = 56, t3 = 70, t4 = 50; equal_mass = true)
         # Base case
-        case, model, nodes, products, T = TestData.generate_data()
+        case, model, nodes, products, T = TestData.generate_data(t1, t2, t3, t4; equal_mass)
 
         # Assumptions for heat exchange
         A = equal_mass ? EMH.EqualMassFlows : EMH.DifferentMassFlows
-
+        _, heat_sur, heat_use = products
         # Use temperatures that discriminate results for equal/different mass flows
-        pd = PinchData(
-            FixedProfile(60),
-            FixedProfile(56),
-            FixedProfile(5),
-            FixedProfile(70),
-            FixedProfile(50),
-        )
 
         # Define upgrade node
-        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
+        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A,Int}(
             "heat upgrade",
             FixedProfile(1.0),
             FixedProfile(0),
             FixedProfile(0),
             Dict(heat_sur => 1, power => 1),
             Dict(heat_use => 1),
-            [pd],
+            Data[],
+            5, # delta_t_min
         )
         power_source = RefSource(
             "power source",             # Node id
@@ -149,6 +145,7 @@ end
     using HiGHS
     using EnergyModelsBase
     using EnergyModelsHeat
+    using TimeStruct
 
     # Different mass flow assumption
     case, model, nodes, products, T = TestData.generate_data(; equal_mass = false)
@@ -165,7 +162,7 @@ end
     end
     ratio = EnergyModelsHeat.fraction_different_mass(pd, first(T))
 
-    # Test that ratio is calculated as expected
+    # # Test that ratio is calculated as expected
     @test ratio ≈ 1
     # Test that EMX model gives correct ratio of usable energy for all time periods
     for t ∈ T
@@ -196,11 +193,15 @@ end
     using HiGHS
     using EnergyModelsBase
     using EnergyModelsHeat
+    using TimeStruct
     const EMH = EnergyModelsHeat
     # Allow different mass flows
     case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
+    @info "inputs:" dump(inputs(nodes[2]))
+    @info "outputs:" dump(outputs(nodes[2]))
+    @info "delta t:" nodes[2].delta_t_min
     m = run_model(case, model, optimizer)
 
     power = products[1]
@@ -230,7 +231,8 @@ end
     end
 
     # Assume equal mass flows
-    case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = true)
+    case, model, nodes, products, T =
+        TestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
     m = run_model(case, model, optimizer)
@@ -239,6 +241,7 @@ end
     usable_heat = products[3]
     upgrade_node = nodes[4]
     surplus_source = nodes[1]
+    surplus_heat = only(outputs(surplus_source))
 
     pd = EnergyModelsHeat.pinch_data(upgrade_node)
 

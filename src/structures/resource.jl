@@ -5,26 +5,44 @@ A resource for heat.
 
 # Fields
 - **`id`** is the name/identifyer of the resource.
-- **`co2_int::T`** is the CO₂ intensity, *e.g.*, t/MWh.
-- **`t_supply::Float64`** is the supply temperature in °C.
-- **`t_return::Float64`** is the return temperature in °C.
+- **`t_supply`** is the supply temperature in °C as a `TimeProfile`. Providing a single number will be translated to a `FixedProfile`.
+- **`t_return`** is the return temperature in °C as a `TimeProfile`. Providing a single number will be translated to a `FixedProfile`.
 """
-struct ResourceHeat{T<:Real} <: Resource
-    id::Any
-    co2_int::T
-    t_supply::Float64
-    t_return::Float64
+struct ResourceHeat{IDT,TS<:TimeProfile,TR<:TimeProfile} <: EnergyModelsBase.Resource
+    id::IDT
+    t_supply::TS
+    t_return::TR
 end
+ResourceHeat(id, t_supply::Real, t_return::Real) =
+    ResourceHeat(id, FixedProfile(t_supply), FixedProfile(t_return))
+"""
+    t_supply(rh::ResourceHeat)
+    t_supply(rh::ResourceHeat, t)
+
+Return the supply temperature defined for a `ResourceHeat`.
+"""
+t_supply(rh::ResourceHeat) = rh.t_supply
+t_supply(rh::ResourceHeat, t) = rh.t_supply[t]
+"""
+    t_return(rh::ResourceHeat)
+    t_return(rh::ResourceHeat, t)
+
+Return the return temperature defined for a `ResourceHeat`
+"""
+t_return(rh::ResourceHeat) = rh.t_return
+t_return(rh::ResourceHeat, t) = rh.t_return[t]
 
 """
-TO DO: Reconcile with ResourceHeat (above)
+    isheat(r) 
+
+Returns true for heat resources, false otherwise. Extend this by dispatching on the type for any alternative heat resource type implemented.
 """
-struct Heat{T} <: EnergyModelsBase.Resource
-    id::Any
-    T_supply::T
-    T_return::T
-    co2_int::T
-end
-Heat(id, T_supply, T_return) = Heat(id, T_supply, T_return, zero(T_return))
 isheat(r) = false
-isheat(r::Heat) = true
+isheat(r::ResourceHeat) = true
+
+"""
+    co2_int(::ResourceHeat)
+
+Returns 0.0 for all `ResourceHeat`.
+"""
+EnergyModelsBase.co2_int(::ResourceHeat) = 0.0

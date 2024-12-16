@@ -20,7 +20,7 @@ struct DHPipe <: EMB.Link
     to::EMB.Node
     length::Float64
     pipelossfactor::Float64
-    t_ground::Float64
+    t_ground::TimeProfile
     resource_heat::ResourceHeat
     formulation::EMB.Formulation
     data::Vector{EMB.Data}
@@ -32,7 +32,7 @@ DHPipe(
     to::EMB.Node,
     length::Float64,
     pipelossfactor::Float64,
-    t_ground::Float64,
+    t_ground::TimeProfile,
     resource_heat::ResourceHeat,
 ) = DHPipe(id, from, to, length, pipelossfactor, t_ground, resource_heat, Linear(), Data[])
 
@@ -56,7 +56,7 @@ pipelossfactor(l::DHPipe) = l.pipelossfactor
 Returns the ground temperature for disctrict heating `l`.
 """
 t_ground(l::DHPipe) = l.t_ground
-
+t_ground(l::DHPipe, t) = l.t_ground[t]
 """
     resource_heat(l::DHPipe)
 
@@ -69,7 +69,8 @@ resource_heat(l::DHPipe) = l.resource_heat
 
 Returns the supply temperature of the transported `ResourceHeat`.
 """
-t_supply(l::DHPipe) = resource_heat(l).t_supply
+t_supply(l::DHPipe) = t_supply(resource_heat(l))
+t_supply(l::DHPipe, t) = t_supply(resource_heat(l), t)
 
 """
     link_res(l::DHPipe)

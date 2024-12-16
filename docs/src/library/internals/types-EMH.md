@@ -29,10 +29,3 @@ Pages = ["types.md"]
 
 ```@docs
 ```
-
-!!! todo "Changes"
-    To be removed:
-
-```@docs
-EnergyModelsHeat.Heat
-```
