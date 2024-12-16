@@ -33,13 +33,7 @@ end
 # - check_node(n::HeatPump, 𝒯, modeltype::EnergyModel)
 @testitem "HeatPump" begin
     using EnergyModelsBase
-    using EnergyModelsHeat
-    using HiGHS
-    using JuMP
-    using Test
     using TimeStruct
-    import Interpolations
-
     const EMB = EnergyModelsBase
 
     # Set the global to true to suppress the error message
@@ -149,12 +143,7 @@ end
 # - check_node(n::ThermalEnergyStorage, 𝒯, modeltype::EnergyModel)
 @testitem "ThermalEnergyStorage" begin
     using EnergyModelsBase
-    using EnergyModelsHeat
-    using HiGHS
-    using JuMP
-    using Test
     using TimeStruct
-    import Interpolations
 
     const EMB = EnergyModelsBase
 

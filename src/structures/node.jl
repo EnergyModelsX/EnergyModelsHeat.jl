@@ -119,6 +119,7 @@ driving_force_resource(n::HeatPump) = n.driving_force
 
 """
     inputs(n::HeatPump)
+    inputs(n::HeatPump, p::Resource)
 
 Returns the input resources of a HeatPump `n`, specified *via* the fields `heat_in_resource`
 and `driving_force_resource`.

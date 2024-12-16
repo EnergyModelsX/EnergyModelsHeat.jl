@@ -1,9 +1,8 @@
-@testitem "TEStest" begin
+@testitem "Heat - ThermalEnergyStorage" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
     using TimeStruct
-    using EnergyModelsHeat
 
     const EMH = EnergyModelsHeat
 

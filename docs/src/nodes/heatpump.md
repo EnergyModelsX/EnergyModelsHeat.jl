@@ -85,7 +85,7 @@ The [`HeatPump`](@ref) is a subtype of the [`NetworkNode`](@extref EnergyModelsB
   The driving force resource provides the energy for transfering the heat from the lower temperature (given by `t_source`) to the higher temperature (given by `t_sink`).
   The driving force is in general electricity.
 
-### [Mathematical description](@id nodes-HeatPump-math)
+## [Mathematical description](@id nodes-HeatPump-math)
 
 In the following mathematical equations, we use the name for variables and functions used in the model.
 Variables are in general represented as
@@ -98,7 +98,7 @@ with square brackets, while functions are represented as
 
 with paranthesis.
 
-#### [Variables](@id nodes-HeatPump-math-var)
+### [Variables](@id nodes-HeatPump-math-var)
 
 The [`HeatPump`](@ref) node uses standard `NetworkNode` variables, as described on the page *[Optimization variables](@extref EnergyModelsBase man-opt_var)*.
 The variables include:
@@ -110,13 +110,13 @@ The variables include:
 - [``\texttt{flow\_in}``](@extref EnergyModelsBase man-opt_var-flow)
 - [``\texttt{flow\_out}``](@extref EnergyModelsBase man-opt_var-flow)
 
-#### [Constraints](@id nodes-HeatPump-math-con)
+### [Constraints](@id nodes-HeatPump-math-con)
 
 The following sections omit the direct inclusion of the vector of heat pump nodes.
 Instead, it is implicitly assumed that the constraints are valid ``\forall n ∈ N^{HeatPump}`` for all [`HeatPump`](@ref) types if not stated differently.
 In addition, all constraints are valid ``\forall t \in T`` (that is in all operational periods) or ``\forall t_{inv} \in T^{Inv}`` (that is in all strategic periods).
 
-##### [Standard constraints](@id nodes-HeatPump-math-con-stand)
+#### [Standard constraints](@id nodes-HeatPump-math-con-stand)
 
 Heat pump nodes utilize in general the standard constraints described on *[Constraint functions](@extref EnergyModelsBase man-con)* for `NetworkNode`s.
 These standard constraints are:
@@ -198,6 +198,6 @@ The input for the ``p_{df} = driving\_force\_resource(n)``
 \end{aligned}
 ```
 
-##### [Additional constraints](@id nodes-HeatPump-math-con-add)
+#### [Additional constraints](@id nodes-HeatPump-math-con-add)
 
 [`HeatPump`](@ref) nodes do not add additional constraint functions or constraints in the `create_node` function.

@@ -1,9 +1,8 @@
-@testitem "HPtest" begin
+@testitem "Heat - HeatPump" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
     using TimeStruct
-    using EnergyModelsHeat
 
     const EMH = EnergyModelsHeat
 
