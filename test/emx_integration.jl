@@ -53,7 +53,7 @@
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
                 Dict(heat_sur => 1),        # Output from the Node, in this gase, heat_sur
             ),
-            HeatExchanger{A}(
+            HeatExchanger{A, Int}(
                 "heat exchanger",
                 FixedProfile(1.0),
                 FixedProfile(0),
@@ -98,7 +98,7 @@
         # Use temperatures that discriminate results for equal/different mass flows
 
         # Define upgrade node
-        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A}(
+        heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A, Int}(
             "heat upgrade",
             FixedProfile(1.0),
             FixedProfile(0),

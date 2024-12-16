@@ -44,6 +44,13 @@ function constraints_COP_Power(m, n::HeatPump, 𝒯::TimeStructure, modeltype::E
     )
 end
 
+"""
+    constraints_flow_in(m, n::DirectHeatUpgrade, 𝒯::TimeStructure, modeltype::EnergyModel)
+   
+Create the constraints for flow in to [`DirectHeatUpgrade`](@ref). The constraint is only for power as the proportion of the inputs
+    depends on the need for upgrade computed from the temperatures of the input/output [`ResourceHeat`](@ref) and the ΔT_min, and the
+    capacity is linked to the power consumption.
+"""
 function EnergyModelsBase.constraints_flow_in(
     m,
     n::DirectHeatUpgrade,
@@ -59,12 +66,19 @@ function EnergyModelsBase.constraints_flow_in(
     )
 end
 
+"""
+    EMB.constraints_flow_out(m, n::HeatExchanger{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel)
+
+Create the constraints for the flow out from a [`HeatExchanger`](@ref). The flow of available heat energy is calculated
+    from the temperatures in the heat flows using the function [`dh_fraction`](@ref).
+
+"""
 function EMB.constraints_flow_out(
     m,
-    n::HeatExchanger{A},
+    n::HeatExchanger{A,T},
     𝒯::TimeStructure,
     modeltype::EnergyModel,
-) where {A}
+) where {A,T}
     heat_surplus = only(inputs(n))
     heat_available = only(outputs(n))
     pd = pinch_data(n)
@@ -76,12 +90,20 @@ function EMB.constraints_flow_out(
     )
 end
 
+"""
+    constraints_flow_out(m, n::DirectHeatUpgrade{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel) where {A,T}
+
+Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref). The flow of available heat energy is calculated
+    from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to 
+    the  required temperature is calculated by the function [`dh_upgrade`](@ref). Note that the node may dump some of the ingoing heat
+    energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
+"""
 function EnergyModelsBase.constraints_flow_out(
     m,
-    n::DirectHeatUpgrade{A},
+    n::DirectHeatUpgrade{A,T},
     𝒯::TimeStructure,
     modeltype::EnergyModel,
-) where {A}
+) where {A,T}
     pd = pinch_data(n)
     # Only allow two inputs, one heat and one other (power)
     power = only(filter(!isheat, inputs(n)))
