@@ -13,6 +13,11 @@ Pages = ["methods-EMH.md"]
 ## [Utility methods](@id lib-int-met-util)
 
 ```@docs
+EnergyModelsHeat.dh_fraction
+EnergyModelsHeat.dh_upgrade
 EnergyModelsHeat.fraction_equal_mass
+EnergyModelsHeat.isheat
+EnergyModelsHeat.t_return
 EnergyModelsHeat.upgrade_equal_mass
+EnergyModelsHeat.upgradeable_fraction
 ```

@@ -10,16 +10,27 @@ fraction_equal_mass(pd::PinchData, t) = fraction_equal_mass(
     pd.T_DH_hot[t],
     pd.T_DH_cold[t],
 )
-
-# Dispatch on HeatExchangerAssumptions when calculating d_fraction
+"""
+    dh_fraction
+Return fraction of surpus heat that can be used for district heating.
+Dispatch on HeatExchangerAssumptions when calculating d_fraction
+"""
 dh_fraction(::Type{EqualMassFlows}, T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold) =
     fraction_equal_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
 dh_fraction(::Type{DifferentMassFlows}, T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold) =
     fraction_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_cold)
 dh_fraction(::Type{EqualMassFlows}, pd, t) = fraction_equal_mass(pd, t)
 dh_fraction(::Type{DifferentMassFlows}, pd, t) = fraction_different_mass(pd, t)
+"""
+    dh_upgrade
+Return needed power to upgrade to outflow of useable (for district heating) heat
+"""
 dh_upgrade(::Type{EqualMassFlows}, pd, t) = upgrade_equal_mass(pd, t)
 dh_upgrade(::Type{DifferentMassFlows}, pd, t) = upgrade_different_mass(pd, t)
+"""
+    upgradeable_fraction
+Return fraction of surplus heat that can be upgraded    
+"""
 upgradeable_fraction(::Type{EqualMassFlows}, pd, t) = upgradeable_equal_mass(pd, t)
 upgradeable_fraction(::Type{DifferentMassFlows}, pd, t) = upgradeable_different_mass(pd, t)
 
