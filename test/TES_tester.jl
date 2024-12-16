@@ -57,7 +57,7 @@
             ),
             RefSink(
                 "heat demand",              # Node id
-                OperationalProfile([0.1, 0.5, 0.5, 0.8]), # Demand in MW
+                OperationalProfile([0.1, 0.1, 0.2, 0.8]), # Demand in MW
                 Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
                 # Line above: Surplus and deficit penalty for the node in EUR/MWh
                 Dict(heat_use => 1),           # Energy demand and corresponding ratio
@@ -88,7 +88,7 @@
     heat_use = products[3]
 
     # Test that the expected heat loss ratio is calculated
-    heatloss = nodes[3].heatlossfactor
+    heatloss = EMH.heat_loss_factor(nodes[3])
 
     heat_input = sum(JuMP.value(m[:flow_in][nodes[3], t, heat_use]) for t ∈ T) * op_duration
     heat_output =
@@ -96,7 +96,9 @@
     heat_stored = sum(JuMP.value(m[:stor_level][nodes[3], t]) for t ∈ T)
 
     # Check that the heat delivered matches the expected ratio of heat stored
-    calculated_heatlosses = heat_stored * heatloss
+    calculated_heatlosses = heat_stored * heatloss * op_duration
     real_heatlosses = heat_input - heat_output
     @test real_heatlosses ≈ calculated_heatlosses atol = 0.01
+    @test real_heatlosses ≈ 1.3333 atol = 0.01
+    @test heat_stored ≈ 3.3333 atol = 0.01
 end

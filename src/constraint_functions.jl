@@ -1,24 +1,28 @@
 """
-    constraints_cap_bound(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+    constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the minimum capacity utilization of a [`HeatPump`](@ref).
 """
-function constraints_cap_bound(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+function EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     #Part Load Constraint
     @constraint(m, [t ∈ 𝒯],
         m[:cap_use][n, t] >= (m[:cap_inst][n, t] * cap_lower_bound(n))
     )
+
+    @constraint(m, [t ∈ 𝒯], m[:cap_use][n, t] <= m[:cap_inst][n, t])
+
+    constraints_capacity_installed(m, n, 𝒯, modeltype)
 end
 
 """
-    constraints_COP_Heat(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+    constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the heat input of a [`HeatPump`](@ref).
+Function for creating the constraint on the heat and electricity input of a [`HeatPump`](@ref).
 """
-function constraints_COP_Heat(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+function EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Constraint for the COP - Heat
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, heat_input_resource(n)] ==
+        m[:flow_in][n, t, heat_in_resource(n)] ==
         (
             m[:cap_use][n, t] * (
                 1 - (
@@ -28,17 +32,10 @@ function constraints_COP_Heat(m, n::HeatPump, 𝒯::TimeStructure, modeltype::En
             )
         )
     )
-end
 
-"""
-    constraints_COP_Power(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
-
-Function for creating the constraint on the power input of a [`HeatPump`](@ref).
-"""
-function constraints_COP_Power(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Constraint for the COP - Electricity
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, drivingforce_resource(n)] ==
+        m[:flow_in][n, t, driving_force_resource(n)] ==
         (m[:cap_use][n, t] * (t_sink(n, t) - t_source(n, t))) /
         (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
     )
@@ -169,7 +166,7 @@ function EMB.constraints_level_iterate(
         @constraint(m,
             m[:stor_level][n, t] ==
             prev_level + m[:stor_level_Δ_op][n, t] * duration(t) -
-            prev_level * heatlossfactor(n)
+            prev_level * heat_loss_factor(n) * duration(t)
         )
 
         # Constraint for avoiding starting below 0 if the previous operational level is
