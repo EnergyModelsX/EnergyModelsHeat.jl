@@ -10,11 +10,11 @@ Check if a `DirectHeatUpgrade` node has reasonable values for the return/supply 
     error if the upgrade is ≥ 1 (should only happen with data errors).
 """
 function EMB.check_node(
-    n::DirectHeatUpgrade{A, T},
+    n::DirectHeatUpgrade{A,T},
     𝒯,
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
-) where {A, T}
+) where {A,T}
     if check_timeprofiles
         pd = EMH.pinch_data(n)
         @assert_or_log(

@@ -155,7 +155,7 @@ the alternative is to specify `EqualMassFlows` to limit heat exchange to equal m
 `data` is conditional through usage of a constructor.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger
 """
-struct HeatExchanger{A<:HeatExchangerAssumptions, T<:Real} <: AbstractHeatExchanger
+struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -167,7 +167,7 @@ struct HeatExchanger{A<:HeatExchangerAssumptions, T<:Real} <: AbstractHeatExchan
 end
 # Default to different mass flows assumptions for heat exchanger
 HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
-    HeatExchanger{DifferentMassFlows, typeof(delta_t_min)}(
+    HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
         id,
         cap,
         opex_var,
@@ -319,7 +319,7 @@ Valid output is a single `Heat` resource
 - **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger.
 """
-struct DirectHeatUpgrade{A<:HeatExchangerAssumptions, T<:Real} <: AbstractHeatExchanger
+struct DirectHeatUpgrade{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
     id::Any
     cap::TimeProfile
     opex_var::TimeProfile
@@ -331,7 +331,7 @@ struct DirectHeatUpgrade{A<:HeatExchangerAssumptions, T<:Real} <: AbstractHeatEx
 end
 # Default to different mass flows assumptions for heat exchange
 DirectHeatUpgrade(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
-    DirectHeatUpgrade{DifferentMassFlows, typeof(delta_t_min)}(
+    DirectHeatUpgrade{DifferentMassFlows,typeof(delta_t_min)}(
         id,
         cap,
         opex_var,

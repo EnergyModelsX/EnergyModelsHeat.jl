@@ -9,7 +9,7 @@
     power, heat_sur, heat_use, CO₂ = products
 
     for A ∈ (EnergyModelsHeat.EqualMassFlows, EnergyModelsHeat.DifferentMassFlows)
-        nonsensical_heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A, Int}(
+        nonsensical_heat_upgrade = EnergyModelsHeat.DirectHeatUpgrade{A,Int}(
             "heat upgrade",
             FixedProfile(1.0),
             FixedProfile(0),
