@@ -6,10 +6,11 @@
 EnergyModelsHeat
 ```
 
+
 ## [`Resource` types](@id lib-pub-res-types)
 
 ```@docs
-ResourceHeat
+EnergyModelsHeat.ResourceHeat
 ```
 
 ## [`Link` types](@id lib-pub-links-types)

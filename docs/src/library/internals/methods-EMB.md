@@ -10,6 +10,7 @@ Pages = ["methods-EMB.md"]
 
 ```@docs
 EnergyModelsBase.create_link
+EnergyModelsBase.variables_link
 ```
 
 ## [Constraint methods](@id lib-int-met_emb-con)
@@ -26,5 +27,13 @@ EnergyModelsBase.check_node
 
 ```@docs
 EnergyModelsBase.co2_int
+EnergyModelsBase.capacity
 EnergyModelsBase.inputs
+EnergyModelsBase.outputs
+```
+
+## [Identification methods](@id lib-int-met_emb-identi)
+
+```@docs
+EnergyModelsBase.has_capacity
 ```

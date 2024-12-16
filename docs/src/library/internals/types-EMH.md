@@ -1,4 +1,3 @@
-
 # [Types](@id lib-int-types)
 
 ## [Index](@id lib-int-types-idx)

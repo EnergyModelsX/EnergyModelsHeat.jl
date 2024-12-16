@@ -3,18 +3,15 @@
     using HiGHS
     using JuMP
     using TimeStruct
-    using EnergyModelsHeat
-    #using PrettyTables
 
     const EMH = EnergyModelsHeat
 
     function generate_data()
 
-        # Define the different resources and their emission intensity in tCO2/MWh
-        dh_heat_in = ResourceHeat("DHheat", FixedProfile(70.0), FixedProfile(30.0))
-        dh_heat_out = ResourceHeat("DHheat", FixedProfile(70.0), FixedProfile(30.0))
+        # Define the different resources
+        dh_res = ResourceHeat("DHheat", FixedProfile(70.0), FixedProfile(30.0))
         CO₂ = ResourceEmit("CO₂", 0.0)
-        products = [dh_heat_in, dh_heat_out]
+        products = [dh_res, CO₂]
 
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
@@ -30,37 +27,37 @@
             CO₂,                            # CO₂ instance
         )
 
-        # Create the individual test nodes for a system with 
-        # 1) a heat surplus source
-        # 2) a heat conversion from surplus to usable heat
-        # 3) a heat sink representing the district heating demand
+        # Create the individual test nodes for a system with
+        # 1) a heat source
+        # 2) a heat sink representing the district heating demand
         nodes = [
             RefSource(
-                "heat source",      # Node id
+                "heat source",              # Node id
                 FixedProfile(0.85),         # Capacity in MW
-                FixedProfile(0),            # Variable OPEX in EUR/MW
+                FixedProfile(10),            # Variable OPEX in EUR/MW
                 FixedProfile(0),            # Fixed OPEX in EUR/8h
-                Dict(dh_heat_in => 1),        # Output from the Node, in this gase, dh_heat
+                Dict(dh_res => 1),          # Output from the Node, in this gase, dh_heat
             ),
             RefSink(
                 "heat demand",              # Node id
-                OperationalProfile([0.2, 0.3, 0.4, 0.3]), # Demand in MW
+                OperationalProfile([0.2, 0.8, 0.4, 0.3]), # Demand in MW
                 Dict(:surplus => FixedProfile(0), :deficit => FixedProfile(1e6)),
                 # Line above: Surplus and deficit penalty for the node in EUR/MWh
-                Dict(dh_heat_out => 1),           # Input to the Node, in this gase, dh_heat
+                Dict(dh_res => 1),           # Input to the Node, in this gase, dh_heat
             ),
         ]
 
         # Connect all nodes with the availability node for the overall energy/mass balance
         links = [
-            EMH.DHPipe(
-                "DH pipe 1",
+            DHPipe(
+                "DH pipe",
                 nodes[1],
                 nodes[2],
+                FixedProfile(0.8),
                 1000.0,
                 0.25 * 10^(-6),
                 FixedProfile(10.0),
-                dh_heat_in,
+                dh_res,
             ),
         ]
 
@@ -71,23 +68,89 @@
             :products => products,
             :T => T,
         )
-        return (; case, model, nodes, products, T)
+        return (; case, model)
     end
-    case, model, nodes, products, T = generate_data()
+    case, model = generate_data()
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
-    dh_heat_in = products[1]
-    dh_heat_out = products[2]
+    # Extract the individual nodes
+    𝒩 = case[:nodes]
+    ℒ = case[:links]
+    𝒫 = case[:products]
+    𝒯 = case[:T]
+    src = 𝒩[1]
+    snk = 𝒩[2]
+    pipe = ℒ[1]
+    dh_res = 𝒫[1]
 
-    total_heat_in = sum(JuMP.value(m[:flow_out][nodes[1], t, dh_heat_in]) for t ∈ T)
-    total_heat_out = sum(JuMP.value(m[:flow_in][nodes[2], t, dh_heat_out]) for t ∈ T)
+    # Test that the heat loss is accurately calculated
+    @test all(
+        value.(m[:flow_in][snk, t, dh_res]) ≈
+            value.(m[:flow_out][src, t, dh_res]) - value.(m[:dh_pipe_loss][pipe, t])
+    for t ∈ 𝒯)
+    @test all(
+        value.(m[:dh_pipe_loss][pipe, t]) ≈
+            EMH.pipe_length(pipe) * EMH.pipe_loss_factor(pipe) *
+            (EMH.t_supply(pipe, t) - EMH.t_ground(pipe, t))
+    for t ∈ 𝒯)
+    @test all(
+        value.(m[:dh_pipe_loss][pipe, t]) ≈ 0.015
+    for t ∈ 𝒯)
 
+    # Test that the capacity constraint is hold in all periods
+    @test all(value.(m[:link_in][pipe, t, dh_res]) ≤ 0.8+10^-6 for t ∈ 𝒯)
+
+    # Test that we have exactly two deficits due to the limited capacity, given by the loss
+    # in the pipeline
+    @test sum(value.(m[:sink_deficit][snk, t]) ≈ 0.015 for t ∈ 𝒯) == 2
+
+    # Test that the total loss is correct
+    total_heat_in = sum(JuMP.value(m[:flow_out][src, t, dh_res]) for t ∈ 𝒯)
+    total_heat_out = sum(JuMP.value(m[:flow_in][snk, t, dh_res]) for t ∈ 𝒯)
     heat_loss = total_heat_in - total_heat_out
+    rel_heat_loss = heat_loss / total_heat_in
+    rel_heat_loss_assumed = 0.0344
+    @test rel_heat_loss_assumed ≈ rel_heat_loss rtol = 0.01
 
-    heat_loss_assumed = 0.01
-
-    calculated_loss = heat_loss / total_heat_in
-
-    @test heat_loss_assumed ≈ calculated_loss rtol = 0.5
+    # Test that the individual constructors are working
+    pipe_data = DHPipe(
+        "DH pipe",
+        src,
+        snk,
+        FixedProfile(0.8),
+        1000.0,
+        0.25 * 10^(-6),
+        FixedProfile(10.0),
+        dh_res,
+        Data[],
+    )
+    pipe_form = DHPipe(
+        "DH pipe",
+        src,
+        snk,
+        FixedProfile(0.8),
+        1000.0,
+        0.25 * 10^(-6),
+        FixedProfile(10.0),
+        dh_res,
+        Linear(),
+    )
+    pipe_all = DHPipe(
+        "DH pipe",
+        src,
+        snk,
+        FixedProfile(0.8),
+        1000.0,
+        0.25 * 10^(-6),
+        FixedProfile(10.0),
+        dh_res,
+        Linear(),
+        Data[],
+    )
+    for field ∈ fieldnames(DHPipe)
+        @test getproperty(pipe, field) == getproperty(pipe_data, field)
+        @test getproperty(pipe, field) == getproperty(pipe_form, field)
+        @test getproperty(pipe, field) == getproperty(pipe_all, field)
+    end
 end

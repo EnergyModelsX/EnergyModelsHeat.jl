@@ -43,7 +43,7 @@ end
 
 """
     constraints_flow_in(m, n::DirectHeatUpgrade, 𝒯::TimeStructure, modeltype::EnergyModel)
-   
+
 Create the constraints for flow in to [`DirectHeatUpgrade`](@ref). The constraint is only for power as the proportion of the inputs
     depends on the need for upgrade computed from the temperatures of the input/output [`ResourceHeat`](@ref) and the ΔT_min, and the
     capacity is linked to the power consumption.
@@ -55,7 +55,7 @@ function EnergyModelsBase.constraints_flow_in(
     modeltype::EnergyModel,
 )
     # Define capacity by power in
-    power = only(filter(!isheat, inputs(n)))
+    power = only(filter(!is_heat, inputs(n)))
 
     # Constraint for the individual input stream connections
     @constraint(m, [t ∈ 𝒯],
@@ -91,7 +91,7 @@ end
     constraints_flow_out(m, n::DirectHeatUpgrade{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel) where {A,T}
 
 Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref). The flow of available heat energy is calculated
-    from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to 
+    from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to
     the  required temperature is calculated by the function [`dh_upgrade`](@ref). Note that the node may dump some of the ingoing heat
     energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
 """
@@ -103,10 +103,10 @@ function EnergyModelsBase.constraints_flow_out(
 ) where {A,T}
     pd = pinch_data(n)
     # Only allow two inputs, one heat and one other (power)
-    power = only(filter(!isheat, inputs(n)))
-    heat_surplus = only(filter(isheat, inputs(n)))
+    power = only(filter(!is_heat, inputs(n)))
+    heat_surplus = only(filter(is_heat, inputs(n)))
     # Only allow one output, must be heat
-    heat_available = only(filter(isheat, outputs(n)))
+    heat_available = only(filter(is_heat, outputs(n)))
 
     # Available heat output is a fraction of heat input and the upgrade (using extra power)
     for t ∈ 𝒯
