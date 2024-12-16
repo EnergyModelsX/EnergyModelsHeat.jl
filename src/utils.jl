@@ -29,7 +29,7 @@ dh_upgrade(::Type{EqualMassFlows}, pd, t) = upgrade_equal_mass(pd, t)
 dh_upgrade(::Type{DifferentMassFlows}, pd, t) = upgrade_different_mass(pd, t)
 """
     upgradeable_fraction
-Return fraction of surplus heat that can be upgraded    
+Return fraction of surplus heat that can be upgraded
 """
 upgradeable_fraction(::Type{EqualMassFlows}, pd, t) = upgradeable_equal_mass(pd, t)
 upgradeable_fraction(::Type{DifferentMassFlows}, pd, t) = upgradeable_different_mass(pd, t)
@@ -142,7 +142,7 @@ function upgrade_different_mass(T_SH_hot, T_SH_cold, ΔT_min, T_DH_hot, T_DH_col
 end
 
 function pinch_data(n::AbstractHeatExchanger)
-    heat_surplus = only(filter(isheat, inputs(n)))
+    heat_surplus = only(filter(is_heat, inputs(n)))
     heat_available = only(outputs(n))
     pd = PinchData(
         t_supply(heat_surplus), t_return(heat_surplus),

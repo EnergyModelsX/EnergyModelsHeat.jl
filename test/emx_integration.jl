@@ -41,7 +41,7 @@
             CO₂,                            # CO₂ instance
         )
 
-        # Create the individual test nodes for a system with 
+        # Create the individual test nodes for a system with
         # 1) a heat surplus source
         # 2) a heat conversion from surplus to usable heat
         # 3) a heat sink representing the district heating demand

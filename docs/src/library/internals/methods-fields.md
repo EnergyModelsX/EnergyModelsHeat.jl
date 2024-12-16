@@ -9,12 +9,11 @@ Pages = ["methods-fields.md"]
 ## [`DHPipe`](@id lib-int-met_field-dhpipe)
 
 ```@docs
-EnergyModelsHeat.pipelength
-EnergyModelsHeat.pipelossfactor
+EnergyModelsHeat.pipe_length
+EnergyModelsHeat.pipe_loss_factor
 EnergyModelsHeat.t_ground
 EnergyModelsHeat.resource_heat
 EnergyModelsHeat.t_supply
-EnergyModelsHeat.link_res
 ```
 
 ## [`HeatPump`](@id lib-int-met_field-heatpump)

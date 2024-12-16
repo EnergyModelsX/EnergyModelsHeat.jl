@@ -124,6 +124,7 @@ function generate_district_heating_example_data()
             "dh_source-heat_pump",      # Id for the link
             nodes[2],                   # Input node
             nodes[3],                   # Output node
+            FixedProfile(50),           # Capacity of the pipeline in MW
             2000000.0,                  # Pipe lenght in meters
             # Extreme example to visualize the effects of heat loss
             0.025 * 10^(-6),            # Heat loss factor in MW m⁻¹ K⁻¹
