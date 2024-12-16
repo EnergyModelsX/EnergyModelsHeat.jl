@@ -28,7 +28,6 @@ EnergyModelsHeat.heat_in_resource
 EnergyModelsHeat.driving_force_resource
 ```
 
-
 ## [`ThermalEnergyStorage`](@id lib-int-met_field-thermalenergystorage)
 
 ```@docs
