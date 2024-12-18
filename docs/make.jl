@@ -48,7 +48,7 @@ Documenter.makedocs(
                 "library/internals/methods-EMB.md",
             ],
         ],
-        "Background" => "background/background.md",
+        # "Background" => "background/background.md",
     ],
     plugins = [links, bib],
 )
