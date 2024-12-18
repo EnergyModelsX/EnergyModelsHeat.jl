@@ -199,9 +199,6 @@ end
     case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
-    @info "inputs:" dump(inputs(nodes[2]))
-    @info "outputs:" dump(outputs(nodes[2]))
-    @info "delta t:" nodes[2].delta_t_min
     m = run_model(case, model, optimizer)
 
     power = products[1]
