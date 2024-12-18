@@ -6,8 +6,7 @@
     check_timeprofiles::Bool,
 ) where {A, T}
 
-Check if a `DirectHeatUpgrade` node has reasonable values for the return/supply temperatures and
-    error if the upgrade is ≥ 1 (should only happen with data errors).
+Check if a `DirectHeatUpgrade` node has reasonable values for the return/supply temperatures and error if the upgrade is ≥ 1 (should only happen with data errors).
 """
 function EMB.check_node(
     n::DirectHeatUpgrade{A,T},

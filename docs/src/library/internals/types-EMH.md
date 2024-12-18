@@ -9,22 +9,18 @@ Pages = ["types.md"]
 ## [Nodal supertypes](@id lib-int-types-node)
 
 ```@docs
+EnergyModelsHeat.AbstractHeatExchanger
 ```
-
-!!! todo "Changes"
-    To be added, once docstrings are written:
-    - `AbstractHeatExchanger`
 
 ## [Parameter supertypes](@id lib-int-types-para)
 
 ```@docs
+EnergyModelsHeat.HeatExchangerAssumptions
 ```
-
-!!! todo "Changes"
-    To be added, once docstrings are written:
-    - `HeatExchangerAssumptions`
 
 ## [Auxiliary types](@id lib-int-types-aux)
 
 ```@docs
+EnergyModelsHeat.DifferentMassFlows
+EnergyModelsHeat.EqualMassFlows
 ```

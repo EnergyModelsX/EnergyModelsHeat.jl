@@ -66,9 +66,7 @@ end
 """
     EMB.constraints_flow_out(m, n::HeatExchanger{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Create the constraints for the flow out from a [`HeatExchanger`](@ref). The flow of available heat energy is calculated
-    from the temperatures in the heat flows using the function [`dh_fraction`](@ref).
-
+Create the constraints for the flow out from a [`HeatExchanger`](@ref). The flow of available heat energy is calculated from the temperatures in the heat flows using the function [`dh_fraction`](@ref).
 """
 function EMB.constraints_flow_out(
     m,
@@ -90,10 +88,9 @@ end
 """
     constraints_flow_out(m, n::DirectHeatUpgrade{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel) where {A,T}
 
-Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref). The flow of available heat energy is calculated
-    from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to
-    the  required temperature is calculated by the function [`dh_upgrade`](@ref). Note that the node may dump some of the ingoing heat
-    energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
+Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref).
+The flow of available heat energy is calculated from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to the  required temperature is calculated by the function [`dh_upgrade`](@ref).
+Note that the node may dump some of the ingoing heat energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
 """
 function EnergyModelsBase.constraints_flow_out(
     m,
@@ -142,8 +139,7 @@ end
         modeltype::EnergyModel,
     )
 
-In the case of a [`ThermalEnergyStorage`](@ref), the lowest level iterator is adjusted as
-the loss is dependent on the level at the beginning of the operational period.
+In the case of a [`ThermalEnergyStorage`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
 """
 function EMB.constraints_level_iterate(
     m,
