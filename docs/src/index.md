@@ -18,26 +18,26 @@ The new introduced types are also documented in the *[public library](@ref lib-p
 Heat as a resource does not possess a CO₂ intensity when used.
 Instead, it has as fields both the supply and return temperatures of heat utilized in a district heating network.
 
-## [`DHPipe](@ref links-DHPipe)
+## [`DHPipe`](@ref links-DHPipe)
 
 District heating pipes are a new subtype of links.
 They include a capacity and a new variable for calculating the loss of the district heating network.
 While the loss is independent of the transported energy in the current implementation, it may be possible to provide a nonlinear formulation for the pipe in a later stage.
 
-## [`HeatPump](@ref nodes-HeatPump)
+## [`HeatPump`](@ref nodes-HeatPump)
 
 Heat pumps are utilizing a driving force for transferring heat from a lower temperature to a higher temperature.
 As a consequence, it requires changes to the input flow to the heat pump.
 The input flow is now dependent on the temperature profile of the source and sink heats.
 
-## [`ThermalEnergyStorage](@ref nodes-TES)
+## [`ThermalEnergyStorage`](@ref nodes-TES)
 
 Thermal energy storage differs from standard storage node as they experience a constant loss dependent on the storage volume and not the charging or discharging of the storage.
 This change requires direct adjustments to the storage balance that cannot be incorporated in the variable ``\texttt{stor\_level\_Δ\_op}``.
 The current implementation assumes a loss independent of the operational period.
 As a consequence, it is assumed that the tempreature outside of the thermal energy storage does not change in the operational periods.
 
-## [`HeatExchanger](@ref nodes-HeatExchanger)
+## [`HeatExchanger`](@ref nodes-HeatExchanger)
 
 A lot of process produce surplus heat as a side stream.
 The utilization of the heat is however limited by the fact that heat exchangers have a minimum temperature approach as design parameter to minimize the surface area.
