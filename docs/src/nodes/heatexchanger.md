@@ -2,12 +2,18 @@
 
 The [`HeatExchanger`](@ref) node models a technology that converts higher-temperature heat from a surplus heat source into lower-temperature heat that can be used in a district heating system.
 
-The [`HeatExchanger`](@ref) will compute the available energy, given the supply and return temperatures of the heat from the surplus heat circuit, the $\Delta T_{min}$ of the `HeatExchanger`, and the supply and return temperatures of the district heating circuit. These parameters may all be given as `TimeProfile` (which in many cases will be a `FixedProfile`).
-
+The [`HeatExchanger`](@ref) will compute the available energy, given the supply and return temperatures of the heat from the surplus heat circuit, the minimum temperature approach ``\Delta T_{min}`` of the `HeatExchanger`, and the supply and return temperatures of the district heating circuit.
+These parameters may all be given as `TimeProfile` (which in many cases will be a `FixedProfile`).
 
 ## [Introduced type and its fields](@id nodes-HeatExchanger-fields)
 
-The [`HeatExchanger`](@ref) is a subtype of the [`NetworkNode`](@extref EnergyModelsBase.NetworkNode). It uses the same functions as `NetworkNode` in `EnergyModelsBase`.
+The [`HeatExchanger`](@ref) is a subtype of the [`NetworkNode`](@extref EnergyModelsBase.NetworkNode).
+It uses the same functions as `NetworkNode` in `EnergyModelsBase`.
+
+[`HeatExchanger`](@ref) are parametric types which allow for the inclusion of different `HeatExchangerAssumptions`.
+This approach is similar to the approach utilized for *[Storage in `EnergyModelsBase`](@extref EnergyModelsBase nodes-storage-phil-parametric)*.
+These assumption determine how the two streams behave towards each other.
+The strict assumption of `EqualMassFlow` enforces that the mass flow of both streams is the same while the assumption `DifferentMassFlow` allows for differing mass flows, and hence, optimization of these flows.
 
 ### [Standard fields](@id nodes-HeatExchanger-fields-stand)
 
@@ -49,8 +55,9 @@ The [`HeatExchanger`](@ref) is a subtype of the [`NetworkNode`](@extref EnergyMo
 
 ### [New fields](@id nodes-HeatExchanger-fields-new)
 
-- **` delta_t_min`**:\
-  The $\Delta T_{min}$ for the heat exchanger.
+- **`delta_t_min::Real`**:\
+  The minimum temperature approach of the heat exchanger.
+  It is in general a design parameter that impacts the size of the heat exchanger and how much heat can be recovered from the hot stream.
 
 ## [Mathematical description](@id nodes-HeatExchanger-math)
 
@@ -88,6 +95,12 @@ In addition, all constraints are valid ``\forall t \in T`` (that is in all opera
 Heat exchanger nodes utilize in general the standard constraints described on *[Constraint functions](@extref EnergyModelsBase man-con)* for `NetworkNode`s.
 These standard constraints are:
 
+- `constraints_capacity`:
+
+  ```math
+  \texttt{cap\_use}[n, t] \leq \texttt{cap\_inst}[n, t]
+  ```
+
 - `constraints_capacity_installed`:
 
   ```math
@@ -97,45 +110,6 @@ These standard constraints are:
   !!! tip "Using investments"
       The function `constraints_capacity_installed` is also used in [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) to incorporate the potential for investment.
       Nodes with investments are then no longer constrained by the parameter capacity.
-
-
-- `constraints_flow_out`:
-
-The `constraints_flow_out` function is replaced with a new implementation for `HeatExchangers` nodes.
-
-The flow out of heat that can be used in the district heating system $p_{DH}$ is limited by the available fraction $dh\_fraction(A, pd, t)$ of the flow of the surplus heat resource $p_{SH}$ flow into the node. 
-
-  ```math
-  \texttt{flow\_out}[n, t, p_{SH}] =
-  dh\_fraction(A, pd, t) \times \texttt{flow\_in}[n, t ,p_{DH} ]
-  
-  ```
-
-The available fraction of heat available for the district heating system is calculated using the temperatures of the two resources $p_{SH}$ and $p_{DH}$ as well as the $\Delta T_{min}$ for the heat exchanger. 
-
-The default assumption $A$ for a [`HeatExchanger`](@ref) in `EnergyModelsHeat` is that the medium in both circuits is the same, but mass flows may be adjusted individually in each circuit to optimise heat transfer (`DifferentMassFlow`). 
-```math
-\begin{align}
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} } &= 0 \ \text{for} \ T_{\text{DH}_{\text{hot}}} > T_{\text{SH}_{\text{hot}}} - \Delta T_{\text{min}}  %lost because we don't allow the heat upgrade
-    \\
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} } &= \frac{T_{\text{SH}_{\text{hot}}} - (T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}} )}{T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}} \ \text{for} \  T_{\text{SH}_{\text{cold}}} < T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}}  \\ 
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} }  &=  1\ \text{otherwise}
-\end{align}
-```
-Alternatively, we can specify the more restrictive assumption that mass flows are the same in both circuits (`EqualMassFlow`)
-
-```math
-\begin{align}
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} } &= 0 
-    \ \text{for} \ T_{\text{DH}_{\text{hot}}} - T_{\text{DH}_{\text{cold}}} >   T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}
-    \\
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} } &= 0 
-    \ \text{for} \ T_{\text{SH}_{\text{cold}}} < T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}}  \ (\text{or}\ T_{\text{DH}_{\text{hot}}} > T_{\text{SH}_{\text{hot}}} - \Delta T_{\text{min}} )
-    \\ 
-    \frac{\dot{Q}_{\text{DH}} }{\dot{Q}_{\text{SH}} } &=  \frac{T_{\text{DH}_{\text{hot}}} - T_{\text{DH}_{\text{cold}}} }{ T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}} 
-    \ \text{otherwise}
-\end{align}
-```
 
 - `constraints_opex_fixed`:
 
@@ -157,22 +131,48 @@ Alternatively, we can specify the more restrictive assumption that mass flows ar
       The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
-*  `constraints_capacity` :
+The `constraints_flow_out` function is replaced with a new implementation for `HeatExchangers` nodes.
 
-The original constraints limiting the capacity to the installed capacity:
+The flow out of heat that can be used in the district heating system ``p_{DH}`` is limited by the available fraction ``dh\_fraction(A, pd, t)`` of the flow of the surplus heat resource ``p_{SH}`` flow into the node.
 
 ```math
-\texttt{cap\_use}[n, t] \leq \texttt{cap\_inst}[n, t]
+\texttt{flow\_out}[n, t, p_{SH}] =
+  dh\_fraction(A, pd, t) \times \texttt{flow\_in}[n, t ,p_{DH}]
 ```
 
-and calling the subfunction `constraints_capacity_installed` to provide bounds for the variable ``\texttt{cap\_inst}[n, t]`` are used.
+The available fraction of heat available for the district heating system is calculated using the temperatures of the two resources ``p_{SH}`` and ``p_{DH}`` as well as the ``\Delta T_{min}`` for the heat exchanger.
 
+The default assumption ``A`` for a [`HeatExchanger`](@ref) in `EnergyModelsHeat` is that the medium in both circuits is the same, but mass flows may be adjusted individually in each circuit to optimise heat transfer (`DifferentMassFlow`):
+
+```math
+\frac{\dot{Q}_{\text{DH}}}{\dot{Q}_{\text{SH}}} =
+  \begin{cases}
+    0, & \text{for} ~ T_{\text{DH}_{\text{hot}}}
+      > T_{\text{SH}_{\text{hot}}} - \Delta T_{\text{min}}
+    \\
+    \frac{T_{\text{SH}_{\text{hot}}} - (T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}} )}{T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}}, & \text{for} ~ T_{\text{SH}_{\text{cold}}}
+      < T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}}
+    \\
+    1, & \text{otherwise}
+  \end{cases}
+```
+
+Alternatively, we can specify the more restrictive assumption that mass flows are the same in both circuits (`EqualMassFlow`)
+
+```math
+\frac{\dot{Q}_{\text{DH}}}{\dot{Q}_{\text{SH}}} =
+  \begin{cases}
+    0, & \text{for} ~ T_{\text{DH}_{\text{hot}}} - T_{\text{DH}_{\text{cold}}}
+      > T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}
+    \\
+    0, & \text{for} ~ T_{\text{SH}_{\text{cold}}}
+      < T_{\text{DH}_{\text{cold}}} + \Delta T_{\text{min}}  \ (\text{or}\ T_{\text{DH}_{\text{hot}}} > T_{\text{SH}_{\text{hot}}} - \Delta T_{\text{min}} )
+    \\
+    \frac{T_{\text{DH}_{\text{hot}}} - T_{\text{DH}_{\text{cold}}}}{ T_{\text{SH}_{\text{hot}}} - T_{\text{SH}_{\text{cold}}}}
+    , & \text{otherwise}
+  \end{cases}
+```
 
 #### [Additional constraints](@id nodes-HeatExchanger-math-con-add)
 
-[`HeatExchanger`](@ref) modifies the following  constraint functions or constraints in the `create_node` function:
-
-
-
-
-
+[`HeatExchanger`](@ref) do not add additional constraint functions or constraints in the `create_node` function.
