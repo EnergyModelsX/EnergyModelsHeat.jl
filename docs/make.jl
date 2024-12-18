@@ -1,8 +1,19 @@
-using Documenter, DocumenterCitations, DocumenterInterLinks
+using Documenter, DocumenterCitations, DocumenterInterLinks, DocumenterMermaid
 
 using TimeStruct
 using EnergyModelsBase
 using EnergyModelsHeat
+
+DocMeta.setdocmeta!(
+    EnergyModelsHeat,
+    :DocTestSetup,
+    :(using EnergyModelsHeat);
+    recursive = true,
+)
+
+# Copy the NEWS.md file
+news = "docs/src/manual/NEWS.md"
+cp("NEWS.md", news; force=true)
 
 links = InterLinks(
     "TimeStruct" => "https://sintefore.github.io/TimeStruct.jl/stable/",
@@ -10,21 +21,22 @@ links = InterLinks(
 )
 
 bib = CitationBibliography(joinpath(@__DIR__, "src", "references.bib"))
-# TODO: Enable modules
-# TODO: Enable doctests
 
 Documenter.makedocs(
     sitename = "EnergyModelsHeat",
-    repo = "https://gitlab.sintef.no/zeesa-wp3/EnergyModelsHeat.jl/blob/{commit}{path}#{line}",
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical = "https://zeesa-wp3.pages.sintef.no/EnergyModelsHeat.jl",
         edit_link = "main",
         assets = String[],
     ),
     modules = [EnergyModelsHeat],
     pages = [
-        "Introduction" => "index.md",
+        "Home" => "index.md",
+        "Manual" => Any[
+            "Quick Start" => "manual/quick-start.md",
+            "Examples" => "manual/simple-example.md",
+            "Release notes" => "manual/NEWS.md",
+        ],
         "Resources" => [
             "ResourceHeat" => "resources/resourceheat.md",
         ],
@@ -38,6 +50,7 @@ Documenter.makedocs(
         ],
         "How to" => [
             "Use surplus heat for DH" => "howto/simple_conversion.md",
+            "Contribute to EnergyModelsHeat" => "howto/contribute.md",
         ],
         "Library" => [
             "Public" => "library/public.md",
@@ -48,9 +61,14 @@ Documenter.makedocs(
                 "library/internals/methods-EMB.md",
             ],
         ],
-        "Background" => "background/background.md",
+        "Background" => [
+            "Heat exchanger" => "background/background.md",
+            "Bio CHP" => "background/bio_chp.md",
+        ],
     ],
     plugins = [links, bib],
 )
 
-# Documenter.deploydocs(; repo = "github.com/sintefore/PiecewiseAffineApprox.jl.git")
+deploydocs(;
+    repo = "github.com/EnergyModelsX/EnergyModelsHeat.jl.git",
+)
