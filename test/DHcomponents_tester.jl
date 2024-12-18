@@ -87,19 +87,19 @@
     # Test that the heat loss is accurately calculated
     @test all(
         value.(m[:flow_in][snk, t, dh_res]) ≈
-            value.(m[:flow_out][src, t, dh_res]) - value.(m[:dh_pipe_loss][pipe, t])
-    for t ∈ 𝒯)
+        value.(m[:flow_out][src, t, dh_res]) - value.(m[:dh_pipe_loss][pipe, t])
+        for t ∈ 𝒯)
     @test all(
         value.(m[:dh_pipe_loss][pipe, t]) ≈
-            EMH.pipe_length(pipe) * EMH.pipe_loss_factor(pipe) *
-            (EMH.t_supply(pipe, t) - EMH.t_ground(pipe, t))
-    for t ∈ 𝒯)
+        EMH.pipe_length(pipe) * EMH.pipe_loss_factor(pipe) *
+        (EMH.t_supply(pipe, t) - EMH.t_ground(pipe, t))
+        for t ∈ 𝒯)
     @test all(
         value.(m[:dh_pipe_loss][pipe, t]) ≈ 0.015
-    for t ∈ 𝒯)
+        for t ∈ 𝒯)
 
     # Test that the capacity constraint is hold in all periods
-    @test all(value.(m[:link_in][pipe, t, dh_res]) ≤ 0.8+10^-6 for t ∈ 𝒯)
+    @test all(value.(m[:link_in][pipe, t, dh_res]) ≤ 0.8 + 10^-6 for t ∈ 𝒯)
 
     # Test that we have exactly two deficits due to the limited capacity, given by the loss
     # in the pipeline

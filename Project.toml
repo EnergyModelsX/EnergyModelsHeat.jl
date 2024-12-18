@@ -1,6 +1,6 @@
 name = "EnergyModelsHeat"
 uuid = "ad1b8b27-e232-4da9-b498-bea9c19a30d7"
-authors = ["Lars Hellemo <Lars.Hellemo@sintef.no> and contributors"]
+authors = ["Lars Hellemo, Hanne Kauko, and Till Holmes"]
 version = "0.1.0"
 
 [deps]
