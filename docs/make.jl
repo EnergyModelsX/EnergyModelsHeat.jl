@@ -13,7 +13,7 @@ DocMeta.setdocmeta!(
 
 # Copy the NEWS.md file
 news = "docs/src/manual/NEWS.md"
-cp("NEWS.md", news; force=true)
+cp("NEWS.md", news; force = true)
 
 links = InterLinks(
     "TimeStruct" => "https://sintefore.github.io/TimeStruct.jl/stable/",
@@ -32,7 +32,7 @@ Documenter.makedocs(
     modules = [EnergyModelsHeat],
     pages = [
         "Home" => "index.md",
-        "Manual" => Any[
+        "Manual" => [
             "Quick Start" => "manual/quick-start.md",
             "Examples" => "manual/simple-example.md",
             "Release notes" => "manual/NEWS.md",
