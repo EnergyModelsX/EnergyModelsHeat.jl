@@ -26,7 +26,7 @@ If you find `EnergyModelsHeat` useful in your work, we kindly request that you c
   number = {97},
   pages = {6619},
   year = {2024},
-  doi = {https://doi.org/10.21105/joss.06619},
+  doi = {10.21105/joss.06619},
 }
 ```
 
