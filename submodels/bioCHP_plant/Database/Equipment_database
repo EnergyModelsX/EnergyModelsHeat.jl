@@ -1,0 +1,48 @@
+equipment biomass_storage&feeding
+input base_year 2007
+input Sb_unit ton/h
+input Sb 25
+input Cpb 5.43e6
+input n 0.5
+input f_inst 2.1
+
+equipment biomass_stoker_boiler_heat
+input base_year 2007
+input Sb_unit ton/h
+input Sb 4.17
+input Cpb 1.195e6
+input n 0.7
+input f_inst 2.1
+input w_el_unit kW/t-h
+input w_el 27
+
+equipment biomass_stoker_boiler_power
+input base_year 2007
+input Sb_unit ton/h
+input Sb 25
+input Cpb 7.98e6
+input n 0.7
+input f_inst 2.1
+input w_el_unit kW/t-h
+input w_el 27
+input f_maint 0.04
+
+equipment dry_scrubber
+input base_year 2007
+input Sb_unit t/h
+input Sb 66.672
+input Cpb 0.1749e6
+input n 0.7
+input f_inst 2.47
+input w_el_unit t/h
+input w_el 9
+input f_maint 0.01
+
+equipment rankine_cycle
+input base_year 2006
+input Sb 1500
+input Cpb 40.5e6
+input n 0.7
+input f_inst 1.35
+
+END

@@ -1,0 +1,71 @@
+Compound: methanol
+Property: Hvap
+MW: 32.04
+Dependence: temperature
+Validity: 248.0 512.0
+Unit: J/mol
+Data: model
+Model: PPDS12
+Extrapolation: yes
+Constants: A B C D E Tc R
+Values: 9.3995 0.14881 9.537 -14.192 30.769 512.6 0.008314
+
+Compound: methanol 
+Property: cpliq
+MW: 32.04
+Dependence: temperature
+Validity: 175.53 348.15
+Unit: J/kmolK
+Data: model
+Model: ThermoML
+Extrapolation: yes
+Constants: C1 C2 C3 C4
+Values: 72254.92 113.9303 -1.512782 0.005428005
+
+Compound: methanol 
+Property: cpideal
+MW: 32.04
+Dependence: temperature
+Validity: 50.0 3000.0
+Unit: J/kmolK
+Data: model
+Model: AlyLee
+Extrapolation: no
+Constants: A B C D E
+Values: 34250.55 90234.34 1324.078 26923.2 471.5034
+
+Compound: methanol
+Property: Psat
+MW: 32.04
+Dependence: temperature
+Validity: 175.53 512.6795
+Unit: Pa
+Data: model
+Model: Wagner25
+Extrapolation: yes
+Constants: C1 C2 C3 C4 lPc Tc
+Values: -8.381618 0.7496107 -2.324033 -0.7894569 15.889 512.6795
+
+Compound: methanol
+Property: Tsat
+MW: 32.04
+Dependence: pressure
+Validity: 1.83235 79.461
+Unit: K
+Data: model
+Model: Antoine
+Extrapolation: no
+Constants: A B C
+Values: 5.15853 1569.613 -34.846
+
+Compound: methanol
+Property: Tsat
+MW: 32.04
+Dependence: pressure
+Validity: 0.0984005 2.06009
+Unit: K
+Data: model
+Model: Antoine
+Extrapolation: no
+Constants: A B C
+Values: 5.20409 1581.341 -33.50

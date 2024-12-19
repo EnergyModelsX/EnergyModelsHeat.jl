@@ -1,0 +1,30 @@
+Atom Atomic_weight(kg/mol) Valences
+H 1.0008e-3 valences: -1 1
+He 4.0026e-3 valences: 0
+Ar 39.95e-3 valences: 0
+C 12.011e-3 valences: 2 4
+N 14.007e-3 valences: -3 -2 -1 1 2 3 4 5
+O 15.999e-3 valences: -1
+S 32.06e-3 valences: -2 2 4 6
+P 30.974e-3 valences: -3 1 3 5
+As 74.922e-3 valences: -3 2 3 5
+K 39.098e-3 valences: 1
+Na 22.990e-3 valences: 1
+Mg 24.305e-3 valences: 2
+Ca 40.078e-3 valences: 2
+Cl 35.45e-3 valences: -1 1 2 3 4 5 7
+Al 26.982e-3 valences: 3
+Fe 55.845e-3 valences: 2 3 4 6
+Mn 54.938e-3 valences: 2 3 4 6 7
+Si 28.085e-3 valences: -4 2 4
+Ti 47.867e-3 valences: 2 3 4
+Zn 65.38e-3 valences: 2
+Hg 200.59e-3 valences: 1 2
+Pb 207.2e-3 valences: 2 4
+Cd 112.41e-3 valences: 1 2
+Cr 51.996e-3 valences: 2 3 6
+Cu 63.456e-3 valences: 1 2 3
+Ni 58.693e-3 valences: 1 2 3 4
+
+
+

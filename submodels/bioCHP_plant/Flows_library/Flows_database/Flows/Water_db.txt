@@ -1,0 +1,20 @@
+Flow_def water steam H2O
+Flow_cls water
+Prop_data water_correlations
+
+MOLECULES
+n_data 1
+H2O Y 1.0 
+
+ATOMS
+n_data 2
+H X 2
+O X 1
+
+PROPERTIES
+n_data 3
+HHV -2.5
+rho_m 1000.0
+cp_m 1000.0
+
+END
