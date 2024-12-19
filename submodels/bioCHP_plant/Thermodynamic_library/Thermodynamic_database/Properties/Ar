@@ -1,0 +1,29 @@
+Compound: Ar
+Property: cp
+Dependence: temperature
+Validity: 298 6000
+Unit: J/molK
+Data: model
+Model: Shomate
+Constants: A B C D E F G H
+Values: 20.786 2.825911e-7 -21.64191 1.092131e-8 -44.61371 -6.19735 179.999 0
+
+Compound: Ar
+Property: h
+Dependence: temperature
+Validity: 298 6000
+Unit: J/molK
+Data: model
+Model: Shomate
+Constants: A B C D E F G H
+Values: 20.786 2.825911e-7 -21.64191 1.092131e-8 -44.61371 -6.19735 179.999 0
+
+Compound: Ar
+Property: s
+Dependence: temperature
+Validity: 298 6000
+Unit: J/molK
+Data: model
+Model: Shomate
+Constants: A B C D E F G H
+Values: 20.786 2.825911e-7 -21.64191 1.092131e-8 -44.61371 -6.19735 179.999 0

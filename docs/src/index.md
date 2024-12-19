@@ -5,11 +5,11 @@
 The following types are introduced:
 
 1. a `Resource` [`ResourceHeat`](@ref),
-2. a `Link` [`DHPipe](@ref),
-3. a `NetworkNode` [`HeatPump](@ref),
-4. a `Storage` [`ThermalEnergyStorage](@ref),
-5. an utility type [`PinchData](@ref), and
-6. a `NetworkNode` [`HeatExchanger](@ref).
+2. a `Link` [`DHPipe`](@ref),
+3. a `NetworkNode` [`HeatPump`](@ref),
+4. a `Storage` [`ThermalEnergyStorage`](@ref),
+5. a utility type [`PinchData`](@ref), and
+6. a `NetworkNode` [`HeatExchanger`](@ref).
 
 The new introduced types are also documented in the *[public library](@ref lib-pub)* as well as the corresponding pages.
 

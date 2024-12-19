@@ -1,0 +1,55 @@
+Flow_def ash
+Flow_cls ash
+Prop_data ash
+
+ATOMS
+n_atom 24
+C
+H
+O
+N
+S
+P
+K
+Cl
+Ca
+Al
+Fe
+Mg
+Mn
+Na
+Si
+Ti
+Zn
+Hg
+Pb
+Cd
+Cr
+Cu
+Ni
+As
+
+MOLECULES
+n_data 0
+
+PROXIMATE
+n_prox 11
+DM
+H2O
+ash
+INORG
+ORG
+INORG-O
+ORG-O
+INORG-S
+ORG-S
+INORG-N
+ORG-N
+
+PROPERTIES
+n_data	2
+rho_m	400.0
+cp_m	1200.0
+
+END
+

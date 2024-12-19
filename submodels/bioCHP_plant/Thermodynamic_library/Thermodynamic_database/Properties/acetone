@@ -1,0 +1,55 @@
+Compound: Acetone
+Property: Hvap
+Dependence: temperature
+Validity: 251.0 505.0
+Unit: J/mol
+Data: model
+Model: PPDS12
+Extrapolation: yes
+Constants: A B C D E Tc R
+Values: 6.6492 6.1047 -1.9357 -1.1091 7.573 508.1
+
+Compound: Acetone
+Property: cpideal
+Dependence: temperature
+Validity: 200.0 1500.0
+Unit: J/kmolK
+Data: model
+Model: AlyLee
+Extrapolation: no
+Constants: A B C D E 
+Values: 56784.82 162251.3 1572.387 93640.73 720.0944
+
+Compound: Acetone
+Property: cpliq
+Dependence: temperature
+Validity: 178.16 497.9042
+Unit: J/kmolK
+Data: model
+Model: TDEliquid
+Extrapolation: yes
+Constants: C1 C2 C3 C4 B Tc
+Values: 199551.1 -960.4159 3.14242 -0.002830175 3833.658 508.0655
+
+Compound: Acetone
+Property: Tsat
+Dependence: pressure
+Validity: 0.0432875 45.9985
+Unit: K
+Data: model
+Model: Antoine
+Extrapolation: yes
+Constants: A B C
+Values: 4.42448 1312.253 -32.445
+
+Compound: Acetone
+Property: Psat
+Dependence: temperature
+Validity: 259.16 507.60
+Unit: bar
+Data: model
+Model: Antoine
+Extrapolation: no
+Constants: A B C
+Values: 4.42448 1312.253 -32.445
+

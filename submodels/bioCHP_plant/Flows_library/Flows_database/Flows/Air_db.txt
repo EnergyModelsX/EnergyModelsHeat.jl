@@ -1,0 +1,38 @@
+Flow_def dry_air air
+Flow_cls real_gas
+prop_data refprop
+
+MOLECULES
+n_data 3
+N2 X 0.7812
+Ar X 0.0092
+O2 X 0.2096
+
+ATOMS
+n_atom 3
+O
+N
+Ar
+
+END
+
+Flow_def wet_air 
+Flow_cls real_gas
+prop_data refprop
+
+MOLECULES
+n_data 4
+N2 X 0.7812
+Ar X 0.0092
+O2 X 0.2096
+H2O X 0.0
+
+ATOMS
+n_atom 4
+O
+H
+N
+Ar
+
+END
+

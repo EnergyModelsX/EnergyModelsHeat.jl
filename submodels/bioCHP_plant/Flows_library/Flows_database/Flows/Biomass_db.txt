@@ -1,0 +1,164 @@
+Flow_def spruce_chips
+Flow_cls hardwood
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 48.78e-2
+H Y 6.27e-2
+O Y 44.8e-2
+N Y 0.13e-2
+S Y 0.01e-2
+Cl Y 0.0
+
+PROXIMATE
+n_prox 3
+VOL Y 39.985e-2
+FC Y 9.825e-2
+ASH Y 0.19e-2
+H2O Y 0.5
+
+PROPERTIES
+n_data 3
+HHV 20.13
+rho_m 400.0
+cp_m 1200.0
+
+END
+
+Flow_def spruce_stem
+Flow_cls hardwood
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 47.38e-2
+H Y 6.4e-2
+O Y 46.1e-2
+N Y 0.09e-2
+S Y 0.01e-2
+Cl Y 0.0
+
+PROXIMATE
+n_prox 3
+VOL Y 72.43e-2
+FC Y 27.27e-2
+ASH Y 0.3e-2
+
+PROPERTIES
+n_data 3
+HHV 19.9
+rho_m 400.0
+cp_m 1200.0
+
+END
+
+Flow_def spruce_bark
+Flow_cls hardwood
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 49.09e-2
+H Y 6.06e-2
+O Y 44.38e-2
+N Y 0.45e-2
+S Y 0.02e-2
+Cl Y 0.0
+
+PROXIMATE
+n_prox 3
+VOL Y 70.62e-2
+FC Y 26.85e-2
+ASH Y 2.53e-2
+
+PROPERTIES
+n_data 3
+HHV 20.25
+rho_m 400.0
+cp_m 1200.0
+
+END
+
+Flow_def spruce_T&B
+Flow_cls hardwood
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 51.53e-2
+H Y 6.51e-2
+O Y 41.5e-2
+N Y 0.44e-2
+S Y 0.02e-2
+Cl Y 0.0
+
+PROXIMATE
+n_prox 3
+VOL Y 69.82e-2
+FC Y 24.49e-2
+ASH Y 5.69e-2
+
+PROPERTIES
+n_data 3
+HHV 19.94
+rho_m 400.0
+cp_m 1200.0
+
+END
+
+Flow_def birch_stem
+Flow_cls woody_biomass
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 48.62e-2
+H Y 6.34e-2
+O Y 44.9e-2
+N Y 0.09e-2
+S Y 0.05e-2
+Cl Y 0.0
+
+PROXIMATE
+n_prox 3
+VOL Y 89.43e-2
+FC Y 10.35e-2
+ASH Y 0.22e-2
+
+PROPERTIES
+n_data 3
+HHV 18.42
+rho_m 400.0
+cp_m 1200.0
+
+END
+
+Flow_def SE-pellets_arbacore_spruce_stem
+Flow_cls SE-pellets_hardwood
+prop_data solid_fuel
+
+ATOMS
+n_atom 6
+C Y 52.3e-2
+H Y 6.2e-2
+O Y 41.39e-2
+N Y 0.1e-2
+S Y 0.01e-2
+Cl Y 0.002e-2
+
+PROXIMATE
+n_prox 4
+VOL Y 80.2e-2
+FC Y 19.6e-2
+ASH Y 0.02e-2
+H2O Y 3.4e-2
+
+PROPERTIES
+n_data 3
+LHV 20.9
+rho_m 400.0
+cp_m 1200.0
+
+END
+

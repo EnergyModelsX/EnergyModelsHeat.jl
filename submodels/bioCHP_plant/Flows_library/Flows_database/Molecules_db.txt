@@ -1,0 +1,84 @@
+
+Species_id O2
+Composition: O2
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/O2
+inputs 3
+MW 32e-3
+hf 0.0
+cp_n 7.02
+
+Species_id N2    
+Composition: N2
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/N2
+inputs 3
+MW 28e-3
+Hf 0.0
+cp_n 6.96
+
+Species_id H2
+Composition: H2   
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/H2
+inputs 4
+MW 2e-3
+Hf 0.0
+cp_n 6.89
+LHV 120.971
+
+Species_id H2O
+Composition: H2O      
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/H2O
+inputs 3
+MW 18e-3
+Hf -241.8e3
+cp_n 8.03
+
+Species_id CO
+Composition: CO
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/CO
+inputs 4
+MW 28e-3
+Hf -110.5e3
+cp_n 6.97
+LHV 10.112
+
+Species_id CO2       
+Composition: CO2
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/CO2
+inputs 3
+MW 44e-3
+Hf -393.5e3
+cp_n 8.88
+
+Species_id SO2
+Composition: SO2
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/SO2
+inputs 3
+MW 64e-3
+Hf 0.0
+cp_n 0
+
+Species_id NO2
+Composition: NO2
+NASA yes
+thermo_data Thermodynamic_library/Thermodynamic_database/Properties/NO2
+inputs 3
+MW       46e-3
+Hf       0.0
+cp_n	0
+
+Species_id Ar
+Composition: Ar     
+NASA yes
+thermo_data none
+inputs 3
+MW      39.948e-3
+Hf      0.0
+cp_n	6.96
+

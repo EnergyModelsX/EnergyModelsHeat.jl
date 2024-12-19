@@ -1,0 +1,61 @@
+Compound: acetic_acid 
+Property: cpliq
+MW: 60.052
+Dependence: temperature
+Validity: 289.691 580.0
+Unit: J/kmolK
+Data: model
+Model: TDEliq
+Extrapolation: yes
+Constants: C1 C2 C3 C4 B Tc
+Values: 182617.6 -992.636 3.586276 -0.003622026 6808.338 592.9978
+
+Compound: acetic_acid 
+Property: cpideal
+MW: 60.052
+Dependence: temperature
+Validity: 50 1500
+Unit: J/kmolK
+Data: model
+Model: AlyLee
+Extrapolation: no
+Constants: A B C D E
+Values: 39924.63 135839.5 1208.064 64252.96 542.473
+
+Compound: acetic_acid
+Property: Tsat
+MW: 60.052
+Dependence: pressure
+Validity: 
+Unit: K
+Data: model
+Model: Antoine
+Extrapolation: no
+Constants: A B C
+Values: 4.68206 1642.54 -39.764
+
+Compound: acetic_acid
+Property: Psat
+MW: 60.052
+Dependence: temperature
+Validity: 
+Unit: K
+Data: model
+Model: Antoine
+Extrapolation: no
+Constants: A B C
+Values: 4.68206 1642.54 -39.764
+
+Compound: acetic_acid
+Property: Hvap
+MW: 60.052
+Dependence: temperature
+Validity: 298.0 392.0
+Unit: kJ/mol
+Data: model
+Model: Majer1985
+Extrapolation: yes
+Constants: A alpha beta Tc
+Values: 22.84 0.0184 -0.0454 592.7
+
+
