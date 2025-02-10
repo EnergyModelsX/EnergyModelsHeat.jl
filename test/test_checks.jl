@@ -1,11 +1,11 @@
-@testitem "Checks - DirectHeatUpgrade" setup = [TestData] begin
+@testitem "Checks - DirectHeatUpgrade" setup = [UpgradeTestData] begin
     using EnergyModelsBase
     using EnergyModelsHeat
     using TimeStruct
     global EnergyModelsBase.ASSERTS_AS_LOG = false # Throw error when check fails
 
     case, model, nodes, products, T =
-        TestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = false)
+        UpgradeTestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = false)
     power, heat_sur, heat_use, CO₂ = products
 
     for A ∈ (EnergyModelsHeat.EqualMassFlows, EnergyModelsHeat.DifferentMassFlows)
