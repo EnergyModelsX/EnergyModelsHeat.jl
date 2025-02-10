@@ -9,7 +9,7 @@ function EMB.variables_link(m, ℒˢᵘᵇ::Vector{<:DHPipe}, 𝒯, modeltype::E
 end
 
 """
-    create_link(m, 𝒯, 𝒫, l::DHPipe, modeltype::EnergyModel, formulation::EMB.Formulation)
+    create_link(m, l::DHPipe, 𝒯, 𝒫, modeltype::EnergyModel)
 
 When the link is a [`DHPipe`](@ref), the constraints for a link include a loss based on the
 difference in the temperature of the district heating resource and the ground.
@@ -18,11 +18,10 @@ In addition, a [`DHPipe`](@ref) includes a capacity with the potential for inves
 """
 function EMB.create_link(
     m,
+    l::DHPipe,
     𝒯,
     𝒫,
-    l::DHPipe,
     modeltype::EnergyModel,
-    formulation::EMB.Formulation,
 )
 
     # DH pipe in which each output corresponds to the input minus heat losses

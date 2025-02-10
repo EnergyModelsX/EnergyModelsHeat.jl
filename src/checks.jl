@@ -1,12 +1,13 @@
 """
     check_node(
-    n::DirectHeatUpgrade{A, T},
-    𝒯,
-    modeltype::EnergyModel,
-    check_timeprofiles::Bool,
-) where {A, T}
+        n::DirectHeatUpgrade{A, T},
+        𝒯,
+        modeltype::EnergyModel,
+        check_timeprofiles::Bool,
+    ) where {A, T}
 
-Check if a `DirectHeatUpgrade` node has reasonable values for the return/supply temperatures and error if the upgrade is ≥ 1 (should only happen with data errors).
+Check if a `DirectHeatUpgrade` node has reasonable values for the return/supply temperatures
+and error if the upgrade is ≥ 1 (should only happen with data errors).
 """
 function EMB.check_node(
     n::DirectHeatUpgrade{A,T},
@@ -113,5 +114,27 @@ function EMB.check_node(
     @assert_or_log(
         heat_loss_factor(n) ≤ 1,
         "The heat_loss_factor field must be less or equal to 1."
+    )
+end
+
+"""
+    EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
+
+This method checks that the *[`DHPipe`](@ref)* link is valid.
+
+## Checks
+ - The field `cap` is required to be non-negative.
+ - The field `pipe_length` is required to be non-negative.
+ - The field `pipe_loss_factor` is required to be non-negative.
+"""
+function EMB.check_link(l::DHPipe, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    @assert_or_log(
+        all(capacity(l, t) ≥ 0 for t ∈ 𝒯),
+        "The capacity must be non-negative."
+    )
+    @assert_or_log(pipe_length(l) ≥ 0, "The pipeline length must be non-negative.")
+    @assert_or_log(
+        pipe_loss_factor(l) ≥ 0,
+        "The pipeline loss factor must be non-negative."
     )
 end
