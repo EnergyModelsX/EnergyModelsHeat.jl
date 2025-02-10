@@ -1,4 +1,4 @@
-@testmodule TestData begin
+@testmodule UpgradeTestData begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
@@ -136,7 +136,7 @@
     end
 end
 
-@testitem "Simple EMX model" setup = [TestData] begin
+@testitem "Upgrade - Simple EMX model" setup = [UpgradeTestData] begin
     using JuMP
     using HiGHS
     using EnergyModelsBase
@@ -184,7 +184,7 @@ end
     end
 end
 
-@testitem "Simple Upgrade example" setup = [TestData] begin
+@testitem "Upgrade - Simple Upgrade example" setup = [UpgradeTestData] begin
     using JuMP
     using HiGHS
     using EnergyModelsBase

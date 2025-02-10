@@ -1,4 +1,4 @@
-@testitem "Simple EMX DH model" begin
+@testitem "DHPipe" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
