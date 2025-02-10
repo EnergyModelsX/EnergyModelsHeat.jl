@@ -20,7 +20,13 @@ EnergyModelsBase.constraints_level_iterate
 EnergyModelsBase.constraints_capacity
 EnergyModelsBase.constraints_flow_in
 EnergyModelsBase.constraints_flow_out
+```
+
+## [Check methods](@id lib-int-met_emb-check)
+
+```@docs
 EnergyModelsBase.check_node
+EnergyModelsBase.check_link
 ```
 
 ## [Field extraction methods](@id lib-int-met_emb-field)
