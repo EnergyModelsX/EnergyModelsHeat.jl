@@ -277,7 +277,7 @@ end
                 pipe_length,
                 pipe_loss_factor,
                 FixedProfile(10),
-                Heat
+                Heat,
             ),
         ]
 

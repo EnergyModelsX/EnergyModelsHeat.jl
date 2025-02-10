@@ -126,8 +126,7 @@ This method checks that the *[`DHPipe`](@ref)* link is valid.
  - The field `pipe_length` is required to be non-negative.
  - The field `pipe_loss_factor` is required to be non-negative.
 """
-function EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
-
+function EMB.check_link(l::DHPipe, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
     @assert_or_log(
         all(capacity(l, t) ≥ 0 for t ∈ 𝒯),
         "The capacity must be non-negative."
