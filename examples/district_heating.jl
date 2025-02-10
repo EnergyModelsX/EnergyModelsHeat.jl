@@ -136,13 +136,8 @@ function generate_district_heating_example_data()
         Direct("TES-demand", nodes[4], nodes[5], Linear())
     ]
 
-    # WIP data structure
-    case = Dict(
-        :nodes => nodes,
-        :links => links,
-        :products => products,
-        :T => T,
-    )
+    # Input data structure
+    case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
     return case, model
 end
 
@@ -154,10 +149,10 @@ Function for processing the results to be represented in the a table afterwards.
 function process_district_heating_results(m, case)
     # Extract the nodes and the first strategic period from the data
     electricity_source, district_heat_source, heat_pump, TES, heat_demand =
-        case[:nodes][[1, 2, 3, 4, 5]]               # Extract all nodes
-    Power, HeatLT, HeatHT = case[:products][[1, 2, 3]]  # Extract all resources
-    dh_pipe = case[:links][2]                 # Extract the DH Pipe
-    𝒯 = case[:T]
+        get_nodes(case)[[1, 2, 3, 4, 5]]            # Extract all nodes
+    HeatLT = get_products(case)[2]                  # Extract the requried resource
+    dh_pipe = get_links(case)[2]                    # Extract the DH Pipe
+    𝒯 = get_time_struct(case)
 
     # District heating variables
     DHPipe_input = JuMP.Containers.rowtable(        # Flow into the link

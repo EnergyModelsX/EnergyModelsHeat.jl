@@ -71,13 +71,8 @@
             Direct("TES-demand", nodes[3], nodes[4], Linear()),
         ]
 
-        # WIP data structure
-        case = Dict(
-            :nodes => nodes,
-            :links => links,
-            :products => products,
-            :T => T,
-        )
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return (; case, model, nodes, products, T, op_duration)
     end
     case, model, nodes, products, T, op_duration = generate_data()

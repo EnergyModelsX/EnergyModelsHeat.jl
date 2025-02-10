@@ -73,13 +73,8 @@
             Direct("power source-HP", nodes[2], nodes[3], Linear()),
         ]
 
-        # WIP data structure
-        case = Dict(
-            :nodes => nodes,
-            :links => links,
-            :products => products,
-            :T => T,
-        )
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return (; case, model, nodes, products, T)
     end
 

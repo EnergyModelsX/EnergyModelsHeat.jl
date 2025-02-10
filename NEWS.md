@@ -1,5 +1,12 @@
 # Release Notes
 
+## Unversioned
+
+* Adjusted to [`EnergyModelsBase` v0.9.0](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.0):
+  * Increased version nubmer for EMB.
+  * Model worked without adjustments.
+  * Adjustments only required for simple understanding of changes.
+
 ## Version 0.1.0 (2024-12-18)
 
 Initial version of the heat package within the [EnergyModelsX](https://github.com/EnergyModelsX) framework.
