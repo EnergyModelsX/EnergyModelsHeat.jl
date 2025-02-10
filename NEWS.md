@@ -6,6 +6,9 @@
   * Increased version nubmer for EMB.
   * Model worked without adjustments.
   * Adjustments only required for simple understanding of changes.
+* Included updated `DHPipe`:
+  * `DHPIpe` now follow a check.
+  * The arguments for `create_link` were updated.
 
 ## Version 0.1.0 (2024-12-18)
 

@@ -159,7 +159,7 @@ t_supply(l::DHPipe, t) = t_supply(resource_heat(l), t)
 """
     EMB.inputs(l::DHPipe)
 
-Return the resources transported into a given DHPipe `l`. 
+Return the resources transported into a given DHPipe `l`.
 This resource is in a standard [`DHPipe`](@ref) given by the function [`resource_heat`](@ref).
 """
 EMB.inputs(l::DHPipe) = [resource_heat(l)]
@@ -167,7 +167,7 @@ EMB.inputs(l::DHPipe) = [resource_heat(l)]
 """
     EMB.outputs(l::DHPipe)
 
-Return the resources transported out from a given DHPipe `l`. 
+Return the resources transported out from a given DHPipe `l`.
 This resource is in a standard [`DHPipe`](@ref) given by the function [`resource_heat`](@ref).
 """
 EMB.outputs(l::DHPipe) = [resource_heat(l)]

@@ -1,4 +1,4 @@
-@testitem "DirectHeatUpgrade checks" setup = [TestData] begin
+@testitem "Checks - DirectHeatUpgrade" setup = [TestData] begin
     using EnergyModelsBase
     using EnergyModelsHeat
     using TimeStruct
@@ -31,7 +31,7 @@ end
 
 # Test that the fields of a HeatPump are correctly checked
 # - check_node(n::HeatPump, 𝒯, modeltype::EnergyModel)
-@testitem "HeatPump" begin
+@testitem "Checks - HeatPump" begin
     using EnergyModelsBase
     using TimeStruct
     const EMB = EnergyModelsBase
@@ -90,7 +90,7 @@ end
             "heat_demand",
             FixedProfile(10),
             Dict(:surplus => FixedProfile(0), :deficit => StrategicProfile([1e3, 2e2])),
-            Dict(Power => 1),
+            Dict(Heat => 1),
         )
 
         nodes = [heat_pump, heat_source, power_source, heat_demand]
@@ -140,7 +140,7 @@ end
 
 # Test that the fields of a ThermalEnergyStorage are correctly checked
 # - check_node(n::ThermalEnergyStorage, 𝒯, modeltype::EnergyModel)
-@testitem "ThermalEnergyStorage" begin
+@testitem "Checks - ThermalEnergyStorage" begin
     using EnergyModelsBase
     using TimeStruct
 
@@ -227,6 +227,80 @@ end
     @test_throws AssertionError check_graph(; charge_opex = OperationalProfile([10]))
     @test_throws AssertionError check_graph(; level_opex = FixedProfile(-5))
     @test_throws AssertionError check_graph(; level_opex = OperationalProfile([10]))
+
+    # Set the global again to false
+    EMB.TEST_ENV = false
+end
+
+# Test that the fields of a DHPipe are correctly checked
+# - EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
+@testitem "Checks - DHPipe" begin
+    using EnergyModelsBase
+    using TimeStruct
+    const EMB = EnergyModelsBase
+
+    # Set the global to true to suppress the error message
+    EMB.TEST_ENV = true
+
+    # Resources used in the analysis
+    Heat = ResourceHeat("Heat", FixedProfile(90), FixedProfile(60))
+    CO2 = ResourceEmit("CO2", 1.0)
+
+    # Function for setting up the system for testing a `DHPipe` link
+    function check_graph(;
+        cap = FixedProfile(20),
+        pipe_length = 100.0,
+        pipe_loss_factor = 0.5,
+    )
+        products = [Heat, CO2]
+        heat_source = RefSource(
+            "heat_source",
+            FixedProfile(20),
+            FixedProfile(0.1),
+            FixedProfile(0),
+            Dict(Heat => 1),
+        )
+        heat_demand = RefSink(
+            "heat_demand",
+            FixedProfile(10),
+            Dict(:surplus => FixedProfile(0), :deficit => StrategicProfile([1e3, 2e2])),
+            Dict(Heat => 1),
+        )
+
+        nodes = [heat_source, heat_demand]
+        links = [
+            DHPipe(
+                "src-sink",
+                nodes[1],
+                nodes[2],
+                cap,
+                pipe_length,
+                pipe_loss_factor,
+                FixedProfile(10),
+                Heat
+            ),
+        ]
+
+        # Creation of the time structure and the used global data
+        op_per_strat = 8760.0
+        T = TwoLevel(2, 2, SimpleTimes(10, 1); op_per_strat)
+        modeltype = OperationalModel(
+            Dict(CO2 => FixedProfile(10)),
+            Dict(CO2 => FixedProfile(0)),
+            CO2,
+        )
+
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
+        return create_model(case, modeltype), case, modeltype
+    end
+
+    # Test that a wrong capacity is caught by the checks
+    @test_throws AssertionError check_graph(; cap = FixedProfile(-25))
+
+    # Test that a wrong lower capacity bound is caught by the checks
+    @test_throws AssertionError check_graph(; pipe_length = -0.4)
+    @test_throws AssertionError check_graph(; pipe_loss_factor = -0.4)
 
     # Set the global again to false
     EMB.TEST_ENV = false

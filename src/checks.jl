@@ -115,3 +115,26 @@ function EMB.check_node(
         "The heat_loss_factor field must be less or equal to 1."
     )
 end
+
+"""
+    EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
+
+This method checks that the *[`DHPipe`](@ref)* link is valid.
+
+## Checks
+ - The field `cap` is required to be non-negative.
+ - The field `pipe_length` is required to be non-negative.
+ - The field `pipe_loss_factor` is required to be non-negative.
+"""
+function EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
+
+    @assert_or_log(
+        all(capacity(l, t) ≥ 0 for t ∈ 𝒯),
+        "The capacity must be non-negative."
+    )
+    @assert_or_log(pipe_length(l) ≥ 0, "The pipeline length must be non-negative.")
+    @assert_or_log(
+        pipe_loss_factor(l) ≥ 0,
+        "The pipeline loss factor must be non-negative."
+    )
+end
