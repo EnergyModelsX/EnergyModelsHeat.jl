@@ -1,4 +1,4 @@
-@testitem "Heat - Examples" begin
+@testitem "Examples" begin
     ENV["EMX_TEST"] = true # Set flag for example scripts to check if they are run as part of the tests
     exdir = joinpath(@__DIR__, "..", "examples")
     files = filter(endswith(".jl"), readdir(exdir))

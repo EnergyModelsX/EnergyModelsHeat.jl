@@ -1,4 +1,4 @@
-@testmodule TestData begin
+@testmodule UpgradeTestData begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
@@ -85,7 +85,8 @@
 
     function generate_upgrade_data(t1 = 60, t2 = 56, t3 = 70, t4 = 50; equal_mass = true)
         # Base case
-        case, model, nodes, products, T = TestData.generate_data(t1, t2, t3, t4; equal_mass)
+        case, model, nodes, products, T =
+            UpgradeTestData.generate_data(t1, t2, t3, t4; equal_mass)
 
         # Assumptions for heat exchange
         A = equal_mass ? EMH.EqualMassFlows : EMH.DifferentMassFlows
@@ -136,7 +137,7 @@
     end
 end
 
-@testitem "Simple EMX model" setup = [TestData] begin
+@testitem "Upgrade - Simple EMX model" setup = [UpgradeTestData] begin
     using JuMP
     using HiGHS
     using EnergyModelsBase
@@ -144,7 +145,7 @@ end
     using TimeStruct
 
     # Different mass flow assumption
-    case, model, nodes, products, T = TestData.generate_data(; equal_mass = false)
+    case, model, nodes, products, T = UpgradeTestData.generate_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
@@ -167,7 +168,7 @@ end
     end
 
     # Equal mass flow assumption
-    case, model, nodes, products, T = TestData.generate_data(; equal_mass = true)
+    case, model, nodes, products, T = UpgradeTestData.generate_data(; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
     m = run_model(case, model, optimizer)
 
@@ -184,7 +185,7 @@ end
     end
 end
 
-@testitem "Simple Upgrade example" setup = [TestData] begin
+@testitem "Upgrade - Simple Upgrade example" setup = [UpgradeTestData] begin
     using JuMP
     using HiGHS
     using EnergyModelsBase
@@ -192,7 +193,8 @@ end
     using TimeStruct
     const EMH = EnergyModelsHeat
     # Allow different mass flows
-    case, model, nodes, products, T = TestData.generate_upgrade_data(; equal_mass = false)
+    case, model, nodes, products, T =
+        UpgradeTestData.generate_upgrade_data(; equal_mass = false)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
     m = run_model(case, model, optimizer)
@@ -225,7 +227,7 @@ end
 
     # Assume equal mass flows
     case, model, nodes, products, T =
-        TestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = true)
+        UpgradeTestData.generate_upgrade_data(70, 60, 70, 60; equal_mass = true)
     optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
 
     m = run_model(case, model, optimizer)

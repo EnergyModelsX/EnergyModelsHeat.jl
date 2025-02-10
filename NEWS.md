@@ -1,6 +1,6 @@
 # Release Notes
 
-## Unversioned
+## Version 0.1.1 (2025-02-10)
 
 * Adjusted to [`EnergyModelsBase` v0.9.0](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.0):
   * Increased version nubmer for EMB.
@@ -9,6 +9,7 @@
 * Included updated `DHPipe`:
   * `DHPIpe` now follow a check.
   * The arguments for `create_link` were updated.
+* Renaming of test files to be consistent with other packages.
 
 ## Version 0.1.0 (2024-12-18)
 

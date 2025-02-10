@@ -1,4 +1,4 @@
-@testitem "Heat - ThermalEnergyStorage" begin
+@testitem "ThermalEnergyStorage" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP

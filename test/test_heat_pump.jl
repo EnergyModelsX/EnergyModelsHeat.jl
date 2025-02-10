@@ -1,4 +1,4 @@
-@testitem "Heat - HeatPump" begin
+@testitem "HeatPump" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP

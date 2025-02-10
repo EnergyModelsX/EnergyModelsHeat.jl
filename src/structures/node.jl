@@ -90,7 +90,8 @@ t_sink(n::HeatPump, t) = n.t_sink[t]
     t_source(n::HeatPump)
     t_source(n::HeatPump, t)
 
-Returns the temperature of the heat source for heat pump `n` as `TimeProfile` or in operational period `t`.
+Returns the temperature of the heat source for heat pump `n` as `TimeProfile` or in
+operational period `t`.
 """
 t_source(n::HeatPump) = n.t_sources
 t_source(n::HeatPump, t) = n.t_source[t]
@@ -132,7 +133,8 @@ EMB.inputs(n::HeatPump, p::Resource) = 1
 """
     HeatExchangerAssumptions
 
-A supertype for assumptions for a heat exchanger, such that different efficiencies can be calculated based on the underlying assumptions.
+A supertype for assumptions for a heat exchanger, such that different efficiencies can be
+calculated based on the underlying assumptions.
 """
 abstract type HeatExchangerAssumptions end
 """
@@ -144,7 +146,7 @@ struct EqualMassFlows <: HeatExchangerAssumptions end
 """
     DifferentMassFlows <: HeatExchangerAssumptions
 
-Assume mass flows can be adjusted to optimise heat transfer. 
+Assume mass flows can be adjusted to optimise heat transfer.
 Assume the same medium in both circuits.
 """
 struct DifferentMassFlows <: HeatExchangerAssumptions end
@@ -172,8 +174,8 @@ the alternative is to specify `EqualMassFlows` to limit heat exchange to equal m
 - **`opex_fixed::TimeProfile`** is the fixed operating expense.
 - **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.
 - **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field \
-`data` is conditional through usage of a constructor.
+- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field
+  `data` is conditional through usage of a constructor.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger
 """
 struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
@@ -201,9 +203,12 @@ HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
 """
     PinchData{T}
 
-Data for fixed temperature intervals used to calculate available energy from surplus energy source operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the district heating network operating at `T_DH_hot` and `T_DH_cold`.
+Data for fixed temperature intervals used to calculate available energy from surplus energy
+source operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the
+district heating network operating at `T_DH_hot` and `T_DH_cold`.
 
-This struct is used internally, and it is calculated from the supply and return temperatures of the `ResourceHeat` going in and out of the `AbstractHeatExchanger`.
+This struct is used internally, and it is calculated from the supply and return temperatures
+of the `ResourceHeat` going in and out of the `AbstractHeatExchanger`.
 """
 struct PinchData{
     TP1<:TimeProfile,
@@ -222,10 +227,14 @@ end
 """
     ThermalEnergyStorage{T} <: Storage{T}
 
-A `ThermalEnergyStorage` that functions mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses. 
-Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level from the previous timeperiod.
+A `ThermalEnergyStorage` that functions mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage)
+with the additional option to include thermal energy losses. Heat losses are quantified
+through a heat loss factor that describes the amount of thermal energy that is lost in
+relation to the storage level from the previous timeperiod.
 
-The main difference to [`RefStorage`](@extref EnergyModelsBase.RefStorage) is that  these heat losses do not occur while charging or discharging, *i.e.*, they are proportional to the storage level.
+The main difference to [`RefStorage`](@extref EnergyModelsBase.RefStorage) is that these
+heat losses do not occur while charging or discharging, *i.e.*, they are proportional to the
+storage level.
 
 !!! warning "StorageBehavior"
     `ThermalEnergyStorage` in its current implementation only supports
@@ -314,20 +323,23 @@ heat_loss_factor(n::ThermalEnergyStorage) = n.heat_loss_factor
 """
     DirectHeatUpgrade
 
-A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to "available" energy that can be used in the District Heating network.
+A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to
+"available" energy that can be used in the District Heating network.
 
-The default `DirectHeatUpgrade` heat exchanger assumes that mass flows can be different to optimize heat transfer. 
-This is encoded by the type parameter `HeatExchangerAssumptions`. The default value is `DifferentMassFlows`, the alternative is to specify `EqualMassFlows` to limit heat exchange to equal mass flow in the two circuits.
+The default `DirectHeatUpgrade` heat exchanger assumes that mass flows can be different to
+optimize heat transfer. This is encoded by the type parameter `HeatExchangerAssumptions`.
+The default value is `DifferentMassFlows`, the alternative is to specify `EqualMassFlows`
+to limit heat exchange to equal mass flow in the two circuits.
 
 # Fields
 - **`id`** is the name/identifier of the node.
 - **`cap::TimeProfile`** is the installed capacity.
 - **`opex_var::TimeProfile`** is the variable operating expense per energy unit produced.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense.
-- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`. \
-Valid inputs are: one `Heat` resource and one power resource.
-- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`. \
-Valid output is a single `Heat` resource
+- **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.
+  Valid inputs are: one `Heat` resource and one power resource.
+- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
+  Valid output is a single `Heat` resource
 - **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger.
 """
