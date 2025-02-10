@@ -78,13 +78,8 @@
             Direct("exchange-demand", nodes[2], nodes[3], Linear()),
         ]
 
-        # WIP data structure
-        case = Dict(
-            :nodes => nodes,
-            :links => links,
-            :products => products,
-            :T => T,
-        )
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return (; case, model, nodes, products, T)
     end
 
@@ -124,6 +119,7 @@
             Dict(heat_use => 1),           # Energy demand and corresponding ratio
         )
 
+        nodes = get_nodes(case)
         nodes[3] = heat_demand
         push!(nodes, heat_upgrade)
         push!(nodes, power_source)
@@ -133,9 +129,9 @@
             Direct("power-upgrade", nodes[5], nodes[4], Linear()),
             Direct("upgrade-demand", nodes[4], nodes[3], Linear()),
         ]
-        case[:nodes] = nodes
-        case[:links] = links
 
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return (; case, model, nodes, products, T)
     end
 end

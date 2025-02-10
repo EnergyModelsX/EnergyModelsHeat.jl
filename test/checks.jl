@@ -109,9 +109,8 @@ end
             CO2,
         )
 
-        # Creation of the case dictionary
-        case = Dict(:nodes => nodes, :links => links, :products => products, :T => T)
-
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return create_model(case, modeltype), case, modeltype
     end
 
@@ -151,7 +150,6 @@ end
     EMB.TEST_ENV = true
 
     # Resources used in the analysis
-
     Heat = ResourceCarrier("Heat", 0.0)
     CO2 = ResourceEmit("CO2", 1.0)
 
@@ -207,9 +205,8 @@ end
             CO2,
         )
 
-        # Creation of the case dictionary
-        case = Dict(:nodes => nodes, :links => links, :products => products, :T => T)
-
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return create_model(case, modeltype), case, modeltype
     end
 

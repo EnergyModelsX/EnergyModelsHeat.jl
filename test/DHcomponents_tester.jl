@@ -61,13 +61,8 @@
             ),
         ]
 
-        # WIP data structure
-        case = Dict(
-            :nodes => nodes,
-            :links => links,
-            :products => products,
-            :T => T,
-        )
+        # Input data structure
+        case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
         return (; case, model)
     end
     case, model = generate_data()
@@ -75,14 +70,10 @@
     m = run_model(case, model, optimizer)
 
     # Extract the individual nodes
-    𝒩 = case[:nodes]
-    ℒ = case[:links]
-    𝒫 = case[:products]
-    𝒯 = case[:T]
-    src = 𝒩[1]
-    snk = 𝒩[2]
-    pipe = ℒ[1]
-    dh_res = 𝒫[1]
+    src, snk = get_nodes(case)[1:2]
+    pipe = get_links(case)[1]
+    dh_res = get_products(case)[1]
+    𝒯 = get_time_struct(case)
 
     # Test that the heat loss is accurately calculated
     @test all(
