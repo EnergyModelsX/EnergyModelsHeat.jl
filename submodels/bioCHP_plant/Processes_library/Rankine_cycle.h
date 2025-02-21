@@ -181,39 +181,38 @@ void steam_condenser(flow &steam, flow &cond, object &par){
 	cout << "District heating: " << endl;
 	cout << "---------------------- " << endl;
 
-	cout << "Heat capacity (MW): " << par.fp("Q_dh") << endl;
-	cout << "T_dh_in (deg. C): " << par.fp("T_dh_in") << endl;
-	cout << "T_dh_out (deg. C): " << par.fp("T_dh_out") << endl;
-	
+
+	vector<double> P_bleed, M_bleed; 
+
 	dh_in = flow("dh_in", "water"); dh_out = flow("dh_out", "water"); 
 
-	dh_in.F.T = par.fp("T_dh_in"); dh_in.F.P = 1.01325; dh_in.P.h = hTWater(dh_in.F.T); //h_in.calculate_flow_properties("PT");
-	dh_out.F.T = par.fp("T_dh_out"); dh_out.F.P = 1.01325; dh_out.P.h = hTWater(dh_out.F.T); //dh_out.calculate_flow_properties("PT");
+	for(int nk = 0; nk < par.vctp("Qk").size(); nk++){
 
-	cout << "h dh_in: " << dh_in.P.h << endl;
-	cout << "h dh_out: " << dh_out.P.h << endl;
+		dh_in.F.T = par.vctp("Tk_in")[nk]; dh_in.F.P = 1.01325; dh_in.P.h = hTWater(dh_in.F.T); //h_in.calculate_flow_properties("PT");
+		dh_out.F.T = par.vctp("Tk_out")[nk]; dh_out.F.P = 1.01325; dh_out.P.h = hTWater(dh_out.F.T); //dh_out.calculate_flow_properties("PT");
 
-	dh_in.F.M = par.fp("Q_dh") / (dh_out.P.h - dh_in.P.h);
-	dh_out.F.M = dh_in.F.M;
+		dh_in.F.M = par.vctp("Qk")[nk] / (dh_out.P.h - dh_in.P.h);
+		dh_out.F.M = dh_in.F.M;
 
-	flow hf_in, hf_out; // In / out heating fluid to for exporting heat to district heating
-	hf_in = flow("hf_in", "water"); hf_out = flow("hf_out", "water");
-	hf_in.F.T = dh_out.F.T + 25.0; hf_in.F.P = PSatWater(hf_in.F.T); double Tsat_hf_in = TSatWater(hf_in.F.P); hf_in.P.h = hPSatSteam(hf_in.F.P);
-	hf_out.F.T = Tsat_hf_in - 5.0; hf_out.F.P = hf_in.F.P; hf_out.P.h = hTWater(hf_out.F.T); 
+		flow hf_in, hf_out; // In / out heating fluid to for exporting heat to district heating
+		hf_in = flow("hf_in", "water"); hf_out = flow("hf_out", "water");
+		hf_in.F.T = dh_out.F.T + 25.0; hf_in.F.P = PSatWater(hf_in.F.T); double Tsat_hf_in = TSatWater(hf_in.F.P); hf_in.P.h = hPSatSteam(hf_in.F.P);
+		hf_out.F.T = Tsat_hf_in - 5.0; hf_out.F.P = hf_in.F.P; hf_out.P.h = hTWater(hf_out.F.T); 
 
-	hf_in.F.M = 1e3*par.fp("Q_dh") / (hf_in.P.h - hf_out.P.h);
-	hf_out.F.M = hf_in.F.M;
+		hf_in.F.M = 1e3*par.vctp("Qk")[nk] / (hf_in.P.h - hf_out.P.h);
+		hf_out.F.M = hf_in.F.M;
 	
- 	cout << "Heating fluid:" << '\t' << "in" << '\t' << "out" << endl;
- 	cout << "M (kg/s)"  << '\t' << hf_in.F.M << '\t' << hf_out.F.M << endl;
- 	cout << "P (bar-a)"  << '\t' << hf_in.F.P << '\t' << hf_out.F.P << endl;
- 	cout << "T (deg-C)"  << '\t' << hf_in.F.T << '\t' << hf_out.F.T << endl;
- 	cout << "h (kJ/kg)"  << '\t' << hf_in.P.h << '\t' << hf_out.P.h << endl;
+ 		cout << "Heating fluid:" << '\t' << "in" << '\t' << "out" << endl;
+ 		cout << "M (kg/s)"  << '\t' << hf_in.F.M << '\t' << hf_out.F.M << endl;
+ 		cout << "P (bar-a)"  << '\t' << hf_in.F.P << '\t' << hf_out.F.P << endl;
+ 		cout << "T (deg-C)"  << '\t' << hf_in.F.T << '\t' << hf_out.F.T << endl;
+ 		cout << "h (kJ/kg)"  << '\t' << hf_in.P.h << '\t' << hf_out.P.h << endl;
 
-	cout << "DH Qh (MW): " << par.fp("Q_dh") << endl;
-	cout << "DH HX duty (MW): " << hf_in.F.M * (hf_in.P.h - hf_out.P.h) * 1e-3 << endl;
+		cout << "Qk (MW): " << par.vctp("Qk")[nk] << endl;
+		cout << "DH HX duty (MW): " << hf_in.F.M * (hf_in.P.h - hf_out.P.h) * 1e-3 << endl;
 	
-	vector<double> P_bleed, M_bleed; P_bleed.push_back(hf_in.F.P); M_bleed.push_back(hf_in.F.M);
+		P_bleed.push_back(hf_in.F.P); M_bleed.push_back(hf_in.F.M);
+	}
 	par.vct_fp("P_bleed", P_bleed);
 	par.vct_fp("M_bleed", M_bleed);
 
@@ -229,6 +228,7 @@ void rankine_cycle(object &par){
 	bfw = flow("bfw", "water"); bfw.F.T = 105.0; bfw.F.P = par.fp("P_stm"); bfw.P.h = hTWater(bfw.F.T); bfw.P.Tsat = TSatWater(bfw.F.P); double Tsat = bfw.P.Tsat;
 	sat_cond = flow("sat_cond", "water"); sat_cond.F.T = Tsat-5.0; sat_cond.F.P = par.fp("P_stm"); sat_cond.calculate_flow_properties("PT");
 	sat_stm = flow("sat_stm", "water"); sat_stm.F.P = par.fp("P_stm"); sat_stm.F.T = Tsat+5.0; sat_stm.calculate_flow_properties("PT");
+
 	steam = flow("steam", "water"); steam.F.P = par.fp("P_stm"); steam.F.T = par.fp("T_stm"); steam.P.h = hPTSupSteam(steam.F.P,steam.F.T); 
 	steam.F.M = 1e-3*par.fp("Q_stm")/(steam.P.h-bfw.P.h);
 	steam_out = flow("cond", "water");
@@ -248,5 +248,7 @@ void rankine_cycle(object &par){
 	
 
 }
+
+
 
 
