@@ -1,8 +1,5 @@
 plant bioCHP_PLANT
-prop fuel_def SE-pellets_arbacore_spruce_stem
 prop fuel_diameter_m 0.05
-prop boiler_power_in_MW 1500
-prop heat_demand_MW 200
 prop T_stm 450.0
 prop P_stm 100.0
 prop electricity_unit kWh
@@ -45,7 +42,6 @@ prop Po 0.032
 prop mu_isent 0.65
 prop P_cond 1.032
 prop T_cond 25
-prop T_dh_in 70.0
-prop T_dh_out 90.0
 
 END
+
