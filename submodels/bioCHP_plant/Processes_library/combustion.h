@@ -98,13 +98,20 @@ void solid_fuel_boiler(vector<flow> &fuel, vector<flow> &comb_air, flow &flue_ga
 
  vector<flow> air; vector<flow> fg; vector<flow> ba; vector<flow> fa;
 
-    for( int n = 0; n < fuel.size(); n++)
-    {
+	if(air.size() == 0){ 
 
-	air.push_back(flow(comb.sp("oxidant_def"))); 	
-	fg.push_back(flow("flue_gas", "flue_gas"));
-	ba.push_back(flow("bottom_ash", "ash"));	
-	fa.push_back(flow("fly_ash", "ash"));	
+    		for( int n = 0; n < fuel.size(); n++){
+
+			air.push_back(flow(comb.sp("oxidant_def"))); 	
+			fg.push_back(flow("flue_gas", "flue_gas")); 
+			ba.push_back(flow("bottom_ash", "ash")); 	
+			fa.push_back(flow("fly_ash", "ash")); 
+
+		}
+
+	}
+
+	for( int n = 0; n < fuel.size(); n++){
 
         int C = index_species(fuel[n].i, "C");
         int H = index_species(fuel[n].i, "H");
@@ -153,7 +160,9 @@ void solid_fuel_boiler(vector<flow> &fuel, vector<flow> &comb_air, flow &flue_ga
 
 	double comb_Hf = 0; 
         for( int n = 0; n < fuel.size(); n++){
-	        if ( n == 0 ) {comb_air.push_back(air[n]); flue_gas = fg[n]; bottom_ash = ba[n]; fly_ash = fa[n]; }
+	        if ( n == 0 ) {
+			if(comb_air.size() == 0){ comb_air.push_back(air[n]);} 
+			flue_gas = fg[n]; bottom_ash = ba[n]; fly_ash = fa[n]; }
         	if ( n > 0 ) { 
         		comb_air[0].mix_flows(comb_air[0], air[n]); 
         		bottom_ash.mix_flows(bottom_ash, ba[n]); 
@@ -167,26 +176,6 @@ void solid_fuel_boiler(vector<flow> &fuel, vector<flow> &comb_air, flow &flue_ga
 	comb.fval_p("Q_loss", flue_gas.F.Ht * comb.fp("q_loss"));
 	comb.fval_p("Q_out", comb.fp("Hf")*1e6 + comb_air[0].F.Ht - flue_gas.F.Ht - bottom_ash.F.Ht - comb.fp("Q_loss"));
 
-        cout << "-------------" << endl; 
-        cout << "Mass balance" << endl; 
-        cout << "------------" << endl; 
-        cout << "fuel M: " << fuel[0].F.M <<  endl;
-        cout << "flue gas M: " << flue_gas.F.M <<  endl; 
-	cout << "comb air M: " << comb_air[0].F.M << endl;
-	cout << "bottom ash M: " << bottom_ash.F.M << endl; 
-	cout << "fly ash M: " << fly_ash.F.M << endl; 
-
-        cout << "-------------" << endl; 
-        cout << "energy balance" << endl; 
-        cout << "-------------" << endl; 
-        cout << "comb Hf (MW): " << comb.fp("Hf") <<  endl;
-        cout << "Q_out: (W) " << comb.fp("Q_out") << endl; 
-        cout << "Q_loss: (W) " << comb.fp("Q_loss") << endl; 
-        cout << "H_air: (W) " << comb_air[0].F.Ht << endl; 
-        cout << "H_fg: (W) " << flue_gas.F.Ht << endl; 
-        cout << "H_ba: (W) " << bottom_ash.F.Ht << endl; 
-        cout << "H_fa: (W) " << fly_ash.F.Ht << endl; 
-
 	object boiler("equipment","biomass_stoker_boiler_power");
 	boiler.fval_p("S", comb.fp("M_fuel")*3.6);
 	equipment_cost(boiler);
@@ -198,12 +187,32 @@ void solid_fuel_boiler(vector<flow> &fuel, vector<flow> &comb_air, flow &flue_ga
 	equipment_cost(prep);
 	comb.c.push_back(prep);
 
+        cout << "-------------" << endl; 
+        cout << "Mass balance" << endl; 
+        cout << "------------" << endl; 
+        cout << "fuel M (kg/s): " << comb.fp("M_fuel") <<  endl;
+		for(int nf = 0; nf < fuel.size(); nf++){
+			cout << '\t' << fuel[nf].def << " (kg/s): " << fuel[nf].F.M << endl;
+		}
+        cout << "flue gas M: " << flue_gas.F.M <<  endl; 
+	cout << "comb air M: " << comb_air[0].F.M << endl;
+	cout << "bottom ash M: " << bottom_ash.F.M << endl; 
+	cout << "fly ash M: " << fly_ash.F.M << endl; 
+
+        cout << "-------------" << endl; 
+        cout << "energy balance" << endl; 
+        cout << "-------------" << endl; 
+        cout << "Fuel Hf (MW): " << comb.fp("Hf") <<  endl;
+		for(int nf = 0; nf < fuel.size(); nf++){
+			cout << '\t'<< fuel[nf].def << " (MW): " << fuel[nf].F.Hf << endl;
+		}
+
+        cout << "Q_out: (W) " << comb.fp("Q_out") << endl; 
+        cout << "Q_loss: (W) " << comb.fp("Q_loss") << endl; 
+        cout << "H_air: (W) " << comb_air[0].F.Ht  << endl; 
+        cout << "H_fg: (W) " << flue_gas.F.Ht << endl; 
+        cout << "H_ba: (W) " << bottom_ash.F.Ht << endl; 
+        cout << "H_fa: (W) " << fly_ash.F.Ht << endl; 
+
 }
 
-void solid_fuel_boiler(vector<flow> &feed, flow &flue_gas, flow &bottom_ash, flow &fly_ash, object &boiler){
-
-	vector<flow> comb_air;
-
-	solid_fuel_boiler(feed, comb_air, flue_gas, bottom_ash, fly_ash, boiler);
-
-}
