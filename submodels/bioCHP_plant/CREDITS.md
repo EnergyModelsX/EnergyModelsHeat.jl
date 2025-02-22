@@ -1,5 +1,3 @@
-# Credits 
-
 bioCHP plant model.
 
 author: Gonzalo del Alamo.
