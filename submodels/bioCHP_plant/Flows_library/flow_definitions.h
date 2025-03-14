@@ -813,4 +813,51 @@ void flow::print_flow(){
 
 }
 
+bool find_flow(string input_def){
+
+ 	ifstream db_file;
+
+	string line_txt, txt, flow_cls, flow_db, error = input_def + " not found in the database";
+ 
+ 	db_file.open("Flows_library/Flows_database/Flow_list.txt");
+
+ 	if(!db_file.good()){ cout << error << endl; db_file.close(); return false;}
+ 	if(db_file.good()){
+         	bool flow_found = false;
+	 	while (flow_found == false) {
+			getline(db_file, line_txt); stringstream sst(line_txt); 
+			getline(sst, txt, ' '); 
+			if(txt == input_def){ 
+				flow_found = true;
+				getline(sst, flow_cls, ' ');
+				getline(sst, flow_db, ' ');
+				break;
+			} 
+			if(db_file.eof()){break;}
+	 	}
+
+ 		if(flow_found == false){cout << error << endl; db_file.close(); return false;}
+	}
+
+	db_file.close(); 
+
+ 	ifstream db; 
+ 	db.open(flow_db); 
+ 	if(!db.good()){cout << error << endl; db.close(); return false;}
+ 	if(db.good()){
+         	bool flow_found = false;
+	 	while (flow_found == false) {
+			getline(db, line_txt); stringstream sst(line_txt); 
+			getline(sst, txt, ' '); 
+			if(txt == "Flow_def" or txt == "Flow_def:" or txt == "flow_def" or txt == "flow_def:" ){ 
+				while(getline(sst, txt, ' ')){if(txt == input_def){flow_found = true; return true;}}
+			} 
+			if(db.eof()){break;}
+		 }
+		if(flow_found == false) {cout << error << endl; db.close(); return false;}
+	}
+
+
+ }
+
 
