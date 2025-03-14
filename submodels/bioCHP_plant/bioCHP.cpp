@@ -33,6 +33,12 @@ bool bioCHP_plant(vector<string> fuel_def, vector<double> Yj, double W_el, vecto
 
 	}}	
 
+	// Check specificatins of heat demands
+	if( Qk.size() != Tk_in.size() ){ cout << "number of specifications for Tk_in and Qk are different" << endl; return false; } 
+	if( Qk.size() != Tk_out.size() ){ cout << "number of specifications for Tk_out and Qk are different" << endl;  return false; } 
+	if( Tk_in.size() != Tk_out.size() ){ cout << "number of specifications for Tk_in and Tk_out are different" << endl;  return false; } 
+	for(int nk = 0; nk < Tk_in.size(); nk++){ if( Tk_in[nk] > Tk_out[nk] ) { cout << "return temperature of heat demand no. " << nk << " is higher than supply temperature" << endl; return false;  } }
+
 	// Check that there is sufficient heat available from Rankine cycle
 	double sum_Qk = 0.0; for(int nk = 0; nk < Qk.size(); nk++){ sum_Qk = sum_Qk + Qk[nk]; }	
 	if( sum_Qk > 0.5 * (W_el / 0.2) ){
