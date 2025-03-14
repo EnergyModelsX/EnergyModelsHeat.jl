@@ -25,7 +25,7 @@ bool bioCHP_plant(vector<string> fuel_def, vector<double> Yj, double W_el, vecto
 	// Check that all feedstock exist in the database
 	for(int nf = 0; nf < fuel_def.size(); nf++){ if( !find_flow(fuel_def[nf]) ){ 
 
-		Mj = 0.0;
+		for(int nff = 0; nff < fuel_def.size(); nff++){ Mj.push_back(0.0); }
 		C_inv = 0.0;
 		C_op = 0.0;
 		
