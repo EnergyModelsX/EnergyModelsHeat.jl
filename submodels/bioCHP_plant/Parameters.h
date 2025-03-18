@@ -31,7 +31,7 @@ struct parameter
 {
  public:
  string sys_type, sys_def; 
- string data_def, data_id, data_type;
+ string data_def, data_id, data_type, data_info;
  int pos;
  vector<string> str; 
  vector<double> num;
@@ -58,6 +58,7 @@ struct object
  object(){};
  int ic(string type, string def);
  int ip(string symb);
+ bool bp(string symb);
  double fp(string symb);
  vector<double> vctp(string symb);
  string sp(string symb);
@@ -152,9 +153,14 @@ void get_parameters( vector<parameter> &par, string sys_type, string sys_def, st
       					p.data_def = txt;
       					sst >> p.data_id;   
 					//cout << "data_def: " << txt << " data_id: " << p.data_id << endl;
+					bool str_complete = false; 
+					p.data_info = "";
       					while(sst >> str) { 
-				 		//cout << "str[]: " << str << endl; 
-				 		p.str.push_back(str);
+						vector<char> cstr(str.begin(), str.end());
+						if(!str_complete and cstr[0] != '#'){ p.str.push_back(str);}
+						if(cstr[0] == '#'){ str_complete = true; }
+						if(str_complete and cstr[0] != '#'){ p.data_info = str + " ";}
+		
 					} 
       					p.pos = 0; par.push_back(p); p = parameter(); p.str.clear(); p.num.clear();
      				}
@@ -316,6 +322,16 @@ int object::ip(string symb){
   		if(p[np].data_id == symb ){ return np; }
   	} 
  	if( found == false ) { return -1; }
+
+}
+
+bool object::bp(string symb){ 
+
+ 	bool found = false;
+ 	for( int np = 0; np < p.size(); np++){
+  		if(p[np].data_id == symb ){ return true; }
+  	} 
+ 	if( found == false ) { return false; }
 
 }
 
