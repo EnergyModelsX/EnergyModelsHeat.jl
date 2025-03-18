@@ -17,7 +17,7 @@ double shomate(string property, double tK, double A, double B, double C, double 
         if(property == "hf"){ return Hf298;}
         if(property == "s"){ return A*log(tK)+B*pow(tK,1)+C*pow(tK,2)/2.0+D*pow(tK,3)/3.0-E/(2.0*pow(tK,2.0))+G;}
 
-
+	return -1;
 
 }
  
