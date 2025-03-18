@@ -83,6 +83,7 @@ string get_parameter_value(vector<parameter> &par, string sys_type, string sys_d
   		} 
  	}
  	if( found == false ) { return "null"; }
+	return "null";
 } 
 
 
@@ -233,7 +234,8 @@ vector<double> fp_vct(vector<parameter> &par, string sys_type, string sys_def, s
    			found = true; return vct;
   		} 
  	}
- 	if( found == false ) { return vct; }
+ 	//if( found == false ) { return vct; }
+	return vct;
 } 
 
 vector<string> sp_vct(vector<parameter> &par, string sys_type, string sys_def, string data_id){
@@ -246,6 +248,7 @@ vector<string> sp_vct(vector<parameter> &par, string sys_type, string sys_def, s
   		} 
  	}
  	if( found == false ) { return vct; }
+	return vct;
 } 
 
 void fval_p(vector<parameter> &par, string data_def, string sys_type, string sys_def, string data_id, double val){
@@ -321,7 +324,9 @@ int object::ip(string symb){
  	for( int np = 0; np < p.size(); np++){
   		if(p[np].data_id == symb ){ return np; }
   	} 
- 	if( found == false ) { return -1; }
+ 	//if( found == false ) { return -1; }
+	return -1;
+
 
 }
 
@@ -331,7 +336,8 @@ bool object::bp(string symb){
  	for( int np = 0; np < p.size(); np++){
   		if(p[np].data_id == symb ){ return true; }
   	} 
- 	if( found == false ) { return false; }
+ 	//if( found == false ) { return false; }
+	return false;
 
 }
 
