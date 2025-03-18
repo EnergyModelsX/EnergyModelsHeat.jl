@@ -1,4 +1,8 @@
 
+#include <algorithm>    // std::sort
+
+using namespace std;
+
 struct steam_turbine_parameters
 {
  public:
