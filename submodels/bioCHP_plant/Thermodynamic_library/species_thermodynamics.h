@@ -159,5 +159,5 @@ double thermodynamic_property(string species, string property, double TK, double
 		return shomate(property, tK, A, B, C, D, E, F, G, Hf298);
 	}
 
-
+	return -1;
 }
