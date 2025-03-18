@@ -855,10 +855,8 @@ bool find_flow(string input_def){
 			} 
 			if(db.eof()){break;}
 		 }
-		//if(flow_found == false) {cout << error << endl; db.close(); return false;}
-		return false;
 	}
-
+	return false;
 
  }
 
