@@ -17,7 +17,6 @@ prop f_cont 0.15
 prop f_ins 0.01
 prop f_adm 0.01
 
-
 system solid_fuel_boiler
 prop oxidant_def dry_air
 prop lambda 1.2
