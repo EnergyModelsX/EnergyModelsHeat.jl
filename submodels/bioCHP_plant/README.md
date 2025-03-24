@@ -6,7 +6,8 @@
 
 The bioCHP plant model can be tested separately using the c++ files bioCHP_function_test_[number].cpp in the main directory:
  - bioCHP_function_test_1.cpp: single biomass feedstock with specified electric power production and no heat demand
- - bioCHP_function_test_2.cpp: multiple biomass feedstock with specified electric power production and no heat demand no heat demand
+ - bioCHP_function_test_2.cpp: multiple biomass feedstock with specified electric power production and no heat demands
+ - bioCHP_function_test_3.cpp: multiple biomass feedstock with specified electric power production and several heat demand
 
 ## Project Funding
 
