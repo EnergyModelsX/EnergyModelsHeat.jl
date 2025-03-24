@@ -1,7 +1,4 @@
 
-#include <algorithm>    // std::sort
-
-using namespace std;
 
 struct steam_turbine_parameters
 {
@@ -119,7 +116,14 @@ void steam_turbine_model(flow &in, flow &out, object &par){
  
  	double W = 0;
 
- 	if (N_bleed == 0){ steam_turbine(in, out, ST);}
+ 	if (N_bleed == 0){ 
+		steam_turbine(in, out, ST);
+		par.fval_p("W_el", 1e-6 * ST.W);
+
+		cout << "-------------------------- " << endl;
+ 		cout << "Steam turbine power output: (MW): " << 1e-6 * W << endl;
+		
+	}
 
  	if (N_bleed > 0){
 		steam_turbine_parameters ST_n;	
@@ -190,6 +194,8 @@ void steam_condenser(flow &steam, flow &cond, object &par){
 
 	dh_in = flow("dh_in", "water"); dh_out = flow("dh_out", "water"); 
 
+	if( par.vctp("Qk").size() > 0 ){ 
+
 	for(int nk = 0; nk < par.vctp("Qk").size(); nk++){
 
 		dh_in.F.T = par.vctp("Tk_in")[nk]; dh_in.F.P = 1.01325; dh_in.P.h = hTWater(dh_in.F.T); //h_in.calculate_flow_properties("PT");
@@ -217,10 +223,89 @@ void steam_condenser(flow &steam, flow &cond, object &par){
 	
 		P_bleed.push_back(hf_in.F.P); M_bleed.push_back(hf_in.F.M);
 	}
+
+	// interpret_bleeds(P_bleed,M_bleed);
+
+	vector<int> merged;
+	if( P_bleed.size() > 1){ for(int nb = 1; nb < P_bleed.size(); nb++){
+
+		if( (P_bleed[nb] - P_bleed[nb-1]) < 5.0 ){ 
+			merged.push_back(nb); 
+			M_bleed[nb-1] += M_bleed[nb];
+		} 
+	}}
+
+	if( merged.size() > 0){ for(int n = 0; n < merged.size(); n++){
+
+		P_bleed.erase(P_bleed.begin()+merged[n]);
+		M_bleed.erase(M_bleed.begin()+merged[n]);
+	
+	}}
+
+	//vector<int> ord(P_bleed.size());
+	//sort(ord.begin(), ord.end(), &P_bleed { return P_bleed[a] > P_bleed[b];  });	
+
+	vector<double> P_bleed_ord = P_bleed, M_bleed_ord; 
+
+	sort(P_bleed_ord.begin(), P_bleed_ord.end(), greater<>());
+  	for(int nbo = 0; nbo < P_bleed_ord.size(); nbo++){ for(int nb = 0; nb < P_bleed_ord.size(); nb++){
+
+		if( P_bleed_ord[nbo] == P_bleed[nb] ){ M_bleed_ord.push_back(M_bleed[nb]); }  
+
+	}}
+
+
+	par.vct_fp("P_bleed", P_bleed_ord);
+	par.vct_fp("M_bleed", M_bleed_ord);
+
+	}
+
+ }
+
+void heat_extractions(object &par){
+
+	cout << "---------------------- " << endl;
+	cout << " District heating: " << endl;
+	cout << "---------------------- " << endl;
+
+	cout << "Number of heat demands: " << par.vctp("Qk").size() << endl; 
+	
+	vector<double> P_bleed, M_bleed; 
+
+	flow dh_in = flow("dh_in", "water"), dh_out = flow("dh_out", "water"); 
+
+	for(int nk = 0; nk < par.vctp("Qk").size(); nk++){
+
+		dh_in.F.T = par.vctp("Tk_in")[nk]; dh_in.F.P = 1.01325; dh_in.P.h = hTWater(dh_in.F.T); //h_in.calculate_flow_properties("PT");
+		dh_out.F.T = par.vctp("Tk_out")[nk]; dh_out.F.P = 1.01325; dh_out.P.h = hTWater(dh_out.F.T); //dh_out.calculate_flow_properties("PT");
+
+		dh_in.F.M = par.vctp("Qk")[nk] / (dh_out.P.h - dh_in.P.h);
+		dh_out.F.M = dh_in.F.M;
+
+		flow hf_in, hf_out; // In / out heating fluid to for exporting heat to district heating
+		hf_in = flow("hf_in", "water"); hf_out = flow("hf_out", "water");
+		hf_in.F.T = dh_out.F.T + 25.0; hf_in.F.P = PSatWater(hf_in.F.T); double Tsat_hf_in = TSatWater(hf_in.F.P); hf_in.P.h = hPSatSteam(hf_in.F.P);
+		hf_out.F.T = Tsat_hf_in - 5.0; hf_out.F.P = hf_in.F.P; hf_out.P.h = hTWater(hf_out.F.T); 
+
+		hf_in.F.M = 1e3*par.fp("Q_dh") / (hf_in.P.h - hf_out.P.h);
+		hf_out.F.M = hf_in.F.M;
+	
+ 		cout << "Heating fluid:" << '\t' << "in" << '\t' << "out" << endl;
+ 		cout << "M (kg/s)"  << '\t' << hf_in.F.M << '\t' << hf_out.F.M << endl;
+ 		cout << "P (bar-a)"  << '\t' << hf_in.F.P << '\t' << hf_out.F.P << endl;
+ 		cout << "T (deg-C)"  << '\t' << hf_in.F.T << '\t' << hf_out.F.T << endl;
+ 		cout << "h (kJ/kg)"  << '\t' << hf_in.P.h << '\t' << hf_out.P.h << endl;
+
+		cout << "Qk (MW): " << par.vctp("Qk")[nk] << endl;
+		cout << "DH HX duty (MW): " << hf_in.F.M * (hf_in.P.h - hf_out.P.h) * 1e-3 << endl;
+	
+		P_bleed.push_back(hf_in.F.P); M_bleed.push_back(hf_in.F.M);
+	}
 	par.vct_fp("P_bleed", P_bleed);
 	par.vct_fp("M_bleed", M_bleed);
 
  }
+
 
 void rankine_cycle(object &par){
 
