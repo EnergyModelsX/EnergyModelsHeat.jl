@@ -301,16 +301,3 @@ void flow::calculate_flow_parameters()
 	if( F.Hf == 0 and F.H > 0 and F.Ht > 0 ){F.Hf = F.H - F.Ht;}
 
 }
-
-void flow::calculate_gas_thermodynamics()
-{
-	P.ht = 0;
-	for( int n=0; n<j.size(); n++)
-	{
-		j[n].P.ht = HGas_j(j[n].id, F.T)-HGas_j(j[n].id, 25); 
-		P.ht = P.ht + j[n].P.ht*j[n].X;
-	}
-        if(F.N > 1e-10) {F.Ht = F.N * P.ht;}
-        if(F.N == 0) {F.Ht = (F.M/P.MW) * P.ht;}
-}
-

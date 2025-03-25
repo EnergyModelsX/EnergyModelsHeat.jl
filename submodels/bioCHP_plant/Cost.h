@@ -63,8 +63,8 @@ double I_cecpi(int year_ref, int year){
   if (i==1){year_input = year;} 
 	CECPI = cecpi(year_input);
   if (i==0){CECPI_ref = CECPI;} 
-  if (i==1){return CECPI/CECPI_ref;} 
  }
+return CECPI/CECPI_ref;	
 }
 
 

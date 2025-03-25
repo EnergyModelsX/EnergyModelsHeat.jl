@@ -177,6 +177,7 @@ if (P >= 60 && P < 100) {
               G / pow(P,3) + U / pow(H,3) + i / (P * pow(H,2)) + j / (pow(P,2) * H);
  }
 
+ return -1; 
 }
 
 double TPhSupSteam(double P, double H)
@@ -266,6 +267,9 @@ if(P >= 60 && P < 100) {
               f * log(P) * log(H) + G * pow(log(P), 3) + U * pow(log(H),3) + 
               i * log(P) * pow(log(H),2) + j * pow(log(P), 2) * log(H) - 273.17;
  }
+
+  return -1;
+  
 }
 
 double hPTSupSteam(double P, double Temp)
@@ -357,7 +361,7 @@ if (P >= 6 && P < 10) {
  return A + B * P + C / T + D * pow(P,2) + E / pow(T, 2) + f * P / T + G * pow(P,3) + 
               H / pow(T, 3) + i * P / pow(T, 2) + j * pow(P,2) / T;
  }
- 
+ return -1;
 }
 
 
@@ -454,6 +458,7 @@ if (P < 10) {
  return A + B * P + C / T + D * pow(P,2) + E / pow(T, 2) + f * P / T + G * pow(P,3) + 
               H / pow(T, 3) + i * P / pow(T, 2) + j * pow(P,2) / T;
  }
+  return -1;
 }
 
 double sPWater(double P)
