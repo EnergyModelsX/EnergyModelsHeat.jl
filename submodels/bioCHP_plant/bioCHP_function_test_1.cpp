@@ -1,4 +1,4 @@
-#include "../bioCHP_function.cpp"
+#include "../bioCHP.cpp"
 
 using namespace std;
 
