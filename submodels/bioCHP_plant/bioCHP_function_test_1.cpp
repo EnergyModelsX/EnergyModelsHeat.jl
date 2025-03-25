@@ -17,7 +17,7 @@ int main(){
 
 		for(int nj = 0; nj < Mj.size(); nj++){ cout << "M_"+fuel_def[nj]+" = " << Mj[nj] << endl;}
 		cout << "C_inv (M$) = " << C_inv << endl; 
-		cout << "C_op (M$) = " << C_op << endl; 
+		std::cout << "C_op (M$) = " << C_op << endl; 
 
 	}
 	else{ cout << "error" << endl; }
