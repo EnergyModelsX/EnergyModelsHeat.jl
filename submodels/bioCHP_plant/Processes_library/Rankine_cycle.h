@@ -242,12 +242,16 @@ void steam_condenser(flow &steam, flow &cond, object &par){
 	
 	}}
 
-	//vector<int> ord(P_bleed.size());
-	//sort(ord.begin(), ord.end(), &P_bleed { return P_bleed[a] > P_bleed[b];  });	
-
 	vector<double> P_bleed_ord = P_bleed, M_bleed_ord; 
 
-	sort(P_bleed_ord.begin(), P_bleed_ord.end(), greater<>());
+	//sort(P_bleed_ord.begin(), P_bleed_ord.end(), greater<>());
+
+	for (size_t i = 0; i < P_bleed_ord.size() - 1; ++i) {
+        	for (size_t j = 0; j < P_bleed_ord.size() - i - 1; ++j) {
+            		if (P_bleed_ord[j] < P_bleed_ord[j + 1]) { swap(P_bleed_ord[j], P_bleed_ord[j + 1]); }
+        	}
+    	}
+		
   	for(int nbo = 0; nbo < P_bleed_ord.size(); nbo++){ for(int nb = 0; nb < P_bleed_ord.size(); nb++){
 
 		if( P_bleed_ord[nbo] == P_bleed[nb] ){ M_bleed_ord.push_back(M_bleed[nb]); }  
