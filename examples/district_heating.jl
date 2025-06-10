@@ -231,7 +231,7 @@ pretty_table(table[1:4])
 
 @info(
     "Operational periods 5-8:\n" *
-    "The heat pump is used at maximum to satisfy the deman while in period 8 its utilization \n" *
+    "The heat pump is used at maximum to satisfy the demand while in period 8 its utilization \n" *
     "exceeds the demand to increase the storage level of the TES at the maximum charge capacity."
 )
 pretty_table(table[5:8])

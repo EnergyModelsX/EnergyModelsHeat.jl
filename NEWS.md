@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.1.2 (2025-06-10)
+
+### Bugfix
+
+* The function `t_source(n::HeatPump)` did result in an error.
+  This was not tested previously and not used in the model.
+  New tests are hence included for it.
+
 ## Version 0.1.1 (2025-02-10)
 
 * Adjusted to [`EnergyModelsBase` v0.9.0](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.0):

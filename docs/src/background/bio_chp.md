@@ -67,7 +67,6 @@ The following input is required for the plant characteristics:
   This implies that you have to provide the pressure through subtracting the ambient pressure.
   The combination of the temperature and the pressure determines whether the heat is supplied as steam or as hot water.
 - ``\dot{Q}_{k}`` (`Q_h[k]` in the model as `vector[double]`) is the heat demand at the individual temperature and pressure levels ``k`` in MW.
-  The heat demands are
 - ``\dot{W}_{el}`` (`W_el` in the model as `double`) is the electric power output of the CHP plant in MW.
 
 !!! note "Vector positions"
@@ -106,7 +105,7 @@ The standard output of the model is given as
 - ``\dot{H}_F``;(`H_fuel` in the model) Input energy flow rates of biomass to BioCHP plant in MW.
 - ``C_{inv}``(`C_inv` in the model) are the capital expenditures in M\$.
 - ``C_{op,d}`` (`C_op_d` in the model) are the annual direct variable operating expenses in M\$.
-  It is assumed that the plant operate at XXX h/year at full capacity.
+  It is assumed that the plant operates at XXX h/year at full capacity.
 - ``C_{op,f}`` (`C_op_f` in the model) are the annual fixed operating expenses in M\$.
 
 !!! tip "Format of the outputs"
