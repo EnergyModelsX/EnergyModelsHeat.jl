@@ -93,7 +93,7 @@ t_sink(n::HeatPump, t) = n.t_sink[t]
 Returns the temperature of the heat source for heat pump `n` as `TimeProfile` or in
 operational period `t`.
 """
-t_source(n::HeatPump) = n.t_sources
+t_source(n::HeatPump) = n.t_source
 t_source(n::HeatPump, t) = n.t_source[t]
 
 """
