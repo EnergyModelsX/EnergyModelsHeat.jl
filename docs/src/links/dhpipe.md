@@ -1,7 +1,7 @@
 # [DHPipe](@id links-DHPipe)
 
 [`DHPipe`](@ref) links model the transport of heat in the form of hot water or other fluid in heating networks.
-The model the flow of energy from a source to a sink, that is we do not model a water/fluid with a given temperature and pressure.
+They model the flow of energy from a source to a sink, that is we do not model a water/fluid with a given temperature and pressure.
 The heat losses are calculated based on the supply temperature of the inflowing [`ResourceHeat`](@ref), together with the ground temperature, pipe length, and a heat loss coefficient.
 Heat losses in the return flow are therefore ignored, following the approach from [KVALSVIK2018](@cite).
 These heat losses are in general very small, and in any case much smaller than the losses in the supply pipes [DALLAROSA2011](@cite).
