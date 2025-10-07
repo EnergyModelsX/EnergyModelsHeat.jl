@@ -16,7 +16,7 @@
             FixedProfile(0),
             Dict(heat_sur => 1, power => 1),
             Dict(heat_use => 1),
-            [],
+            ExtensionData[],
             20,
         )
 
