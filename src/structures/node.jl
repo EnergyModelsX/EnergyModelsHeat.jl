@@ -20,8 +20,8 @@ an exergy driving force (*e.g.*, electricity).
 - **`opex_fixed::TimeProfile`** is the fixed operating expense.
 - **`output::Dict{<:Resource, <:Real}`** are the produced
   [`Resource`](@extref EnergyModelsBase.Resource)s with conversion value `Real`.
-- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field
-  `data` is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
+  field `data` is conditional through usage of a constructor.
 """
 struct HeatPump <: EMB.NetworkNode
     id::Any
@@ -35,7 +35,7 @@ struct HeatPump <: EMB.NetworkNode
     opex_var::TimeProfile
     opex_fixed::TimeProfile
     output::Dict{<:Resource,<:Real}
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
 end
 
 function HeatPump(
@@ -174,8 +174,8 @@ the alternative is to specify `EqualMassFlows` to limit heat exchange to equal m
 - **`opex_fixed::TimeProfile`** is the fixed operating expense.
 - **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.
 - **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
-- **`data::Vector{Data}`** is the additional data (e.g. for investments). The field
-  `data` is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (e.g. for investments). The
+  field `data` is conditional through usage of a constructor.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger
 """
 struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
@@ -185,7 +185,7 @@ struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchang
     opex_fixed::TimeProfile
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
     delta_t_min::T
 end
 # Default to different mass flows assumptions for heat exchanger
@@ -256,8 +256,8 @@ storage level.
   with conversion value `Real`. Only relevant for linking and the stored
   [`Resource`](@extref EnergyModelsBase.Resource) as the output value is not utilized in
   the calculations.
-- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
+  field `data` is conditional through usage of a constructor.
 """
 struct ThermalEnergyStorage{T} <: Storage{T}
     id::Any
@@ -267,7 +267,7 @@ struct ThermalEnergyStorage{T} <: Storage{T}
     heat_loss_factor::Float64
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
-    data::Vector{<:Data}
+    data::Vector{<:ExtensionData}
 end
 
 function ThermalEnergyStorage{T}(
@@ -299,7 +299,7 @@ function ThermalEnergyStorage(
     heat_loss_factor::Float64,
     input::Dict{<:Resource,<:Real},
     output::Dict{<:Resource,<:Real},
-    data::Vector{<:Data},
+    data::Vector{<:ExtensionData},
 )
     new{CyclicRepresentative}(
         id,
@@ -338,9 +338,10 @@ to limit heat exchange to equal mass flow in the two circuits.
 - **`opex_fixed::TimeProfile`** is the fixed operating expense.
 - **`input::Dict{<:Resource, <:Real}`** are the input `Resource`s with conversion value `Real`.
   Valid inputs are: one `Heat` resource and one power resource.
-- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value `Real`.
-  Valid output is a single `Heat` resource
-- **`data::Vector{Data}`** is the additional data. The pinch data must be included here.
+- **`output::Dict{<:Resource, <:Real}`** are the generated `Resource`s with conversion value
+  `Real`. Valid output is a single `Heat` resource
+- **`data::Vector{<:ExtensionData}`** is the additional data. The pinch data must be included
+  here.
 - **`delta_t_min`** is the ΔT_min for the heat exchanger.
 """
 struct DirectHeatUpgrade{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
@@ -350,7 +351,7 @@ struct DirectHeatUpgrade{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExc
     opex_fixed::TimeProfile
     input::Dict{<:Resource,<:Real}
     output::Dict{<:Resource,<:Real}
-    data::Vector{Data}
+    data::Vector{<:ExtensionData}
     delta_t_min::T
 end
 # Default to different mass flows assumptions for heat exchange

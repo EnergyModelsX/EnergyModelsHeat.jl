@@ -60,7 +60,7 @@
                 FixedProfile(0),
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
-                Data[],
+                ExtensionData[],
                 8, # delta_t_min
             ),
             RefSink(
@@ -101,7 +101,7 @@
             FixedProfile(0),
             Dict(heat_sur => 1, power => 1),
             Dict(heat_use => 1),
-            Data[],
+            ExtensionData[],
             5, # delta_t_min
         )
         power_source = RefSource(

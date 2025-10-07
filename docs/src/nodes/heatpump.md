@@ -43,7 +43,7 @@ The [`HeatPump`](@ref) is a subtype of the [`NetworkNode`](@extref EnergyModelsB
   It is also possible to include other resources which are produced with a given correlation with the heat.\
   All values have to be non-negative.
 
-- **`data::Vector{Data}`**:\
+- **`data::Vector{<:ExtensionData}`**:\
   An entry for providing additional data to the model.
   In the current version, it is only relevant for additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used or for additional emission data through [`EmissionsProcess`](@extref EnergyModelsBase.EmissionsProcess).
   The latter would correspond to uncaptured CO₂ that should be included in the analyses.
@@ -159,6 +159,9 @@ These standard constraints are:
       The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
+- `constraints_ext_data`:\
+  This function is only called for specified data of the storage node, see above.
+
 The `constraints_capacity` function is extended by implementing the lower capacity bound to limit the lowest possible capacity use:
 
 ```math
@@ -174,7 +177,7 @@ The original constraints limiting the capacity to the installed capacity:
 and calling the subfunction `constraints_capacity_installed` to provide bounds for the variable ``\texttt{cap\_inst}[n, t]`` are still called within the function.
 
 The input flow constraint for a [`HeatPump`](@ref) node is calculated differently to a [`NetworkNode`](@extref EnergyModelsBase.NetworkNode) as the relationship between `heat_in_resource` and `driving_force_resource` is reflecting the COP of the heat pump.
-Since the input resources are specified via the fields `heat_in_resource` and `driving_force_resource`, and the conversion factors are calculated seperately, the field `inputs` is not required. 
+Since the input resources are specified via the fields `heat_in_resource` and `driving_force_resource`, and the conversion factors are calculated seperately, the field `inputs` is not required.
 The determination of conversion factors is achieved by extending the `constraints_flow_in` function, separating the calculation for the input flow of heat source and driving force.
 All temperatures are specified in degree Celsius, so the values must be converted into Kelvin by adding 273.15 °C.
 

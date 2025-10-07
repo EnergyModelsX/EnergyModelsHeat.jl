@@ -48,7 +48,7 @@ The strict assumption of `EqualMassFlow` enforces that the mass flow of both str
   The value of the *heat* resource is in general 1.
   All values have to be non-negative.
 
-- **`data::Vector{Data}`**:\
+- **`data::Vector{<:ExtensionData}`**:\
   An entry for providing additional data to the model.
   In the current version, it is only relevant for additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used or for additional emission data through [`EmissionsProcess`](@extref EnergyModelsBase.EmissionsProcess).
   The latter would correspond to uncaptured CO₂ that should be included in the analyses.
@@ -130,6 +130,9 @@ These standard constraints are:
   !!! tip "The function `scale_op_sp`"
       The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
+
+- `constraints_ext_data`:\
+  This function is only called for specified data of the storage node, see above.
 
 The `constraints_flow_out` function is replaced with a new implementation for `HeatExchangers` nodes.
 

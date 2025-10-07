@@ -1,7 +1,8 @@
 """
     DHPipe
 
-A DH pipe between two nodes.
+A district heating pipe between two nodes. The district heating pipe only transports the
+specified resource with a specified loss factor. It has a maximum capacity.
 
 # Fields
 - **`id`** is the name/identifier of the link.
@@ -14,8 +15,8 @@ A DH pipe between two nodes.
 - **`resource_heat::ResourceHeat` is the resource used by DHPipe
 - **`formulation::Formulation`** is the used formulation of links. The field
   `formulation` is conditional through usage of a constructor.
-- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field
-  `data` is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
+  field `data` is conditional through usage of a constructor.
 """
 struct DHPipe <: EMB.Link
     id::Any
@@ -27,7 +28,7 @@ struct DHPipe <: EMB.Link
     t_ground::TimeProfile
     resource_heat::ResourceHeat
     formulation::EMB.Formulation
-    data::Vector{EMB.Data}
+    data::Vector{<:ExtensionData}
 end
 
 function DHPipe(
@@ -63,7 +64,7 @@ function DHPipe(
     pipe_loss_factor::Float64,
     t_ground::TimeProfile,
     resource_heat::ResourceHeat,
-    data::Vector{EMB.Data},
+    data::Vector{<:ExtensionData},
 )
     return DHPipe(
         id,

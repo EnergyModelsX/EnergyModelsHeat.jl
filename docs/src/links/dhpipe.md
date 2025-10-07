@@ -55,6 +55,11 @@ The following additional fields are included for [`DHPipe`](@ref) links:
   The resource used by DHPipe, which has to be of type [`ResourceHeat`](@ref) and must be equal to a resource flowing out of a `to::Node` and into a `from::Node`.
   [`ResourceHeat`](@ref) contains the supply and (optionally) return temperature applied in the district heating network.
   The supply temperature is used in the calculation of the heat losses.
+- **`data::Vector{<:ExtensionData}`**:\
+  An entry for providing additional data to the model.
+  In the current version, it is used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
+  !!! note "Constructor for `DHPipe`"
+      The field `data` is not required as we include a constructor when the value is excluded.
 
 ## [Mathematical description](@id links-DHPipe-math)
 
