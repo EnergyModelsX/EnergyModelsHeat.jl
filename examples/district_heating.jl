@@ -19,7 +19,7 @@ const EMH = EnergyModelsHeat
 const TS = TimeStruct
 
 """
-    generate_district_heating_example_data()
+    generate_district_heating_example()
 
 Generate the data for an example consisting of a district heat source, electricity source,
 heat pump, thermal energy storage (TES), and heat demand. The system represents a low-temperature
@@ -30,7 +30,7 @@ This example demonstrates the flexibility provided by the TES, accounting for he
 district heating pipes and the TES, as well as the impact of electricity price variations
 relative to heat demand.
 """
-function generate_district_heating_example_data()
+function generate_district_heating_example()
     @info "Generate case data - District Heating example"
 
     # Define the different resources and their emission intensity in t CO₂/MWh
@@ -41,13 +41,13 @@ function generate_district_heating_example_data()
     products = [Power, HeatLT, HeatHT, CO2]
 
     # Variables for the individual entries of the time structure
-    op_duration = 2 # Each operational period has a duration of 1 h
-    op_number = 12  # There are in total 365 operational periods in each strategic period
+    op_duration = 2 # Each operational period has a duration of 2 h
+    op_number = 12  # There are in total 12 operational periods in each strategic period
     operational_periods = SimpleTimes(op_number, op_duration)
 
     # The total time within a strategic period is given by 8760 h
     # This implies that the individual operational period are scaled:
-    # Each operational period is scaled with a factor of 8760/(1*12) = 730
+    # Each operational period is scaled with a factor of 8760/(2*12) = 365
     op_per_strat = 8760
 
     # Creation of the time structure
@@ -62,8 +62,8 @@ function generate_district_heating_example_data()
         CO2,                                # CO₂ instance
     )
 
-    # Specify the high temperature heat demand
-    # The demand could also be specified directly in the node
+    # Specify the high temperature heat demand and the price for electricity
+    # The demand and price could also be specified directly in the node
     HT_demand = OperationalProfile([zeros(2); ones(5) * 30; ones(3) * 10; ones(2) * 50])
     el_price = OperationalProfile([ones(4) * 10; ones(4) * 20; 30; 20; 10; 40])
 
@@ -118,6 +118,9 @@ function generate_district_heating_example_data()
 
     # Connect all nodes for the overall energy/mass balance
     # Another possibility would be to instead couple the nodes with an `Availability` node
+    # NOTE: This hard coding based on indexing is error prone. It is in general advised to
+    #       use a mapping dictionary to avoid any problems when introducing new technology
+    #       nodes.
     links = [
         Direct("el_source-heat_pump", nodes[1], nodes[3], Linear())
         DHPipe(                     # District heating pipe link with thermal losses
@@ -137,6 +140,8 @@ function generate_district_heating_example_data()
     ]
 
     # Input data structure
+    # It is also explained on
+    # https://energymodelsx.github.io/EnergyModelsBase.jl/stable/library/public/case_element/
     case = Case(T, products, [nodes, links], [[get_nodes, get_links]])
     return case, model
 end
@@ -209,7 +214,7 @@ function process_district_heating_results(m, case)
 end
 
 # Generate the case and model data and run the model
-case, model = generate_district_heating_example_data()
+case, model = generate_district_heating_example()
 optimizer = optimizer_with_attributes(
     HiGHS.Optimizer,
     MOI.Silent() => true,
