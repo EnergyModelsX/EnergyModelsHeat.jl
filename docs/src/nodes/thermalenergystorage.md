@@ -51,7 +51,7 @@ The standard fields are given as:
   !!! info "Conversion factors"
       While the field input includes a proper conversion factor and may allow for multiple resources, the value of the `output` [`Resource`](@extref EnergyModelsBase.Resource)s is not relevant.
 
-- **`data::Vector{<:Data}`** :\
+- **`data::Vector{<:ExtensionData}`** :\
   An entry for providing additional data to the model.
   In the current version, it is used for providing additional investment data when [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/) is used.
   !!! note
@@ -175,7 +175,7 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
       The function [``scale\_op\_sp(t_{inv}, t)``](@extref EnergyModelsBase.scale_op_sp) calculates the scaling factor between operational and strategic periods.
       It also takes into account potential operational scenarios and their probability as well as representative periods.
 
-- `constraints_data`:\
+- `constraints_ext_data`:\
   This function is only called for specified data of the storage node, see above.
 
 !!! info "Implementation of capacity and OPEX"

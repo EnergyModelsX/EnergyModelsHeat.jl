@@ -114,7 +114,7 @@
         0.25 * 10^(-6),
         FixedProfile(10.0),
         dh_res,
-        Data[],
+        ExtensionData[],
     )
     pipe_form = DHPipe(
         "DH pipe",
@@ -137,7 +137,7 @@
         FixedProfile(10.0),
         dh_res,
         Linear(),
-        Data[],
+        ExtensionData[],
     )
     for field ∈ fieldnames(DHPipe)
         @test getproperty(pipe, field) == getproperty(pipe_data, field)

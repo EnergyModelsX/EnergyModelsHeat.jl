@@ -1,5 +1,12 @@
 # Release Notes
 
+## Unversioned
+
+* Switched from `Data` to `ExtensionData` as described within [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
+* Minor fixes to the documentation and example comments.
+* Removed examples from test set as it somehow creates an error in the latest version on Ubuntu.
+  This error is only present for a single test setup and cannot be reproduced locally.
+
 ## Version 0.1.2 (2025-06-10)
 
 ### Bugfix
