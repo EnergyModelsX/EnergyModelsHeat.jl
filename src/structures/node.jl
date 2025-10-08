@@ -287,7 +287,7 @@ function ThermalEnergyStorage{T}(
         heat_loss_factor,
         input,
         output,
-        Data[],
+        ExtensionData[],
     )
 end
 

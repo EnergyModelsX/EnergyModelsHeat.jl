@@ -52,7 +52,7 @@ function DHPipe(
         t_ground,
         resource_heat,
         formulation,
-        Data[],
+        ExtensionData[],
     )
 end
 function DHPipe(
@@ -99,7 +99,7 @@ function DHPipe(
         t_ground,
         resource_heat,
         Linear(),
-        Data[],
+        ExtensionData[],
     )
 end
 
