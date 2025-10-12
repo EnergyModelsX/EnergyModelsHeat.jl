@@ -24,6 +24,7 @@ DHPipe
 ```@docs
 HeatPump
 ThermalEnergyStorage
+FixedRateTES
 HeatExchanger
 EnergyModelsHeat.DirectHeatUpgrade
 ```
