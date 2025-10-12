@@ -7,7 +7,7 @@ The following types are introduced:
 1. a `Resource` [`ResourceHeat`](@ref),
 2. a `Link` [`DHPipe`](@ref),
 3. a `NetworkNode` [`HeatPump`](@ref),
-4. a `Storage` [`ThermalEnergyStorage`](@ref),
+4. a `Storage` [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref),
 5. a utility type [`PinchData`](@ref), and
 6. a `NetworkNode` [`HeatExchanger`](@ref).
 
