@@ -122,7 +122,23 @@ end
 
 This method checks that the *[`FixedRateTES`](@ref)* node is valid.
 
+It reuses the standard checks of a `Storage` node through calling the function
+[`EMB.check_node_default`](@extref EnergyModelsBase.check_node_default), but adds an
+additional check on the data.
+
 ## Checks
+- The `TimeProfile` of the field `capacity` in the type in the field `charge` is required
+  to be non-negative if the chosen composite type has the field `capacity`.
+- The `TimeProfile` of the field `capacity` in the type in the field `level` is required
+  to be non-negative`.
+- The `TimeProfile` of the field `capacity` in the type in the field `discharge` is required
+  to be non-negative if the chosen composite type has the field `capacity`.
+- The `TimeProfile` of the field `fixed_opex` is required to be non-negative and
+  accessible through a `StrategicPeriod` as outlined in the function
+  [`check_fixed_opex(n, 𝒯ᴵⁿᵛ, check_timeprofiles)`] for the chosen composite type .
+- The values of the dictionary `input` are required to be non-negative.
+- The values of the dictionary `output` are required to be non-negative.
+- The value of the field `heat_loss_factor` is required to be in the range ``[0, 1]``.
 - The value of the field `level_discharge` is required to be in the range ``[0, 1]``.
 - The value of the field `level_charge` is required to be in the range ``[0, 1]``.
 
@@ -133,6 +149,18 @@ function EMB.check_node(
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
 )
+    EMB.check_node_default(n, 𝒯, modeltype, check_timeprofiles)
+
+    @assert_or_log(
+        heat_loss_factor(n) ≥ 0,
+        "The heat_loss_factor field must be non-negative."
+    )
+
+    @assert_or_log(
+        heat_loss_factor(n) ≤ 1,
+        "The heat_loss_factor field must be less or equal to 1."
+    )
+
     @assert_or_log(
         level_discharge(n) ≥ 0,
         "The level_discharge field must be non-negative."
