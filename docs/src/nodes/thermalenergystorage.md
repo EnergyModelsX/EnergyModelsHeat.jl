@@ -1,14 +1,19 @@
 
 # [ThermalEnergyStorage nodes](@id nodes-TES)
+# [ThermalEnergyStorage nodes](@id nodes-TES)
 
+Thermal Energy Storages work mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
+Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective operational period.
 Thermal Energy Storages work mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
 Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective operational period.
 The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
 In practice, this approach with a constant relative heat loss factor does not accurately represent heat loss mechanisms based on temperature difference between the inside and outside of the TES.
 However, it is a reasonable approximation that at least reflects the dependence of the SOC on the absolute losses of the storage.
 Additionally, Thermal Energy Storages allow for the definition of both charge and discharge rate. 
+Additionally, Thermal Energy Storages allow for the definition of both charge and discharge rate. 
 
 !!! danger "StorageBehavior for ThermalEnergyStorage"
+    Thermal Energy Storages can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
     Thermal Energy Storages can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
     When using `RepresentativePeriods`, this is furthermore reduced to[`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative).
     The reason for this limitation is that we have not yet implemented heat losses over a representative period.
@@ -17,7 +22,10 @@ Additionally, Thermal Energy Storages allow for the definition of both charge an
 
 [`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.  
 [`FixedRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its charge and discharge rates are defined relative to the installed storage capacity. This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge rate to be maintained when scaling the storage size. In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
+[`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.  
+[`FixedRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its charge and discharge rates are defined relative to the installed storage capacity. This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge rate to be maintained when scaling the storage size. In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
 
+### [Standard fields](@id nodes-TES-fields-stand)
 ### [Standard fields](@id nodes-TES-fields-stand)
 
 The standard fields are given as:
@@ -28,9 +36,11 @@ The standard fields are given as:
 
 - **`level::UnionCapacity`** :\
   The level parameters of the Thermal Energy Storage.
+  The level parameters of the Thermal Energy Storage.
   The level storage parameters must include a capacity.
   Depending on the chosen type, the level parameters can include in addition variable OPEX and/or fixed OPEX.
   More information can be found on *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
+  !!! note "Permitted values for storage parameters in `level`"
   !!! note "Permitted values for storage parameters in `level`"
       If the node should contain investments through the application of [`EnergyModelsInvestments`](https://energymodelsx.github.io/EnergyModelsInvestments.jl/), it is important to note that you can only use `FixedProfile` or `StrategicProfile` for the capacity, but not `RepresentativeProfile` or `OperationalProfile`.
       Similarly, you can only use `FixedProfile` or `StrategicProfile` for the fixed OPEX, but not `RepresentativeProfile` or `OperationalProfile`.
@@ -55,6 +65,7 @@ The standard fields are given as:
 
 ### [Additional fields](@id nodes-TES-fields-new)
 
+Both [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes introduce an additional field for the heat loss factor:
 Both [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes introduce an additional field for the heat loss factor:
 
 - **`heat_loss_factor::Float64`** :\
@@ -104,6 +115,7 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 - [``\texttt{stor\_charge\_inst}``](@extref EnergyModelsBase man-opt_var-cap) if the `ThermalEnergyStorage` has the field `charge` with a capacity
 - [``\texttt{stor\_discharge\_use}``](@extref EnergyModelsBase man-opt_var-cap)
 - [``\texttt{stor\_discharge\_inst}``](@extref EnergyModelsBase man-opt_var-cap) if the `ThermalEnergyStorage` has the field `discharge` with a capacity
+- [``\texttt{stor\_discharge\_inst}``](@extref EnergyModelsBase man-opt_var-cap) if the `ThermalEnergyStorage` has the field `discharge` with a capacity
 - [``\texttt{flow\_in}``](@extref EnergyModelsBase man-opt_var-flow)
 - [``\texttt{flow\_out}``](@extref EnergyModelsBase man-opt_var-flow)
 - [``\texttt{stor\_level\_Δ\_op}``](@extref EnergyModelsBase man-opt_var-cap)
@@ -111,6 +123,9 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 
 ### [Constraints](@id nodes-TES-math-con)
 
+[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*.
+[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize the declared method for all nodes 𝒩.
+ The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes.
 [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*.
 [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize the declared method for all nodes 𝒩.
  The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes.
@@ -129,9 +144,23 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 
   For [`FixedRateTES`](@ref)
 
+  For [`ThermalEnergyStorage`](@ref)
+
   ```math
   \begin{aligned}
   \texttt{stor\_level\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \\
+  \texttt{stor\_charge\_use}[n, t] & ≤ \texttt{stor\_charge\_inst}[n, t] \\
+  \texttt{stor\_discharge\_use}[n, t] & ≤ \texttt{stor\_discharge\_inst}[n, t]
+  \end{aligned}
+  ```
+
+  For [`FixedRateTES`](@ref)
+
+  ```math
+  \begin{aligned}
+  \texttt{stor\_level\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \\
+  \texttt{stor\_charge\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \times level\_charge(n) \\
+  \texttt{stor\_discharge\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \times level\_discharge(n) \\
   \texttt{stor\_charge\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \times level\_charge(n) \\
   \texttt{stor\_discharge\_use}[n, t] & ≤ \texttt{stor\_level\_inst}[n, t] \times level\_discharge(n) \\
   \end{aligned}
@@ -141,9 +170,21 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 
   For [`ThermalEnergyStorage`](@ref)
 
+  For [`ThermalEnergyStorage`](@ref)
+
   ```math
   \begin{aligned}
   \texttt{stor\_level\_inst}[n, t] & = capacity(level(n), t) \\
+  \texttt{stor\_charge\_inst}[n, t] & = capacity(charge(n), t) \\
+  \texttt{stor\_discharge\_inst}[n, t] & = capacity(discharge(n), t) 
+  \end{aligned}
+  ```
+
+  For [`FixedRateTES`](@ref)
+
+  ```math
+  \begin{aligned}
+  \texttt{stor\_level\_inst}[n, t] & = capacity(level(n), t)
   \texttt{stor\_charge\_inst}[n, t] & = capacity(charge(n), t) \\
   \texttt{stor\_discharge\_inst}[n, t] & = capacity(discharge(n), t) 
   \end{aligned}
@@ -162,6 +203,7 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
       Nodes with investments are then no longer constrained by the parameter capacity.
 
 - `constraints_flow_in`:\
+  
   
   The auxiliary resource constraints are independent of the chosen storage behavior:
 
@@ -226,6 +268,7 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 #### [Level constraints](@id nodes-TES-math-con-level)
 
 The overall structure is outlined on *[Constraint functions](@extref EnergyModelsBase man-con-stor_level)*.
+The level constraints are called through the function `constraints_level` which then calls additional functions depending on the chosen time structure (whether it includes representative periods and/or operational scenarios) and the chosen *[storage behaviour](@extref EnergyModelsBase lib-pub-nodes-stor_behav)*. Note: [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) only make changes to the `constraint_level_iterate`function when [`CyclicStrategic`](@extref EnergyModelsBase.CyclicStrategic) is chosen as storage behaviour.
 The level constraints are called through the function `constraints_level` which then calls additional functions depending on the chosen time structure (whether it includes representative periods and/or operational scenarios) and the chosen *[storage behaviour](@extref EnergyModelsBase lib-pub-nodes-stor_behav)*. Note: [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) only make changes to the `constraint_level_iterate`function when [`CyclicStrategic`](@extref EnergyModelsBase.CyclicStrategic) is chosen as storage behaviour.
 
 The constraints introduced in `constraints_level_aux` are given by
