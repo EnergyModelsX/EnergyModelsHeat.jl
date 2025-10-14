@@ -12,7 +12,7 @@
         power    = ResourceCarrier("Power", 0.0)
         heat_sur = ResourceCarrier("Heat_surplus", 0.0)
         heat_use = ResourceCarrier("Heat_usable", 0.0)
-        CO₂      = ResourceEmit("CO₂", 1.0)
+        CO₂    = ResourceEmit("CO₂", 1.0)
         products = [power, heat_sur, heat_use, CO₂]
 
         op_duration = 2 # Each operational period has a duration of 2
@@ -111,7 +111,7 @@ end
         power    = ResourceCarrier("Power", 0.0)
         heat_sur = ResourceCarrier("Heat_surplus", 0.0)
         heat_use = ResourceCarrier("Heat_usable", 0.0)
-        CO₂      = ResourceEmit("CO₂", 1.0)
+        CO₂    = ResourceEmit("CO₂", 1.0)
         products = [power, heat_sur, heat_use, CO₂]
 
         op_duration = 2 # Each operational period has a duration of 2
@@ -189,8 +189,10 @@ end
         sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T) * op_duration
     heat_stored = sum(JuMP.value(m[:stor_level][nodes[3], t]) for t ∈ T)
 
-    calculated_max_charge_rate = maximum([JuMP.value(m[:stor_charge_use][nodes[3], t]) for t in collect(T)])
-    calculated_max_discharge_rate = maximum([JuMP.value(m[:stor_discharge_use][nodes[3], t]) for t in collect(T)])
+    calculated_max_charge_rate =
+        maximum([JuMP.value(m[:stor_charge_use][nodes[3], t]) for t ∈ collect(T)])
+    calculated_max_discharge_rate =
+        maximum([JuMP.value(m[:stor_discharge_use][nodes[3], t]) for t ∈ collect(T)])
 
     real_max_charge_rate = nodes[3].level_charge
     real_max_discharge_rate = nodes[3].level_discharge
@@ -203,6 +205,4 @@ end
     @test heat_stored ≈ 0.6666 atol = 0.01
     @test calculated_max_charge_rate ≤ real_max_charge_rate
     @test calculated_max_discharge_rate ≤ real_max_discharge_rate
-
-
 end
