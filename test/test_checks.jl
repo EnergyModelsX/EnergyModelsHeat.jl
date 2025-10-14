@@ -253,7 +253,7 @@ end
         level_opex = FixedProfile(0.8),
         stor_res = Heat,
         heat_loss_factor = 0.05,
-        level_charge =0.5,
+        level_charge = 0.5,
         level_discharge = 1.0,
         input = Dict(Heat => 1),
         output = Dict(Heat => 1),
