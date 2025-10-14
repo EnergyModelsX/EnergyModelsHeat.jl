@@ -69,6 +69,8 @@ The charging and discharging rates are specified in two different ways:
   The charging and discharging parameters of the `ThermalEnergyStorage`.  
   Depending on the chosen type, these parameters can include variable OPEX, fixed OPEX, and/or capacity.  
   More information can be found in *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
+  !!! note "When not specifying a discharge rate"
+      The field `discharge` is not required as we include a constructor when the value is excluded. In that case, the discharging rate is set to the same value as the charging rate.
 
 For [`FixedRateTES`](@ref), two additional fields specify the charging and discharging rates relative to the installed storage capacity:
 
