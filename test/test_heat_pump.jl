@@ -12,8 +12,8 @@
         power    = ResourceCarrier("Power", 0.0)
         heat_sur = ResourceCarrier("Heat_surplus", 0.0)
         heat_use = ResourceCarrier("Heat_usable", 0.0)
-        CO₂      = ResourceEmit("CO₂", 1.0)
-        𝒫        = [power, heat_sur, heat_use, CO₂]
+        CO₂    = ResourceEmit("CO₂", 1.0)
+        𝒫     = [power, heat_sur, heat_use, CO₂]
 
         op_duration = 2 # Each operational period has a duration of 2
         op_number = 4   # There are in total 4 operational periods
