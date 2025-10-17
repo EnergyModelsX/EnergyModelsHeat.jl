@@ -260,7 +260,7 @@ end
     )
         products = [Heat, CO2]
         # Creation of the source and sink module as well as the arrays used for nodes and links
-        TES = EnergyModelsHeat.FixedRateTES{CyclicRepresentative}(
+        TES = FixedRateTES{CyclicRepresentative}(
             "TES",
             StorCapOpexFixed(level_cap, level_opex),
             stor_res,
