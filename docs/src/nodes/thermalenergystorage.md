@@ -9,7 +9,7 @@ However, it is a reasonable approximation that at least reflects the dependence 
 Additionally, thermal energy storage nodes allow for the definition of both charge and discharge rate. 
 
 !!! danger "StorageBehavior for ThermalEnergyStorage"
-    Thermal Energy Storages can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
+    Thermal energy storage nodes can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
     When using `RepresentativePeriods`, this is furthermore reduced to[`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative).
     The reason for this limitation is that we have not yet implemented heat losses over a representative period.
 
