@@ -6,7 +6,7 @@ Heat losses are quantified through a heat loss factor that describes the amount 
 The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
 In practice, this approach with a constant relative heat loss factor does not accurately represent heat loss mechanisms based on temperature difference between the inside and outside of the TES.
 However, it is a reasonable approximation that at least reflects the dependence of the SOC on the absolute losses of the storage.
-Additionally, Thermal Energy Storages allow for the definition of both charge and discharge rate. 
+Additionally, thermal energy storage nodes allow for the definition of both charge and discharge rate. 
 
 !!! danger "StorageBehavior for ThermalEnergyStorage"
     Thermal Energy Storages can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
