@@ -144,7 +144,7 @@ end
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
             ),
-            EMH.FixedRateTES{CyclicStrategic}(
+            FixedRateTES{CyclicStrategic}(
                 "TES",
                 StorCap(FixedProfile(1)),
                 heat_use,
