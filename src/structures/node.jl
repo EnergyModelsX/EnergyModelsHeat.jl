@@ -504,7 +504,7 @@ level_discharge(n::FixedRateTES) = n.level_discharge
 """
     level_charge(n::FixedRateTES)
 
-Returns the ratio of charge rate and storage level for storage `n`.
+Returns the ratio of the maximum charge rate and storage level capacity for TES `n`.
 """
 level_charge(n::FixedRateTES) = n.level_charge
 
