@@ -33,6 +33,6 @@ export DHPipe
 export HeatPump
 export PinchData
 export HeatExchanger
-export ThermalEnergyStorage
+export AbstractThermalEnergyStor, ThermalEnergyStorage, FixedRateTES
 
 end

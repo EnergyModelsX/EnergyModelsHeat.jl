@@ -131,7 +131,7 @@ end
 """
     constraints_level_iterate(
         m,
-        n::ThermalEnergyStorage,
+        n::AbstractThermalEnergyStor,
         prev_pers::PreviousPeriods,
         cyclic_pers::CyclicPeriods,
         per,
@@ -139,11 +139,11 @@ end
         modeltype::EnergyModel,
     )
 
-In the case of a [`ThermalEnergyStorage`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
+In the case of a [`AbstractThermalEnergyStor`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
 """
 function EMB.constraints_level_iterate(
     m,
-    n::ThermalEnergyStorage,
+    n::AbstractThermalEnergyStor,
     prev_pers::PreviousPeriods,
     cyclic_pers::CyclicPeriods,
     per,
@@ -169,4 +169,39 @@ function EMB.constraints_level_iterate(
         # nothing
         EMB.constraints_level_bounds(m, n, t, cyclic_pers, modeltype)
     end
+end
+
+"""
+    constraints_capacity(
+        m,
+        n::FixedRateTES,
+        𝒯::TimeStructure,
+        modeltype::EnergyModel,
+    )
+
+Adjust the constraints on the capacity of a [`FixedRateTES`](@ref) to account for the maximum charge and discharge rates in relation to the installed storage level.
+"""
+
+function EMB.constraints_capacity(
+    m,
+    n::FixedRateTES,
+    𝒯::TimeStructure,
+    modeltype::EnergyModel,
+)
+    @constraint(m, [t ∈ 𝒯], m[:stor_level][n, t] ≤ m[:stor_level_inst][n, t])
+
+    # The discharge rate is limited by the installed storage level and the level_discharge multiplier
+    @constraint(
+        m,
+        [t ∈ 𝒯],
+        m[:stor_discharge_use][n, t] ≤ m[:stor_level_inst][n, t] * level_discharge(n)
+    )
+    # The charge rate is limited by the installed storage level and the level_charge multiplier
+    @constraint(
+        m,
+        [t ∈ 𝒯],
+        m[:stor_charge_use][n, t] ≤ m[:stor_level_inst][n, t] * level_charge(n)
+    )
+
+    constraints_capacity_installed(m, n, 𝒯, modeltype)
 end
