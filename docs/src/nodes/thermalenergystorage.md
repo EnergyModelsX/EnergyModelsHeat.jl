@@ -27,7 +27,7 @@ The standard fields are given as:
   This is similar to the approach utilized in `EnergyModelsBase`.
 
 - **`level::UnionCapacity`** :\
-  The level parameters of the Thermal Energy Storage.
+  The level parameters of the thermal energy storage node.
   The level storage parameters must include a capacity.
   Depending on the chosen type, the level parameters can include in addition variable OPEX and/or fixed OPEX.
   More information can be found on *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
