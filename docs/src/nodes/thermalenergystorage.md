@@ -1,7 +1,7 @@
 
 # [ThermalEnergyStorage nodes](@id nodes-TES)
 
-Thermal Energy Storages work mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
+Thermal energy storage nodes work mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
 Heat losses are quantified through a heat loss factor that describes the amount of thermal energy that is lost in relation to the storage level of the respective operational period.
 The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
 In practice, this approach with a constant relative heat loss factor does not accurately represent heat loss mechanisms based on temperature difference between the inside and outside of the TES.
