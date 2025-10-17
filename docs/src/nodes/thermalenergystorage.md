@@ -61,7 +61,7 @@ Both [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes introduce a
   The heat loss factor describes the heat lost relative to the storage level.  
   It corresponds to the loss occurring between two operational periods for a given operational duration of 1 (see *[Utilize `TimeStruct`](@extref EnergyModelsBase how_to-utilize_TS)* for details).
 
-The charging and discharging rates are specified in two different ways:  
+The allowed charging and discharging rates are specified in two different ways:  
 
 [`ThermalEnergyStorage`](@ref) nodes use the same field for charging capacity as [`RefStorage`](@extref EnergyModelsBase.RefStorage) nodes, and extend it by adding a field for discharging:
 
