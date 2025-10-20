@@ -190,9 +190,9 @@ end
     heat_stored = sum(JuMP.value(m[:stor_level][nodes[3], t]) for t ∈ T)
 
     calculated_max_charge_rate =
-        maximum([JuMP.value(m[:stor_charge_use][nodes[3], t]) for t ∈ collect(T)])
+        maximum([JuMP.value(m[:stor_charge_use][nodes[3], t]) for t ∈ T])
     calculated_max_discharge_rate =
-        maximum([JuMP.value(m[:stor_discharge_use][nodes[3], t]) for t ∈ collect(T)])
+        maximum([JuMP.value(m[:stor_discharge_use][nodes[3], t]) for t ∈ T])
 
     real_max_charge_rate = nodes[3].level_charge
     real_max_discharge_rate = nodes[3].level_discharge

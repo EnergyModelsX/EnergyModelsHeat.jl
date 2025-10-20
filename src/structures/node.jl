@@ -497,7 +497,7 @@ heat_loss_factor(n::AbstractThermalEnergyStor) = n.heat_loss_factor
 """
     level_discharge(n::FixedRateTES)
 
-Returns the ratio of discharge rate and storage level for storage `n`.
+Returns the ratio of the maximum discharge rate and storage level capacity for TES `n`.
 """
 level_discharge(n::FixedRateTES) = n.level_discharge
 

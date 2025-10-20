@@ -16,7 +16,9 @@ Additionally, thermal energy storage nodes allow for the definition of both char
 ## [Introduced type and its fields](@id nodes-TES-fields)
 
 [`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.  
-[`FixedRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its charge and discharge rates are defined relative to the installed storage capacity. This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge rate to be maintained when scaling the storage size. In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
+[`FixedRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its maximum charge and discharge rates are defined relative to the installed storage capacity.
+ This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge capacity to be maintained when scaling the storage size.
+ In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
 
 ### [Standard fields](@id nodes-TES-fields-stand)
 
@@ -63,7 +65,7 @@ Both [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes introduce a
 
 The allowed charging and discharging rates are specified in two different ways:  
 
-[`ThermalEnergyStorage`](@ref) nodes use the same field for charging capacity as [`RefStorage`](@extref EnergyModelsBase.RefStorage) nodes, and extend it by adding a field for discharging:
+[`ThermalEnergyStorage`](@ref) nodes use the same field for the charging capacity as [`RefStorage`](@extref EnergyModelsBase.RefStorage) nodes, and extend it by adding a field for discharging:
 
 - **`charge::AbstractStorageParameters`** and **`discharge::AbstractStorageParameters`** :\
   The charging and discharging parameters of the `ThermalEnergyStorage`.  
@@ -72,12 +74,18 @@ The allowed charging and discharging rates are specified in two different ways:
   !!! note "When not specifying a discharge rate"
       The field `discharge` is not required as we include a constructor when the value is excluded. In that case, the discharging rate is set to the same value as the charging rate.
 
-For [`FixedRateTES`](@ref), two additional fields specify the charging and discharging rates relative to the installed storage capacity:
+For [`FixedRateTES`](@ref), two additional fields specify the maximum charging and discharging rates relative to the installed storage capacity:
 
-- **`level_charge::AbstractStorageParameters`** and **`level_discharge::AbstractStorageParameters`** :\
-  The fixed charging and discharging rates of the `FixedRateTES` relative to the installed storage capacity.  
-  `level_charge` = charging rate / installed storage level  \
-  `level_discharge` = discharging rate / installed storage level
+- **`level_charge::Float64`** and **`level_discharge::Float64`** :\
+  The maximum charging and discharging rates of the `FixedRateTES` relative to the installed storage capacity.
+  This implies that the unit is given as per operational period duration.
+  Mathematically, this can be expressed as
+  
+  ```math
+  \begin{aligned}
+  level\_charge & = max\_charge / installed\_storage\_level  \\
+  level\_discharge &  = max\_discharge / installed\_storage\_level
+  \end{aligned}
 
 ## [Mathematical description](@id nodes-TES-math)
 
@@ -113,10 +121,10 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 
 [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*.
 [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize the declared method for all nodes 𝒩.
- The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes.
+The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes.
+[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) use the same methods, except for `constraints_capacity`.
 
 - `constraints_capacity`:
-
   For [`ThermalEnergyStorage`](@ref)
 
   ```math
@@ -138,7 +146,6 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
   ```
 
 - `constraints_capacity_installed`:
-
   For [`ThermalEnergyStorage`](@ref)
 
   ```math
@@ -162,7 +169,6 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
       Nodes with investments are then no longer constrained by the parameter capacity.
 
 - `constraints_flow_in`:\
-  
   The auxiliary resource constraints are independent of the chosen storage behavior:
 
   ```math
