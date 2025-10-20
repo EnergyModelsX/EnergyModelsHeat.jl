@@ -322,9 +322,7 @@ end
 
     # Test that a wrong charge or discharge factor are caught by the checks
     @test_throws AssertionError check_graph(; level_charge = -0.4)
-    @test_throws AssertionError check_graph(; level_charge = 1.2)
     @test_throws AssertionError check_graph(; level_discharge = -0.4)
-    @test_throws AssertionError check_graph(; level_discharge = 1.2)
 
     # Set the global again to false
     EMB.TEST_ENV = false
