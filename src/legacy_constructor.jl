@@ -56,7 +56,7 @@ function ThermalEnergyStorage(
     output::Dict{<:Resource,<:Real},
     data::Vector{<:ExtensionData},
 )
-    new{CyclicRepresentative}(
+    return ThermalEnergyStorage{CyclicRepresentative}(
         id,
         charge,
         level,

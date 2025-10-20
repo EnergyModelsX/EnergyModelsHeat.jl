@@ -163,10 +163,12 @@ end
         heat_loss_factor = 0.05,
         input = Dict(Heat => 1),
         output = Dict(Heat => 1),
+        oper = SimpleTimes(10, 1),
+        stor_behav = CyclicRepresentative,
     )
         products = [Heat, CO2]
         # Creation of the source and sink module as well as the arrays used for nodes and links
-        TES = EnergyModelsHeat.ThermalEnergyStorage{CyclicRepresentative}(
+        TES = EnergyModelsHeat.ThermalEnergyStorage{stor_behav}(
             "TES",
             StorCapOpexFixed(charge_cap, charge_opex),
             StorCapOpexFixed(level_cap, level_opex),
@@ -198,7 +200,7 @@ end
 
         # Creation of the time structure and the used global data
         op_per_strat = 8760.0
-        T = TwoLevel(2, 2, SimpleTimes(10, 1); op_per_strat)
+        T = TwoLevel(2, 2, oper; op_per_strat)
         modeltype = OperationalModel(
             Dict(CO2 => FixedProfile(10)),
             Dict(CO2 => FixedProfile(0)),
@@ -227,6 +229,15 @@ end
     @test_throws AssertionError check_graph(; charge_opex = OperationalProfile([10]))
     @test_throws AssertionError check_graph(; level_opex = FixedProfile(-5))
     @test_throws AssertionError check_graph(; level_opex = OperationalProfile([10]))
+
+    # Test that the warning regarding the time structure is thrown
+    msg =
+        "Using `CyclicStrategic` with a `ThermalEnergyStorage{EnergyModelsBase.CyclicStrategic}` and " *
+        "`RepresentativePeriods` " *
+        "results in errors for the calculation of the heat loss. It is not advised " *
+        "to utilize this `StorageBehavior`. Use instead `CyclicRepresentative`."
+    oper = RepresentativePeriods(8760, [0.5, 0.5], SimpleTimes(10, 1))
+    @test_logs (:warn, msg) check_graph(; stor_behav = CyclicStrategic, oper)
 
     # Set the global again to false
     EMB.TEST_ENV = false
@@ -257,10 +268,12 @@ end
         level_discharge = 1.0,
         input = Dict(Heat => 1),
         output = Dict(Heat => 1),
+        oper = SimpleTimes(10, 1),
+        stor_behav = CyclicRepresentative,
     )
         products = [Heat, CO2]
         # Creation of the source and sink module as well as the arrays used for nodes and links
-        TES = BoundRateTES{CyclicRepresentative}(
+        TES = BoundRateTES{stor_behav}(
             "TES",
             StorCapOpexFixed(level_cap, level_opex),
             stor_res,
@@ -293,7 +306,7 @@ end
 
         # Creation of the time structure and the used global data
         op_per_strat = 8760.0
-        T = TwoLevel(2, 2, SimpleTimes(10, 1); op_per_strat)
+        T = TwoLevel(2, 2, oper; op_per_strat)
         modeltype = OperationalModel(
             Dict(CO2 => FixedProfile(10)),
             Dict(CO2 => FixedProfile(0)),
@@ -323,6 +336,14 @@ end
     # Test that a wrong charge or discharge factor are caught by the checks
     @test_throws AssertionError check_graph(; level_charge = -0.4)
     @test_throws AssertionError check_graph(; level_discharge = -0.4)
+
+    # Test that the warning regarding the time structure is thrown
+    msg =
+        "Using `CyclicStrategic` with a `BoundRateTES` and `RepresentativePeriods` " *
+        "results in errors for the calculation of the heat loss. It is not advised " *
+        "to utilize this `StorageBehavior`. Use instead `CyclicRepresentative`."
+    oper = RepresentativePeriods(8760, [0.5, 0.5], SimpleTimes(10, 1))
+    @test_logs (:warn, msg) check_graph(; stor_behav = CyclicStrategic, oper)
 
     # Set the global again to false
     EMB.TEST_ENV = false

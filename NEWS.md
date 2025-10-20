@@ -2,14 +2,24 @@
 
 ## Unversioned
 
+### New subtype for thermal energy storage
+
 * Added Abstract type `AbstractTES`.
-* Introduced a new Storage type `BoundRateTES` including documentation, checks and tests which sets a maximum bound for charge and discharge capacities in relation to the installed storage level. 
-* Added discharge capacity to `ThermalEnergyStorage` node with legacy constructors to prevent breaking changes. 
+* Introduced a new `AbstractTES` type `BoundRateTES` including documentation, checks, and tests which sets a maximum bound for charge and discharge capacities in relation to the installed storage level.
+* Added discharge capacity to `ThermalEnergyStorage` node with legacy constructors to prevent breaking changes.
+
+### Miscellaneous
+
 * Switched from `Data` to `ExtensionData` as described within [`EnergyModelsBase` v0.9.1](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.9.1).
-* Minor fixes to the documentation and example comments.
 * Removed examples from test set as it somehow creates an error in the latest version on Ubuntu.
   This error is only present for a single test setup and cannot be reproduced locally.
 * Removed the folder `submodels` as the CHP model was moved to *[a new repository](https://github.com/iDesignRES/CHP_modelling)*.
+
+### Fixes
+
+* Minor fixes to the documentation and example comments.
+* Fixed one of the constructors for `ThermalEnergyStorage` which was not working.
+  This includes as well now a warning if the wrong `StorageBehavior` is utilized.
 
 ## Version 0.1.2 (2025-06-10)
 

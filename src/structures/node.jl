@@ -244,9 +244,10 @@ heat losses do not occur while charging or discharging, *i.e.*, they are proport
 storage level.
 
 !!! warning "StorageBehavior"
-    `ThermalEnergyStorage` in its current implementation only supports
-    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior.
-    This input is not a required input due to the utilization of an inner constructor.
+    `BoundRateTES` in its current implementation only supports
+    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior
+    when using [`RepresentativePeriods`](@extref TimeStruct.RepresentativePeriods).
+    This input is not a required input due to the inclusion of a constructor.
 
 # Fields
 - **`id`** is the name/identifier of the node.
@@ -303,7 +304,6 @@ function ThermalEnergyStorage{T}(
         ExtensionData[],
     )
 end
-
 function ThermalEnergyStorage(
     id::Any,
     charge::EMB.AbstractStorageParameters,
@@ -315,7 +315,7 @@ function ThermalEnergyStorage(
     output::Dict{<:Resource,<:Real},
     data::Vector{<:ExtensionData},
 )
-    new{CyclicRepresentative}(
+    return ThermalEnergyStorage{CyclicRepresentative}(
         id,
         charge,
         level,
@@ -325,6 +325,28 @@ function ThermalEnergyStorage(
         input,
         output,
         data,
+    )
+end
+function ThermalEnergyStorage(
+    id,
+    charge::EMB.AbstractStorageParameters,
+    level::EMB.UnionCapacity,
+    discharge::EMB.AbstractStorageParameters,
+    stor_res::Resource,
+    heat_loss_factor::Float64,
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+)
+    return ThermalEnergyStorage{CyclicRepresentative}(
+        id,
+        charge,
+        level,
+        discharge,
+        stor_res,
+        heat_loss_factor,
+        input,
+        output,
+        ExtensionData[],
     )
 end
 
@@ -337,8 +359,9 @@ ratio between the (dis-)charge rate and the installed storage capacity.
 
 !!! warning "StorageBehavior"
     `BoundRateTES` in its current implementation only supports
-    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior.
-    This input is not a required input due to the utilization of an inner constructor.
+    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior
+    when using [`RepresentativePeriods`](@extref TimeStruct.RepresentativePeriods).
+    This input is not a required input due to the inclusion of a constructor.
 
 # Fields
 - **`id`** is the name/identifier of the node.
@@ -354,8 +377,8 @@ ratio between the (dis-)charge rate and the installed storage capacity.
   with conversion value `Real`. Only relevant for linking and the stored
   [`Resource`](@extref EnergyModelsBase.Resource) as the output value is not utilized in
   the calculations.
-- **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
-  is conditional through usage of a constructor.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
+  field `data` is conditional through usage of a constructor.
 """
 struct BoundRateTES{T} <: AbstractTES{T}
     id::Any
@@ -368,7 +391,6 @@ struct BoundRateTES{T} <: AbstractTES{T}
     output::Dict{<:Resource,<:Real}
     data::Vector{<:Data}
 end
-
 function BoundRateTES{T}(
     id,
     level::EMB.UnionCapacity,
@@ -388,10 +410,9 @@ function BoundRateTES{T}(
         level_discharge,
         input,
         output,
-        Data[],
+        ExtensionData[],
     )
 end
-
 function BoundRateTES(
     id::Any,
     level::EMB.UnionCapacity,
@@ -401,9 +422,9 @@ function BoundRateTES(
     level_discharge::Float64,
     input::Dict{<:Resource,<:Real},
     output::Dict{<:Resource,<:Real},
-    data::Vector{<:Data},
+    data::Vector{<:ExtensionData},
 )
-    new{CyclicRepresentative}(
+    return BoundRateTES{CyclicRepresentative}(
         id,
         level,
         stor_res,
@@ -413,6 +434,28 @@ function BoundRateTES(
         input,
         output,
         data,
+    )
+end
+function BoundRateTES(
+    id::Any,
+    level::EMB.UnionCapacity,
+    stor_res::Resource,
+    heat_loss_factor::Float64,
+    level_charge::Float64,
+    level_discharge::Float64,
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+)
+    BoundRateTES{CyclicRepresentative}(
+        id,
+        level,
+        stor_res,
+        heat_loss_factor,
+        level_charge,
+        level_discharge,
+        input,
+        output,
+        ExtensionData[],
     )
 end
 
