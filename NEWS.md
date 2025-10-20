@@ -14,6 +14,7 @@
 * Removed examples from test set as it somehow creates an error in the latest version on Ubuntu.
   This error is only present for a single test setup and cannot be reproduced locally.
 * Removed the folder `submodels` as the CHP model was moved to *[a new repository](https://github.com/iDesignRES/CHP_modelling)*.
+* Unified and extended the test structure.
 
 ### Fixes
 
