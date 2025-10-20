@@ -10,6 +10,7 @@ Pages = ["types-EMH.md"]
 
 ```@docs
 EnergyModelsHeat.AbstractHeatExchanger
+EnergyModelsHeat.AbstractTES
 ```
 
 ## [Parameter supertypes](@id lib-int-types-para)

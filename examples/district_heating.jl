@@ -98,12 +98,26 @@ function generate_district_heating_example()
             FixedProfile(0),        # Fixed OPEX in €/MW/a
             Dict(HeatHT => 1),      # Output from the node with output ratio
         ),
-        ThermalEnergyStorage{CyclicStrategic}(
-            "thermal energy storage",
-            StorCap(FixedProfile(10)),  # Charge parameters, in this case only capacity in MW
+        # NOTE: This representation of a ThermalEnergyStorage is equivalent to the one below
+        # using BoundRateTES and will lead to the same results.
+        #
+        # ThermalEnergyStorage{CyclicRepresentative}(
+        #     "thermal energy storage",   # Node id
+        #     StorCap(FixedProfile(10)),  # Charge parameters, in this case only capacity in MW
+        #     StorCap(FixedProfile(200)), # Level parameters, in this case only capacity in MWh
+        #     StorCap(FixedProfile(30)),  # Discharge parameters, in this case only capacity in MW
+        #     HeatHT,                     # Stored resource
+        #     0.02,                       # Heat loss factor
+        #     Dict(HeatHT => 1),          # Input resource and corresponding input ratio
+        #     Dict(HeatHT => 1),          # Output resource and corresponding output ratio
+        # ),
+        BoundRateTES{CyclicStrategic}(
+            "thermal energy storage",   # Node id
             StorCap(FixedProfile(200)), # Level parameters, in this case only capacity in MWh
             HeatHT,                     # Stored resource
             0.02,                       # Heat loss factor
+            0.05,                       # Fixed charge rate (as fraction of capacity)
+            0.15,                       # Fixed discharge rate (as fraction of capacity)
             Dict(HeatHT => 1),          # Input resource and corresponding input ratio
             Dict(HeatHT => 1),          # Output resource and corresponding output ratio
         ),

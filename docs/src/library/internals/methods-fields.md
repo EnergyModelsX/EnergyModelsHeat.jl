@@ -31,6 +31,8 @@ EnergyModelsHeat.driving_force_resource
 
 ```@docs
 EnergyModelsHeat.heat_loss_factor
+EnergyModelsHeat.level_discharge
+EnergyModelsHeat.level_charge
 ```
 
 ## [`HeatExchanger`](@id lib-int-met_field-heatexchanger)
