@@ -1,15 +1,17 @@
 
 """
-    variables_link(m, ℒˢᵘᵇ::Vector{<:DHPipe}, 𝒯, modeltype::EnergyModel)
+    EMB.variables_link(m, ℒˢᵘᵇ::Vector{<:DHPipe}, 𝒯, modeltype::EnergyModel)
 
-Define variable dh_loss for heat losses in DH pipes
+Creates the following additional variable for **ALL** district heating pipe links:
+- `dh_loss[l, t]` is a continuous variable describing the heat los of [`DHPipe`](@ref) `l`
+  operational period `t`.
 """
 function EMB.variables_link(m, ℒˢᵘᵇ::Vector{<:DHPipe}, 𝒯, modeltype::EnergyModel)
     @variable(m, dh_pipe_loss[ℒˢᵘᵇ, 𝒯])
 end
 
 """
-    create_link(m, l::DHPipe, 𝒯, 𝒫, modeltype::EnergyModel)
+    EMB.create_link(m, l::DHPipe, 𝒯, 𝒫, modeltype::EnergyModel)
 
 When the link is a [`DHPipe`](@ref), the constraints for a link include a loss based on the
 difference in the temperature of the district heating resource and the ground.

@@ -1,5 +1,5 @@
 """
-    constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+    EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the minimum capacity utilization of a [`HeatPump`](@ref).
 """
@@ -15,29 +15,22 @@ function EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype
 end
 
 """
-    constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+    EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Function for creating the constraint on the heat and electricity input of a [`HeatPump`](@ref).
 """
 function EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
+    # Calculate the multiplier
+    mult(t) = (t_sink(n, t) - t_source(n, t)) / (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
+
     # Constraint for the COP - Heat
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, heat_in_resource(n)] ==
-        (
-            m[:cap_use][n, t] * (
-                1 - (
-                    (t_sink(n, t) - t_source(n, t)) /
-                    (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
-                )
-            )
-        )
+        m[:flow_in][n, t, heat_in_resource(n)] == m[:cap_use][n, t] * (1 - mult(t))
     )
 
     # Constraint for the COP - Electricity
     @constraint(m, [t ∈ 𝒯],
-        m[:flow_in][n, t, driving_force_resource(n)] ==
-        (m[:cap_use][n, t] * (t_sink(n, t) - t_source(n, t))) /
-        (eff_carnot(n, t) * (t_sink(n, t) + 273.15))
+        m[:flow_in][n, t, driving_force_resource(n)] == m[:cap_use][n, t] * mult(t)
     )
 end
 
