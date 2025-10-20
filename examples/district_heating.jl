@@ -99,7 +99,7 @@ function generate_district_heating_example()
             Dict(HeatHT => 1),      # Output from the node with output ratio
         ),
         # NOTE: This representation of a ThermalEnergyStorage is equivalent to the one below
-        # using FixedRateTES and will lead to the same results.
+        # using BoundRateTES and will lead to the same results.
         #
         # ThermalEnergyStorage{CyclicRepresentative}(
         #     "thermal energy storage",   # Node id
@@ -111,7 +111,7 @@ function generate_district_heating_example()
         #     Dict(HeatHT => 1),          # Input resource and corresponding input ratio
         #     Dict(HeatHT => 1),          # Output resource and corresponding output ratio
         # ),
-        FixedRateTES{CyclicStrategic}(
+        BoundRateTES{CyclicStrategic}(
             "thermal energy storage",   # Node id
             StorCap(FixedProfile(200)), # Level parameters, in this case only capacity in MWh
             HeatHT,                     # Stored resource

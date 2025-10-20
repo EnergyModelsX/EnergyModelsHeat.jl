@@ -232,9 +232,9 @@ end
     EMB.TEST_ENV = false
 end
 
-# Test that the fields of a FixedRateTES are correctly checked
-# - check_node(n::FixedRateTES, 𝒯, modeltype::EnergyModel)
-@testitem "Checks - FixedRateTES" begin
+# Test that the fields of a BoundRateTES are correctly checked
+# - check_node(n::BoundRateTES, 𝒯, modeltype::EnergyModel)
+@testitem "Checks - BoundRateTES" begin
     using EnergyModelsBase
     using TimeStruct
 
@@ -247,7 +247,7 @@ end
     Heat = ResourceCarrier("Heat", 0.0)
     CO2 = ResourceEmit("CO2", 1.0)
 
-    # Function for setting up the system for testing a `FixedRateTES` node
+    # Function for setting up the system for testing a `BoundRateTES` node
     function check_graph(;
         level_cap = FixedProfile(20),
         level_opex = FixedProfile(0.8),
@@ -260,7 +260,7 @@ end
     )
         products = [Heat, CO2]
         # Creation of the source and sink module as well as the arrays used for nodes and links
-        TES = FixedRateTES{CyclicRepresentative}(
+        TES = BoundRateTES{CyclicRepresentative}(
             "TES",
             StorCapOpexFixed(level_cap, level_opex),
             stor_res,

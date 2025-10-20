@@ -225,11 +225,11 @@ struct PinchData{
 end
 
 """
-    AbstractThermalEnergyStor <: Storage{T}
+    AbstractTES <: Storage{T}
 
 Abstract supertype for all thermal energy storage nodes.
 """
-abstract type AbstractThermalEnergyStor{T} <: Storage{T} end
+abstract type AbstractTES{T} <: Storage{T} end
 
 """
     ThermalEnergyStorage{T} <: Storage{T}
@@ -269,7 +269,7 @@ storage level.
 - **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
   field `data` is conditional through usage of a constructor.
 """
-struct ThermalEnergyStorage{T} <: AbstractThermalEnergyStor{T}
+struct ThermalEnergyStorage{T} <: AbstractTES{T}
     id::Any
     charge::EMB.AbstractStorageParameters
     level::EMB.UnionCapacity
@@ -329,91 +329,20 @@ function ThermalEnergyStorage(
 end
 
 """
-    Legacy constructors for TES without discharge parameters.
-"""
-function ThermalEnergyStorage{T}(
-    id,
-    charge::EMB.AbstractStorageParameters,
-    level::EMB.UnionCapacity,
-    stor_res::Resource,
-    heat_loss_factor::Float64,
-    input::Dict{<:Resource,<:Real},
-    output::Dict{<:Resource,<:Real},
-) where {T<:EMB.StorageBehavior}
-    return ThermalEnergyStorage{T}(
-        id,
-        charge,
-        level,
-        charge,
-        stor_res,
-        heat_loss_factor,
-        input,
-        output,
-        ExtensionData[],
-    )
-end
+    BoundRateTES{T} <: AbstractTES{T}
 
-function ThermalEnergyStorage{T}(
-    id,
-    charge::EMB.AbstractStorageParameters,
-    level::EMB.UnionCapacity,
-    stor_res::Resource,
-    heat_loss_factor::Float64,
-    input::Dict{<:Resource,<:Real},
-    output::Dict{<:Resource,<:Real},
-    data::Vector{<:ExtensionData},
-) where {T<:EMB.StorageBehavior}
-    return ThermalEnergyStorage{T}(
-        id,
-        charge,
-        level,
-        charge,
-        stor_res,
-        heat_loss_factor,
-        input,
-        output,
-        data,
-    )
-end
-
-function ThermalEnergyStorage(
-    id::Any,
-    charge::EMB.AbstractStorageParameters,
-    level::EMB.UnionCapacity,
-    stor_res::Resource,
-    heat_loss_factor::Float64,
-    input::Dict{<:Resource,<:Real},
-    output::Dict{<:Resource,<:Real},
-    data::Vector{<:ExtensionData},
-)
-    new{CyclicRepresentative}(
-        id,
-        charge,
-        level,
-        charge,
-        stor_res,
-        heat_loss_factor,
-        input,
-        output,
-        data,
-    )
-end
-
-"""
-    FixedRateTES{T} <: AbstractThermalEnergyStor{T}
-
-A `FixedRateTES` that has the option to include thermal energy losses. In contrast to
+A `BoundRateTES` that has the option to include thermal energy losses. In contrast to
 [`ThermalEnergyStorage`](@ref), the maximum charging and discharging rates are defined as a
 ratio between the (dis-)charge rate and the installed storage capacity.
 
 !!! warning "StorageBehavior"
-    `FixedRateTES` in its current implementation only supports
+    `BoundRateTES` in its current implementation only supports
     [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior.
     This input is not a required input due to the utilization of an inner constructor.
 
 # Fields
 - **`id`** is the name/identifier of the node.
-- **`level::AbstractStorageParameters`** are the level parameters of the `FixedRateTES`.
+- **`level::AbstractStorageParameters`** are the level parameters of the `BoundRateTES`.
   Depending on the chosen type, the level parameters can include variable OPEX and/or fixed OPEX.
 - **`stor_res::Resource`** is the stored [`Resource`](@extref EnergyModelsBase.Resource).
 - **`heat_loss_factor::Float64`** are the relative heat losses in percent.
@@ -428,7 +357,7 @@ ratio between the (dis-)charge rate and the installed storage capacity.
 - **`data::Vector{<:Data}`** is the additional data (*e.g.*, for investments). The field `data`
   is conditional through usage of a constructor.
 """
-struct FixedRateTES{T} <: AbstractThermalEnergyStor{T}
+struct BoundRateTES{T} <: AbstractTES{T}
     id::Any
     level::EMB.UnionCapacity
     stor_res::Resource
@@ -440,7 +369,7 @@ struct FixedRateTES{T} <: AbstractThermalEnergyStor{T}
     data::Vector{<:Data}
 end
 
-function FixedRateTES{T}(
+function BoundRateTES{T}(
     id,
     level::EMB.UnionCapacity,
     stor_res::Resource,
@@ -450,7 +379,7 @@ function FixedRateTES{T}(
     input::Dict{<:Resource,<:Real},
     output::Dict{<:Resource,<:Real},
 ) where {T<:EMB.StorageBehavior}
-    return FixedRateTES{T}(
+    return BoundRateTES{T}(
         id,
         level,
         stor_res,
@@ -463,7 +392,7 @@ function FixedRateTES{T}(
     )
 end
 
-function FixedRateTES(
+function BoundRateTES(
     id::Any,
     level::EMB.UnionCapacity,
     stor_res::Resource,
@@ -492,21 +421,21 @@ end
 
 Returns the heat loss factor for storage `n`.
 """
-heat_loss_factor(n::AbstractThermalEnergyStor) = n.heat_loss_factor
+heat_loss_factor(n::AbstractTES) = n.heat_loss_factor
 
 """
-    level_discharge(n::FixedRateTES)
+    level_discharge(n::BoundRateTES)
 
 Returns the ratio of the maximum discharge rate and storage level capacity for TES `n`.
 """
-level_discharge(n::FixedRateTES) = n.level_discharge
+level_discharge(n::BoundRateTES) = n.level_discharge
 
 """
-    level_charge(n::FixedRateTES)
+    level_charge(n::BoundRateTES)
 
 Returns the ratio of the maximum charge rate and storage level capacity for TES `n`.
 """
-level_charge(n::FixedRateTES) = n.level_charge
+level_charge(n::BoundRateTES) = n.level_charge
 
 """
     DirectHeatUpgrade

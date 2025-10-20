@@ -75,9 +75,9 @@ function EMB.check_node(n::HeatPump, 𝒯, modeltype::EnergyModel, check_timepro
 end
 
 """
-    EMB.check_node(n::AbstractThermalEnergyStor, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_node(n::AbstractTES, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
-This method checks that nodes of the type AbstractThermalEnergyStor are valid.
+This method checks that nodes of the type AbstractTES are valid.
 
 It reuses the standard checks of a `Storage` node through calling the function
 [`EMB.check_node_default`](@extref EnergyModelsBase.check_node_default), but adds an
@@ -99,7 +99,7 @@ additional check on the data.
 
 """
 function EMB.check_node(
-    n::AbstractThermalEnergyStor,
+    n::AbstractTES,
     𝒯,
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
@@ -118,9 +118,9 @@ function EMB.check_node(
 end
 
 """
-    EMB.check_node(n::FixedRateTES, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_node(n::BoundRateTES, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
 
-This method checks that the *[`FixedRateTES`](@ref)* node is valid.
+This method checks that the *[`BoundRateTES`](@ref)* node is valid.
 
 It reuses the standard checks of a `Storage` node through calling the function
 [`EMB.check_node_default`](@extref EnergyModelsBase.check_node_default), but adds an
@@ -139,12 +139,12 @@ additional check on the data.
 - The values of the dictionary `input` are required to be non-negative.
 - The values of the dictionary `output` are required to be non-negative.
 - The value of the field `heat_loss_factor` is required to be in the range ``[0, 1]``.
-- The value of the field `level_discharge` is required to be in the range ``[0, 1]``.
-- The value of the field `level_charge` is required to be in the range ``[0, 1]``.
+- The value of the field `level_discharge` is required to be non-negative.
+- The value of the field `level_charge` is required to be non-negative.
 
 """
 function EMB.check_node(
-    n::FixedRateTES,
+    n::BoundRateTES,
     𝒯,
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
@@ -167,19 +167,10 @@ function EMB.check_node(
     )
 
     @assert_or_log(
-        level_discharge(n) ≤ 1,
-        "The level_discharge field must be less or equal to 1."
-    )
-
-    @assert_or_log(
         level_charge(n) ≥ 0,
         "The level_charge field must be non-negative."
     )
 
-    @assert_or_log(
-        level_charge(n) ≤ 1,
-        "The level_charge field must be less or equal to 1."
-    )
 end
 
 """

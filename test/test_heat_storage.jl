@@ -97,7 +97,7 @@
     @test heat_stored ≈ 3.3333 atol = 0.01
 end
 
-@testitem "FixedRateTES" begin
+@testitem "BoundRateTES" begin
     using EnergyModelsBase
     using HiGHS
     using JuMP
@@ -144,9 +144,9 @@ end
                 Dict(heat_sur => 1),
                 Dict(heat_use => 1),
             ),
-            FixedRateTES{CyclicStrategic}(
+            BoundRateTES{CyclicStrategic}(
                 "TES",
-                StorCap(FixedProfile(1)),
+                StorCap(FixedProfile(2)),
                 heat_use,
                 0.2,
                 0.25,
@@ -189,20 +189,25 @@ end
         sum(JuMP.value(m[:flow_out][nodes[3], t, heat_use]) for t ∈ T) * op_duration
     heat_stored = sum(JuMP.value(m[:stor_level][nodes[3], t]) for t ∈ T)
 
-    calculated_max_charge_rate =
-        maximum([JuMP.value(m[:stor_charge_use][nodes[3], t]) for t ∈ T])
-    calculated_max_discharge_rate =
-        maximum([JuMP.value(m[:stor_discharge_use][nodes[3], t]) for t ∈ T])
-
-    real_max_charge_rate = nodes[3].level_charge
-    real_max_discharge_rate = nodes[3].level_discharge
-
     # Check that the heat delivered matches the expected ratio of heat stored
     calculated_heatlosses = heat_stored * heatloss * op_duration
     real_heatlosses = heat_input - heat_output
+
+    # Check that the actual charge/discharge rates do not exceed the maximum rates
+    @test all(
+        value.(m[:stor_charge_use][nodes[3], t]) -
+        nodes[3].level_charge * value.(m[:stor_level_inst][nodes[3], t]) ≤
+        0.01 for t ∈ T
+    )
+
+    @test all(
+        value.(m[:stor_discharge_use][nodes[3], t]) -
+        nodes[3].level_discharge * value.(m[:stor_level_inst][nodes[3], t]) ≤
+        0.01 for t ∈ T
+    )
+
     @test real_heatlosses ≈ calculated_heatlosses atol = 0.01
-    @test real_heatlosses ≈ 0.2666 atol = 0.01
-    @test heat_stored ≈ 0.6666 atol = 0.01
-    @test calculated_max_charge_rate ≤ real_max_charge_rate
-    @test calculated_max_discharge_rate ≤ real_max_discharge_rate
+    @test real_heatlosses ≈ 0.622 atol = 0.01
+    @test heat_stored ≈ 1.555 atol = 0.01
+
 end

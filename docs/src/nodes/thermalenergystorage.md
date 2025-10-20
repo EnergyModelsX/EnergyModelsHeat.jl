@@ -16,7 +16,7 @@ Additionally, thermal energy storage nodes allow for the definition of both char
 ## [Introduced type and its fields](@id nodes-TES-fields)
 
 [`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.  
-[`FixedRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its maximum charge and discharge rates are defined relative to the installed storage capacity.
+[`BoundRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its maximum charge and discharge rates are defined relative to the installed storage capacity.
  This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge capacity to be maintained when scaling the storage size.
  In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
 
@@ -57,7 +57,7 @@ The standard fields are given as:
 
 ### [Additional fields](@id nodes-TES-fields-new)
 
-Both [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes introduce an additional field for the heat loss factor:
+Both [`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) nodes introduce an additional field for the heat loss factor:
 
 - **`heat_loss_factor::Float64`** :\
   The heat loss factor describes the heat lost relative to the storage level.  
@@ -74,10 +74,10 @@ The allowed charging and discharging rates are specified in two different ways:
   !!! note "When not specifying a discharge rate"
       The field `discharge` is not required as we include a constructor when the value is excluded. In that case, the discharging rate is set to the same value as the charging rate.
 
-For [`FixedRateTES`](@ref), two additional fields specify the maximum charging and discharging rates relative to the installed storage capacity:
+For [`BoundRateTES`](@ref), two additional fields specify the maximum charging and discharging rates relative to the installed storage capacity:
 
 - **`level_charge::Float64`** and **`level_discharge::Float64`** :\
-  The maximum charging and discharging rates of the `FixedRateTES` relative to the installed storage capacity.
+  The maximum charging and discharging rates of the `BoundRateTES` relative to the installed storage capacity.
   This implies that the unit is given as per operational period duration.
   Mathematically, this can be expressed as
   
@@ -119,10 +119,10 @@ The [`ThermalEnergyStorage`](@ref) utilizes all standard variables from [`RefSto
 
 ### [Constraints](@id nodes-TES-math-con)
 
-[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*.
-[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes utilize the declared method for all nodes 𝒩.
-The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) nodes.
-[`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) use the same methods, except for `constraints_capacity`.
+[`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) nodes utilize in general the standard constraints described in *[Constraint functions for `Storage` nodes](@extref EnergyModelsBase nodes-storage-math-con)*.
+[`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) nodes utilize the declared method for all nodes 𝒩.
+The following standard constraints are implemented for [`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) nodes.
+[`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) use the same methods, except for `constraints_capacity`.
 
 - `constraints_capacity`:
   For [`ThermalEnergyStorage`](@ref)
@@ -135,7 +135,7 @@ The following standard constraints are implemented for [`ThermalEnergyStorage`](
   \end{aligned}
   ```
 
-  For [`FixedRateTES`](@ref)
+  For [`BoundRateTES`](@ref)
 
   ```math
   \begin{aligned}
@@ -156,7 +156,7 @@ The following standard constraints are implemented for [`ThermalEnergyStorage`](
   \end{aligned}
   ```
 
-  For [`FixedRateTES`](@ref)
+  For [`BoundRateTES`](@ref)
 
   ```math
   \begin{aligned}
@@ -232,7 +232,7 @@ The following standard constraints are implemented for [`ThermalEnergyStorage`](
 #### [Level constraints](@id nodes-TES-math-con-level)
 
 The overall structure is outlined on *[Constraint functions](@extref EnergyModelsBase man-con-stor_level)*.
-The level constraints are called through the function `constraints_level` which then calls additional functions depending on the chosen time structure (whether it includes representative periods and/or operational scenarios) and the chosen *[storage behaviour](@extref EnergyModelsBase lib-pub-nodes-stor_behav)*. Note: [`ThermalEnergyStorage`](@ref) and [`FixedRateTES`](@ref) only make changes to the `constraint_level_iterate`function when [`CyclicStrategic`](@extref EnergyModelsBase.CyclicStrategic) is chosen as storage behaviour.
+The level constraints are called through the function `constraints_level` which then calls additional functions depending on the chosen time structure (whether it includes representative periods and/or operational scenarios) and the chosen *[storage behaviour](@extref EnergyModelsBase lib-pub-nodes-stor_behav)*. Note: [`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) only make changes to the `constraint_level_iterate`function when [`CyclicStrategic`](@extref EnergyModelsBase.CyclicStrategic) is chosen as storage behaviour.
 
 The constraints introduced in `constraints_level_aux` are given by
 

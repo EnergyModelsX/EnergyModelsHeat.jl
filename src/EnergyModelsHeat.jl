@@ -21,6 +21,7 @@ include(joinpath("structures", "link.jl"))
 include("model.jl")
 include("constraint_functions.jl")
 include("utils.jl")
+include("legacy_constructor.jl")
 
 # Custom input validation
 include("checks.jl")
@@ -33,6 +34,6 @@ export DHPipe
 export HeatPump
 export PinchData
 export HeatExchanger
-export AbstractThermalEnergyStor, ThermalEnergyStorage, FixedRateTES
+export AbstractTES, ThermalEnergyStorage, BoundRateTES
 
 end

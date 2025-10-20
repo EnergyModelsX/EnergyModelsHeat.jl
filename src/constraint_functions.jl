@@ -131,7 +131,7 @@ end
 """
     constraints_level_iterate(
         m,
-        n::AbstractThermalEnergyStor,
+        n::AbstractTES,
         prev_pers::PreviousPeriods,
         cyclic_pers::CyclicPeriods,
         per,
@@ -139,11 +139,11 @@ end
         modeltype::EnergyModel,
     )
 
-In the case of a [`AbstractThermalEnergyStor`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
+In the case of a [`AbstractTES`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
 """
 function EMB.constraints_level_iterate(
     m,
-    n::AbstractThermalEnergyStor,
+    n::AbstractTES,
     prev_pers::PreviousPeriods,
     cyclic_pers::CyclicPeriods,
     per,
@@ -174,17 +174,17 @@ end
 """
     constraints_capacity(
         m,
-        n::FixedRateTES,
+        n::BoundRateTES,
         𝒯::TimeStructure,
         modeltype::EnergyModel,
     )
 
-Adjust the constraints on the capacity of a [`FixedRateTES`](@ref) to account for the maximum charge and discharge rates in relation to the installed storage level.
+Adjust the constraints on the capacity of a [`BoundRateTES`](@ref) to account for the maximum charge and discharge rates in relation to the installed storage level.
 """
 
 function EMB.constraints_capacity(
     m,
-    n::FixedRateTES,
+    n::BoundRateTES,
     𝒯::TimeStructure,
     modeltype::EnergyModel,
 )
