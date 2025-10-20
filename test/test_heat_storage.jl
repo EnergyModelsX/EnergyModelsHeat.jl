@@ -209,5 +209,4 @@ end
     @test real_heatlosses ≈ calculated_heatlosses atol = 0.01
     @test real_heatlosses ≈ 0.622 atol = 0.01
     @test heat_stored ≈ 1.555 atol = 0.01
-
 end

@@ -170,7 +170,6 @@ function EMB.check_node(
         level_charge(n) ≥ 0,
         "The level_charge field must be non-negative."
     )
-
 end
 
 """
