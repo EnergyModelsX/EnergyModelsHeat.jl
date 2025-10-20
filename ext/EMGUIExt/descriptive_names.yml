@@ -1,0 +1,28 @@
+# This file contains descriptions of EnergyModelsHeat-structures and variables 
+# with fields of type TimeStruct.TimeProfile
+structures:
+  HeatPump:
+    cap:                    "Installed capacity"
+    t_source:               "Temperature profile of the heat source"
+    t_sink:                 "Sink temperature of the condensator"
+    eff_carnot:             "Carnot Efficiency"
+    opex_var:               "Variable operating expense per energy unit produced"
+    opex_fixed:             "Fixed operating expense per installed capacity"
+  ResourceHeat:
+    t_supply:               "Supply temperature in °C"
+    t_return:               "Return temperature in °C"
+  DHPipe:
+    cap:                    "Heat transport capacity of the pipe"
+    t_ground:               "Ground temperature in °C"
+  HeatExchanger:
+    cap:                    "Installed capacity"
+    opex_var:               "Variable operating expense per energy unit produced"
+    opex_fixed:             "Fixed operating expense"
+  DirectHeatUpgrade:
+    cap:                    "Installed capacity"
+    opex_var:               "Variable operating expense per energy unit produced"
+    opex_fixed:             "Fixed operating expense"
+
+# Add description for all JuMP variables using a TimeStruct.TimeProfile type
+variables:
+  dh_pipe_loss:             "Heat losses in DH pipes"
