@@ -111,7 +111,7 @@ function generate_district_heating_example()
         #     Dict(HeatHT => 1),          # Input resource and corresponding input ratio
         #     Dict(HeatHT => 1),          # Output resource and corresponding output ratio
         # ),
-        BoundRateTES{CyclicStrategic}(
+        BoundRateTES{CyclicRepresentative}(
             "thermal energy storage",   # Node id
             StorCap(FixedProfile(200)), # Level parameters, in this case only capacity in MWh
             HeatHT,                     # Stored resource

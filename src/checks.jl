@@ -75,7 +75,7 @@ function EMB.check_node(n::HeatPump, 𝒯, modeltype::EnergyModel, check_timepro
 end
 
 """
-    EMB.check_node(n::AbstractTES, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_node(n::AbstractTES{T}, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool) where {T<:StorageBehavior}
 
 This method checks that nodes of the type AbstractTES are valid.
 
@@ -97,13 +97,15 @@ additional check on the data.
 - The values of the dictionary `output` are required to be non-negative.
 - The value of the field `heat_loss_factor` is required to be in the range ``[0, 1]``.
 
+## Warnings
+- The `StorageBehavior` should not be `CyclicStrategic` when using `RepresentativePeriods`.
 """
 function EMB.check_node(
-    n::AbstractTES,
+    n::AbstractTES{T},
     𝒯,
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
-)
+) where {T<:EMB.StorageBehavior}
     EMB.check_node_default(n, 𝒯, modeltype, check_timeprofiles)
 
     @assert_or_log(
@@ -115,10 +117,20 @@ function EMB.check_node(
         heat_loss_factor(n) ≤ 1,
         "The heat_loss_factor field must be less or equal to 1."
     )
+
+    if (T <: CyclicStrategic) &&
+       isa(𝒯, TwoLevel{S,T,U} where {S,T,U<:RepresentativePeriods})
+        @warn(
+            "Using `CyclicStrategic` with a `$(typeof(n))` and `RepresentativePeriods` " *
+            "results in errors for the calculation of the heat loss. It is not advised " *
+            "to utilize this `StorageBehavior`. Use instead `CyclicRepresentative`.",
+            maxlog = 1
+        )
+    end
 end
 
 """
-    EMB.check_node(n::BoundRateTES, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+    EMB.check_node(n::BoundRateTES{T}, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool) where {T<:EMB.StorageBehavior}
 
 This method checks that the *[`BoundRateTES`](@ref)* node is valid.
 
@@ -142,13 +154,15 @@ additional check on the data.
 - The value of the field `level_discharge` is required to be non-negative.
 - The value of the field `level_charge` is required to be non-negative.
 
+## Warnings
+- The `StorageBehavior` should not be `CyclicStrategic` when using `RepresentativePeriods`.
 """
 function EMB.check_node(
-    n::BoundRateTES,
+    n::BoundRateTES{T},
     𝒯,
     modeltype::EnergyModel,
     check_timeprofiles::Bool,
-)
+) where {T<:EMB.StorageBehavior}
     EMB.check_node_default(n, 𝒯, modeltype, check_timeprofiles)
 
     @assert_or_log(
@@ -170,6 +184,16 @@ function EMB.check_node(
         level_charge(n) ≥ 0,
         "The level_charge field must be non-negative."
     )
+
+    if (T <: CyclicStrategic) &&
+       isa(𝒯, TwoLevel{S,T,U} where {S,T,U<:RepresentativePeriods})
+        @warn(
+            "Using `CyclicStrategic` with a `BoundRateTES` and `RepresentativePeriods` " *
+            "results in errors for the calculation of the heat loss. It is not advised " *
+            "to utilize this `StorageBehavior`. Use instead `CyclicRepresentative`.",
+            maxlog = 1
+        )
+    end
 end
 
 """
