@@ -1,27 +1,30 @@
 # This file contains descriptions of EnergyModelsHeat-structures and variables 
-# with fields of type TimeStruct.TimeProfile
+# with fields of type TimeStruct.TimeProfile and fields that cannot be inherited
+# from supertypes.
 structures:
-  HeatPump:
-    cap:                    "Installed capacity"
-    t_source:               "Temperature profile of the heat source"
-    t_sink:                 "Sink temperature of the condensator"
-    eff_carnot:             "Carnot Efficiency"
-    opex_var:               "Variable operating expense per energy unit produced"
-    opex_fixed:             "Fixed operating expense per installed capacity"
-  ResourceHeat:
-    t_supply:               "Supply temperature in °C"
-    t_return:               "Return temperature in °C"
-  DHPipe:
-    cap:                    "Heat transport capacity of the pipe"
-    t_ground:               "Ground temperature in °C"
-  HeatExchanger:
-    cap:                    "Installed capacity"
-    opex_var:               "Variable operating expense per energy unit produced"
-    opex_fixed:             "Fixed operating expense"
-  DirectHeatUpgrade:
-    cap:                    "Installed capacity"
-    opex_var:               "Variable operating expense per energy unit produced"
-    opex_fixed:             "Fixed operating expense"
+  EnergyModelsHeat:
+    ## link.jl
+    DHPipe:
+      cap:                    "Heat transport capacity of the pipe"
+      t_ground:               "Ground temperature in °C"
+
+    ## node.jl
+    HeatPump:
+      t_source:               "Heat source temperature"
+      t_sink:                 "Heat sink temperature"
+      eff_carnot:             "Carnot Efficiency"
+
+    ## resource.jl
+    ResourceHeat:
+      t_supply:               "Supply temperature in °C"
+      t_return:               "Return temperature in °C"
+
+    PinchData:
+      T_SH_hot:               "Hot temperature of surplus heat source in °C"
+      T_SH_cold:              "Cold temperature of surplus heat source in °C"
+      ΔT_min:                 "Minimum temperature difference between surplus source and DH network in °C"
+      T_DH_hot:               "Hot temperature of district heating network in °C"
+      T_DH_cold:              "Cold temperature of district heating network in °C"
 
 # Add description for all JuMP variables using a TimeStruct.TimeProfile type
 variables:
