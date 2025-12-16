@@ -1,61 +1,57 @@
-if get(ENV, "CI", "false") == "true"
-    # skip GUI-related imports/tests until Makie enables headless CI runs for windows
-else
-    @testitem "Test existence of descriptive names for EnergyModelsHeat" begin
-        using EnergyModelsGUI
+@testitem "Test existence of descriptive names for EnergyModelsHeat" tags = [:requires_emgui] begin
+    using EnergyModelsGUI
 
-        # Check that no descriptive names are empty for types
-        descriptive_names = create_descriptive_names()
-        types_map = get_descriptive_names(EnergyModelsHeat, descriptive_names)
-        @test !any(any(isempty.(values(a))) for a ∈ values(types_map))
-    end
+    # Check that no descriptive names are empty for types
+    descriptive_names = create_descriptive_names()
+    types_map = get_descriptive_names(EnergyModelsHeat, descriptive_names)
+    @test !any(any(isempty.(values(a))) for a ∈ values(types_map))
+end
 
-    @testitem "Test descriptive names for DHPipe model" setup = [DHPipeTestData] begin
-        using EnergyModelsGUI
+@testitem "Test descriptive names for DHPipe model" tags = [:requires_emgui] setup = [DHPipeTestData] begin
+    using EnergyModelsGUI
 
-        descriptive_names = create_descriptive_names()
-        m, _, _ = DHPipeTestData.dh_pipe_test_case()
+    descriptive_names = create_descriptive_names()
+    m, _, _ = DHPipeTestData.dh_pipe_test_case()
 
-        # Check that no descriptive names are empty for variables
-        variables_map = get_descriptive_names(m, descriptive_names)
-        @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
-    end
+    # Check that no descriptive names are empty for variables
+    variables_map = get_descriptive_names(m, descriptive_names)
+    @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
+end
 
-    @testitem "Test descriptive names for HeatPump model" setup = [HeatPumpTestData] begin
-        using EnergyModelsGUI
+@testitem "Test descriptive names for HeatPump model" tags = [:requires_emgui] setup = [HeatPumpTestData] begin
+    using EnergyModelsGUI
 
-        descriptive_names = create_descriptive_names()
-        m, _, _ = HeatPumpTestData.hp_test_case()
+    descriptive_names = create_descriptive_names()
+    m, _, _ = HeatPumpTestData.hp_test_case()
 
-        # Check that no descriptive names are empty for variables
-        variables_map = get_descriptive_names(m, descriptive_names)
-        @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
-    end
+    # Check that no descriptive names are empty for variables
+    variables_map = get_descriptive_names(m, descriptive_names)
+    @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
+end
 
-    @testitem "Test descriptive names for TES model" setup = [TESTestData] begin
-        using EnergyModelsGUI
+@testitem "Test descriptive names for TES model" tags = [:requires_emgui] setup = [TESTestData] begin
+    using EnergyModelsGUI
 
-        descriptive_names = create_descriptive_names()
-        m, _, _ = TESTestData.tes_test_case()
+    descriptive_names = create_descriptive_names()
+    m, _, _ = TESTestData.tes_test_case()
 
-        # Check that no descriptive names are empty for variables
-        variables_map = get_descriptive_names(m, descriptive_names)
-        @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
-    end
+    # Check that no descriptive names are empty for variables
+    variables_map = get_descriptive_names(m, descriptive_names)
+    @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
+end
 
-    @testitem "Test descriptive names for Upgrade model" setup = [UpgradeTestData] begin
-        using EnergyModelsBase
-        using EnergyModelsGUI
-        using JuMP
-        using HiGHS
+@testitem "Test descriptive names for Upgrade model" tags = [:requires_emgui] setup = [UpgradeTestData] begin
+    using EnergyModelsBase
+    using EnergyModelsGUI
+    using JuMP
+    using HiGHS
 
-        descriptive_names = create_descriptive_names()
-        case, model, _, _, _ = UpgradeTestData.generate_data(; equal_mass = false)
-        optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
-        m = run_model(case, model, optimizer)
+    descriptive_names = create_descriptive_names()
+    case, model, _, _, _ = UpgradeTestData.generate_data(; equal_mass = false)
+    optimizer = optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
+    m = run_model(case, model, optimizer)
 
-        # Check that no descriptive names are empty for variables
-        variables_map = get_descriptive_names(m, descriptive_names)
-        @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
-    end
+    # Check that no descriptive names are empty for variables
+    variables_map = get_descriptive_names(m, descriptive_names)
+    @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
 end
