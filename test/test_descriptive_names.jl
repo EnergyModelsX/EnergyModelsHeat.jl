@@ -32,7 +32,7 @@ else
         @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
     end
 
-    @testitem "Test descriptive names for HeatPump model" setup = [TESTestData] begin
+    @testitem "Test descriptive names for TES model" setup = [TESTestData] begin
         using EnergyModelsGUI
 
         descriptive_names = create_descriptive_names()
@@ -43,7 +43,7 @@ else
         @test !any(any(isempty.(values(a))) for a ∈ values(variables_map))
     end
 
-    @testitem "Test descriptive names for HeatPump model" setup = [UpgradeTestData] begin
+    @testitem "Test descriptive names for Upgrade model" setup = [UpgradeTestData] begin
         using EnergyModelsBase
         using EnergyModelsGUI
         using JuMP
