@@ -8,6 +8,16 @@
 `EnergyModelsHeat` extends `EnergyModelsBase` with functionality to model heat flows, heat pumps, thermal energy storage, and district heating networks with higher accuracy.
 This includes as well an approach for the calculation of the potential for utilizing surplus heat from processes in the district heating network.
 
+> [!IMPORTANT]
+> Using `EnergyModelsHeat` with `EnergyModelsGUI` is in general unproblematic.
+> However, if you have cloned either package, you must be certain about the correct versions.
+> `EnergyModelsHeat` v0.1.3 is working with `EnergyModelsGUI` v0.5.
+> `EnergyModelsHeat` v0.1.4 is working with `EnergyModelsGUI` v0.6.
+> As version 0.1.3 did not have a compatibility for `EnergyModelsGUI` (we only provide a YAML file), this problem could not be solved by adding a compatibility in version 0.1.4.
+>
+> No problems exists if you have installed both packages *via* the registry.
+> In this case, you can just used `pkg> update`.
+
 ## Usage
 
 The usage of the package is best illustrated through the commented [`examples`](examples).
