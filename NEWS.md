@@ -1,5 +1,9 @@
 # Release Notes
 
+## Version 0.1.4 (2025-12-17)
+
+* Updated the format of `descriptive_names.yaml` to [`EnergyModelsGUI` v0.6.0](https://github.com/EnergyModelsX/EnergyModelsGUI.jl/releases/tag/v0.6.0).
+
 ## Version 0.1.3 (2025-10-20)
 
 ### New subtype for thermal energy storage
