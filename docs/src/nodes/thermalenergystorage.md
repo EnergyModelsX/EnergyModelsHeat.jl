@@ -1,4 +1,3 @@
-
 # [ThermalEnergyStorage nodes](@id nodes-TES)
 
 Thermal energy storage nodes work mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage) with the additional option to include thermal energy losses.
@@ -6,7 +5,7 @@ Heat losses are quantified through a heat loss factor that describes the amount 
 The main difference to `RefStorage` is that these heat losses occur independently of the storage use, *i.e.*, in every operational period unless the storage level is zero.
 In practice, this approach with a constant relative heat loss factor does not accurately represent heat loss mechanisms based on temperature difference between the inside and outside of the TES.
 However, it is a reasonable approximation that at least reflects the dependence of the SOC on the absolute losses of the storage.
-Additionally, thermal energy storage nodes allow for the definition of both charge and discharge rate. 
+Additionally, thermal energy storage nodes allow for the definition of both charge and discharge rate.
 
 !!! danger "StorageBehavior for ThermalEnergyStorage"
     Thermal energy storage nodes can only utilize [`Cyclic`](@extref EnergyModelsBase.Cyclic) storage behaviors.
@@ -15,7 +14,7 @@ Additionally, thermal energy storage nodes allow for the definition of both char
 
 ## [Introduced type and its fields](@id nodes-TES-fields)
 
-[`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.  
+[`ThermalEnergyStorage`](@ref) is similar to a [`RefStorage`](@extref EnergyModelsBase.RefStorage), with the addition of discharge rate limitations and heat losses.
 [`BoundRateTES`](@ref) serves the same fundamental purpose as [`ThermalEnergyStorage`](@ref), but its maximum charge and discharge rates are defined relative to the installed storage capacity.
  This offers an advantage in an [`InvestmentModel`](@extref EnergyModelsBase.InvestmentModel), as it allows a fixed ratio between storage capacity and (dis-)charge capacity to be maintained when scaling the storage size.
  In contrast, [`ThermalEnergyStorage`](@ref) allows the (dis-)charge capacities to be scaled independently of the storage capacity.
@@ -60,16 +59,16 @@ The standard fields are given as:
 Both [`ThermalEnergyStorage`](@ref) and [`BoundRateTES`](@ref) nodes introduce an additional field for the heat loss factor:
 
 - **`heat_loss_factor::Float64`** :\
-  The heat loss factor describes the heat lost relative to the storage level.  
+  The heat loss factor describes the heat lost relative to the storage level.
   It corresponds to the loss occurring between two operational periods for a given operational duration of 1 (see *[Utilize `TimeStruct`](@extref EnergyModelsBase how_to-utilize_TS)* for details).
 
-The allowed charging and discharging rates are specified in two different ways:  
+The allowed charging and discharging rates are specified in two different ways:
 
 [`ThermalEnergyStorage`](@ref) nodes use the same field for the charging capacity as [`RefStorage`](@extref EnergyModelsBase.RefStorage) nodes, and extend it by adding a field for discharging:
 
 - **`charge::AbstractStorageParameters`** and **`discharge::AbstractStorageParameters`** :\
-  The charging and discharging parameters of the `ThermalEnergyStorage`.  
-  Depending on the chosen type, these parameters can include variable OPEX, fixed OPEX, and/or capacity.  
+  The charging and discharging parameters of the `ThermalEnergyStorage`.
+  Depending on the chosen type, these parameters can include variable OPEX, fixed OPEX, and/or capacity.
   More information can be found in *[storage parameters](@extref EnergyModelsBase lib-pub-nodes-stor_par)*.
   !!! note "When not specifying a discharge rate"
       The field `discharge` is not required as we include a constructor when the value is excluded. In that case, the discharging rate is set to the same value as the charging rate.
@@ -80,12 +79,13 @@ For [`BoundRateTES`](@ref), two additional fields specify the maximum charging a
   The maximum charging and discharging rates of the `BoundRateTES` relative to the installed storage capacity.
   This implies that the unit is given as per operational period duration.
   Mathematically, this can be expressed as
-  
+
   ```math
   \begin{aligned}
   level\_charge & = max\_charge / installed\_storage\_level  \\
   level\_discharge &  = max\_discharge / installed\_storage\_level
   \end{aligned}
+  ```
 
 ## [Mathematical description](@id nodes-TES-math)
 
@@ -152,7 +152,7 @@ The following standard constraints are implemented for [`ThermalEnergyStorage`](
   \begin{aligned}
   \texttt{stor\_level\_inst}[n, t] & = capacity(level(n), t) \\
   \texttt{stor\_charge\_inst}[n, t] & = capacity(charge(n), t) \\
-  \texttt{stor\_discharge\_inst}[n, t] & = capacity(discharge(n), t) 
+  \texttt{stor\_discharge\_inst}[n, t] & = capacity(discharge(n), t)
   \end{aligned}
   ```
 
