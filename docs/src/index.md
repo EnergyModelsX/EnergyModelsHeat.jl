@@ -88,6 +88,7 @@ Depth = 1
 ```@contents
 Pages = [
     "howto/simple_conversion.md",
+    "howto/update_models.md",
     "howto/contribute.md",
 ]
 Depth = 1
