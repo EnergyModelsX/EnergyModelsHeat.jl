@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 0.2.0 (2026-04-14)
+
+### Breaking changes
+
+* Adjusted to the changes introduced in [`EnergyModelsInvestments` 0.9](https://github.com/EnergyModelsX/EnergyModelsInvestments.jl/releases/tag/v0.9.0) and [`EnergyModelsBase` 0.10](https://github.com/EnergyModelsX/EnergyModelsBase.jl/releases/tag/v0.10.0):
+  * Breaking change required as early retirement is now allowed.
+  * Early retirement changes the model behavior.
+  * No other changes required.
+
 ## Version 0.1.4 (2025-12-17)
 
 * Updated the format of `descriptive_names.yaml` to [`EnergyModelsGUI` v0.6.0](https://github.com/EnergyModelsX/EnergyModelsGUI.jl/releases/tag/v0.6.0).
