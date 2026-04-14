@@ -50,7 +50,7 @@ Documenter.makedocs(
         ],
         "How to" => [
             "Use surplus heat for DH" => "howto/simple_conversion.md",
-            "Update models"=>"howto/update_models.md",
+            "Update models" => "howto/update_models.md",
             "Contribute to EnergyModelsHeat" => "howto/contribute.md",
         ],
         "Library" => [
