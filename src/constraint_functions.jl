@@ -41,7 +41,7 @@ Create the constraints for flow in to [`DirectHeatUpgrade`](@ref). The constrain
     depends on the need for upgrade computed from the temperatures of the input/output [`ResourceHeat`](@ref) and the ΔT_min, and the
     capacity is linked to the power consumption.
 """
-function EnergyModelsBase.constraints_flow_in(
+function EMB.constraints_flow_in(
     m,
     n::DirectHeatUpgrade,
     𝒯::TimeStructure,
@@ -85,7 +85,7 @@ Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref).
 The flow of available heat energy is calculated from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to the  required temperature is calculated by the function [`dh_upgrade`](@ref).
 Note that the node may dump some of the ingoing heat energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
 """
-function EnergyModelsBase.constraints_flow_out(
+function EMB.constraints_flow_out(
     m,
     n::DirectHeatUpgrade{A,T},
     𝒯::TimeStructure,

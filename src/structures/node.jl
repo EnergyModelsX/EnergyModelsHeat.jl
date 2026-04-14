@@ -1,5 +1,5 @@
 """
-    HeatPump <: EMB.NetworkNode
+    struct HeatPump <: EMB.NetworkNode
 
 A `HeatPump` node to convert low temperature heat to high(er) temperature heat by utilizing
 an exergy driving force (*e.g.*, electricity).
@@ -131,20 +131,20 @@ EMB.inputs(n::HeatPump) = [heat_in_resource(n), driving_force_resource(n)]
 EMB.inputs(n::HeatPump, p::Resource) = 1
 
 """
-    HeatExchangerAssumptions
+    abstract type HeatExchangerAssumptions
 
 A supertype for assumptions for a heat exchanger, such that different efficiencies can be
 calculated based on the underlying assumptions.
 """
 abstract type HeatExchangerAssumptions end
 """
-    EqualMassFlows <: HeatExchangerAssumptions
+    struct EqualMassFlows <: HeatExchangerAssumptions
 
 Assume mass flows are equal in both circuits and using the same medium.
 """
 struct EqualMassFlows <: HeatExchangerAssumptions end
 """
-    DifferentMassFlows <: HeatExchangerAssumptions
+    struct DifferentMassFlows <: HeatExchangerAssumptions
 
 Assume mass flows can be adjusted to optimise heat transfer.
 Assume the same medium in both circuits.
@@ -152,13 +152,14 @@ Assume the same medium in both circuits.
 struct DifferentMassFlows <: HeatExchangerAssumptions end
 
 """
-    AbstractHeatExchanger <: EnergyModelsBase.NetworkNode
+    AbstractHeatExchanger <: EMB.NetworkNode
 
 A supertype for heat exchangers.
 """
-abstract type AbstractHeatExchanger <: EnergyModelsBase.NetworkNode end
+abstract type AbstractHeatExchanger <: EMB.NetworkNode end
+
 """
-    HeatExchanger
+    struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchanger
 
 A `HeatExchanger` node to convert "raw" surplus energy from other processes to "available"
 energy that can be used in the District Heating network.
@@ -190,18 +191,19 @@ struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchang
 end
 # Default to different mass flows assumptions for heat exchanger
 HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
-    HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
-        id,
-        cap,
-        opex_var,
-        opex_fixed,
-        input,
-        output,
-        data,
-        delta_t_min,
-    )
+HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
+    id,
+    cap,
+    opex_var,
+    opex_fixed,
+    input,
+    output,
+    data,
+    delta_t_min,
+)
+
 """
-    PinchData{T}
+    struct PinchData{T}
 
 Data for fixed temperature intervals used to calculate available energy from surplus energy
 source operating at `T_SH_hot` and `T_SH_cold`, with `ΔT_min` between surplus source and the
@@ -216,7 +218,7 @@ struct PinchData{
     TP3<:TimeProfile,
     TP4<:TimeProfile,
     TP5<:TimeProfile,
-} <: EnergyModelsBase.Data
+} <: EMB.Data
     T_SH_hot::TP1
     T_SH_cold::TP2
     ΔT_min::TP3
@@ -225,14 +227,14 @@ struct PinchData{
 end
 
 """
-    AbstractTES <: Storage{T}
+    abstract type AbstractTES <: Storage{T}
 
 Abstract supertype for all thermal energy storage nodes.
 """
 abstract type AbstractTES{T} <: Storage{T} end
 
 """
-    ThermalEnergyStorage{T} <: Storage{T}
+    struct ThermalEnergyStorage{T} <: Storage{T}
 
 A `ThermalEnergyStorage` that functions mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage)
 with the additional option to include a discharge rate and thermal energy losses. Heat losses
@@ -351,7 +353,7 @@ function ThermalEnergyStorage(
 end
 
 """
-    BoundRateTES{T} <: AbstractTES{T}
+    struct BoundRateTES{T} <: AbstractTES{T}
 
 A `BoundRateTES` that has the option to include thermal energy losses. In contrast to
 [`ThermalEnergyStorage`](@ref), the maximum charging and discharging rates are defined as a
@@ -481,7 +483,7 @@ Returns the ratio of the maximum charge rate and storage level capacity for TES 
 level_charge(n::BoundRateTES) = n.level_charge
 
 """
-    DirectHeatUpgrade
+    struct DirectHeatUpgrade
 
 A `DirectHeatUpgrade` node to upgrade "raw" surplus energy from other processes to
 "available" energy that can be used in the District Heating network.

@@ -1,5 +1,5 @@
 """
-    DHPipe
+    struct DHPipe <: EMB.Link
 
 A district heating pipe between two nodes. The district heating pipe only transports the
 specified resource with a specified loss factor. It has a maximum capacity.
