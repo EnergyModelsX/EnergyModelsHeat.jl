@@ -24,7 +24,7 @@ function EMB.check_node(
     end
 
     # Also perform the default checks
-    EnergyModelsBase.check_node_default(n, 𝒯, modeltype, check_timeprofiles)
+    EMB.check_node_default(n, 𝒯, modeltype, check_timeprofiles)
 end
 
 """

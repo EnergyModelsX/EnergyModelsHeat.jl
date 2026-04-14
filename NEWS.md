@@ -9,6 +9,10 @@
   * Early retirement changes the model behavior.
   * No other changes required.
 
+### Other changes
+
+* Minor modifications to documentation.
+
 ## Version 0.1.4 (2025-12-17)
 
 * Updated the format of `descriptive_names.yaml` to [`EnergyModelsGUI` v0.6.0](https://github.com/EnergyModelsX/EnergyModelsGUI.jl/releases/tag/v0.6.0).

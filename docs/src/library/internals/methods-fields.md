@@ -9,33 +9,32 @@ Pages = ["methods-fields.md"]
 ## [`DHPipe`](@id lib-int-met_field-dhpipe)
 
 ```@docs
-EnergyModelsHeat.pipe_length
-EnergyModelsHeat.pipe_loss_factor
-EnergyModelsHeat.t_ground
-EnergyModelsHeat.resource_heat
-EnergyModelsHeat.t_supply
+EMH.pipe_length
+EMH.pipe_loss_factor
+EMH.t_ground
+EMH.resource_heat
+EMH.t_supply
 ```
 
 ## [`HeatPump`](@id lib-int-met_field-heatpump)
 
 ```@docs
-EnergyModelsHeat.eff_carnot
-EnergyModelsHeat.t_sink
-EnergyModelsHeat.t_source
-EnergyModelsHeat.cap_lower_bound
-EnergyModelsHeat.heat_in_resource
-EnergyModelsHeat.driving_force_resource
+EMH.eff_carnot
+EMH.t_sink
+EMH.t_source
+EMH.cap_lower_bound
+EMH.heat_in_resource
+EMH.driving_force_resource
 ```
 
 ## [`ThermalEnergyStorage`](@id lib-int-met_field-thermalenergystorage)
 
 ```@docs
-EnergyModelsHeat.heat_loss_factor
-EnergyModelsHeat.level_discharge
-EnergyModelsHeat.level_charge
+EMH.heat_loss_factor
+EMH.level_discharge
+EMH.level_charge
 ```
 
 ## [`HeatExchanger`](@id lib-int-met_field-heatexchanger)
-
 
 ## [`PinchData`](@id lib-int-met_field-pinchdata)

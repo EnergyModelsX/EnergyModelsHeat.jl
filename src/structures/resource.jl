@@ -1,6 +1,6 @@
 
 """
-    ResourceHeat{IDT,TS<:TimeProfile,TR<:TimeProfile} <: Resource
+    struct ResourceHeat{IDT,TS<:TimeProfile,TR<:TimeProfile} <: Resource
 
     ResourceHeat(id, t_supply::TimeProfile, t_return::TimeProfile)
     ResourceHeat(id, t_supply::TimeProfile)
@@ -50,7 +50,7 @@ t_return(rh::ResourceHeat, t) = rh.t_return[t]
 """
     is_heat(r)
 
-Returns true for heat resources, false otherwise. 
+Returns true for heat resources, false otherwise.
 Extend this by dispatching on the type for any alternative heat resource type implemented.
 """
 is_heat(r::Resource) = false

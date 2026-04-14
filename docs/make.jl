@@ -4,6 +4,9 @@ using TimeStruct
 using EnergyModelsBase
 using EnergyModelsHeat
 
+const EMB = EnergyModelsBase
+const EMH = EnergyModelsHeat
+
 DocMeta.setdocmeta!(
     EnergyModelsHeat,
     :DocTestSetup,
