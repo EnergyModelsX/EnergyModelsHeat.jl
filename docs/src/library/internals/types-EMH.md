@@ -9,19 +9,19 @@ Pages = ["types-EMH.md"]
 ## [Nodal supertypes](@id lib-int-types-node)
 
 ```@docs
-EnergyModelsHeat.AbstractHeatExchanger
-EnergyModelsHeat.AbstractTES
+EMH.AbstractHeatExchanger
+EMH.AbstractTES
 ```
 
 ## [Parameter supertypes](@id lib-int-types-para)
 
 ```@docs
-EnergyModelsHeat.HeatExchangerAssumptions
+EMH.HeatExchangerAssumptions
 ```
 
 ## [Auxiliary types](@id lib-int-types-aux)
 
 ```@docs
-EnergyModelsHeat.DifferentMassFlows
-EnergyModelsHeat.EqualMassFlows
+EMH.DifferentMassFlows
+EMH.EqualMassFlows
 ```
