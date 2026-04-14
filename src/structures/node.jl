@@ -191,16 +191,16 @@ struct HeatExchanger{A<:HeatExchangerAssumptions,T<:Real} <: AbstractHeatExchang
 end
 # Default to different mass flows assumptions for heat exchanger
 HeatExchanger(id, cap, opex_var, opex_fixed, input, output, data, delta_t_min) =
-HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
-    id,
-    cap,
-    opex_var,
-    opex_fixed,
-    input,
-    output,
-    data,
-    delta_t_min,
-)
+    HeatExchanger{DifferentMassFlows,typeof(delta_t_min)}(
+        id,
+        cap,
+        opex_var,
+        opex_fixed,
+        input,
+        output,
+        data,
+        delta_t_min,
+    )
 
 """
     struct PinchData{T}

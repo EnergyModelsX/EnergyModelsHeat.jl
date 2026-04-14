@@ -1,7 +1,9 @@
 """
     EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the minimum capacity utilization of a [`HeatPump`](@ref).
+Method for creating the constraints on the maximum capacity of a [`HeatPump`](@ref).
+
+It adds in the addition to the constraints of the standard method the lower bound constraints.
 """
 function EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     #Part Load Constraint
@@ -17,7 +19,10 @@ end
 """
     EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Function for creating the constraint on the heat and electricity input of a [`HeatPump`](@ref).
+Method for creating the constraint on the inlet flow to a [`HeatPump`](@ref).
+
+It is utlizing the specified temperature levels, [`heat_in_resource`](@ref) and
+[`driving_force_resource`](@ref) for calculating the values.
 """
 function EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
     # Calculate the multiplier
@@ -35,11 +40,13 @@ function EMB.constraints_flow_in(m, n::HeatPump, 𝒯::TimeStructure, modeltype:
 end
 
 """
-    constraints_flow_in(m, n::DirectHeatUpgrade, 𝒯::TimeStructure, modeltype::EnergyModel)
+    EMB.constraints_flow_in(m, n::DirectHeatUpgrade, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Create the constraints for flow in to [`DirectHeatUpgrade`](@ref). The constraint is only for power as the proportion of the inputs
-    depends on the need for upgrade computed from the temperatures of the input/output [`ResourceHeat`](@ref) and the ΔT_min, and the
-    capacity is linked to the power consumption.
+Method for creating the constraint on the inlet flow to a [`DirectHeatUpgrade`](@ref).
+
+The constraint is only for power as the proportion of the inputs depends on the need for
+upgrade computed from the temperatures of the input/output [`ResourceHeat`](@ref) and the
+ΔT_min. The capacity is linked to the power consumption.
 """
 function EMB.constraints_flow_in(
     m,
@@ -59,7 +66,10 @@ end
 """
     EMB.constraints_flow_out(m, n::HeatExchanger{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel)
 
-Create the constraints for the flow out from a [`HeatExchanger`](@ref). The flow of available heat energy is calculated from the temperatures in the heat flows using the function [`dh_fraction`](@ref).
+Method for creating the constraint on the outlet flow from a [`HeatExchanger`](@ref).
+
+The flow of available heat energy is calculated from the temperatures in the heat flows
+using the function [`dh_fraction`](@ref).
 """
 function EMB.constraints_flow_out(
     m,
@@ -79,11 +89,17 @@ function EMB.constraints_flow_out(
 end
 
 """
-    constraints_flow_out(m, n::DirectHeatUpgrade{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel) where {A,T}
+    EMB.constraints_flow_out(m, n::DirectHeatUpgrade{A,T}, 𝒯::TimeStructure, modeltype::EnergyModel) where {A,T}
 
-Create the constraints for flow out from a [`DirectHeatUpgrade`](@ref).
-The flow of available heat energy is calculated from the temperatures in the heat flows using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to the  required temperature is calculated by the function [`dh_upgrade`](@ref).
-Note that the node may dump some of the ingoing heat energy, and the power needed for the upgrade is calculated from the resulting energy outflow.
+Method for creating the constraint on the outlet flow from a [`DirectHeatUpgrade`](@ref).
+
+The flow of available heat energy is calculated from the temperatures in the heat flows
+using the function [`upgradeable_fraction`](@ref), and the heat needed to upgrade to the
+required temperature is calculated by the function [`dh_upgrade`](@ref).
+
+!!! note
+    The node may dump some of the ingoing heat energy, and the power needed for the upgrade
+    is calculated from the resulting energy outflow.
 """
 function EMB.constraints_flow_out(
     m,
@@ -122,7 +138,7 @@ function EMB.constraints_flow_out(
 end
 
 """
-    constraints_level_iterate(
+    EMB.constraints_level_iterate(
         m,
         n::AbstractTES,
         prev_pers::PreviousPeriods,
@@ -132,7 +148,8 @@ end
         modeltype::EnergyModel,
     )
 
-In the case of a [`AbstractTES`](@ref), the lowest level iterator is adjusted as the loss is dependent on the level at the beginning of the operational period.
+In the case of a [`AbstractTES`](@ref), the lowest level iterator is adjusted as the loss
+is dependent on the level at the beginning of the operational period.
 """
 function EMB.constraints_level_iterate(
     m,
@@ -165,14 +182,17 @@ function EMB.constraints_level_iterate(
 end
 
 """
-    constraints_capacity(
+    EMB.constraints_capacity(
         m,
         n::BoundRateTES,
         𝒯::TimeStructure,
         modeltype::EnergyModel,
     )
 
-Adjust the constraints on the capacity of a [`BoundRateTES`](@ref) to account for the maximum charge and discharge rates in relation to the installed storage level.
+Method for creating the constraints on the maximum capacity of a [`BoundRateTES`](@ref)
+
+It adjusts the constraints on the capacity of a [`BoundRateTES`](@ref) to account for the
+maximum charge and discharge rates in relation to the installed storage level.
 """
 
 function EMB.constraints_capacity(
