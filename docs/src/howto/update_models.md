@@ -10,10 +10,11 @@ This document is designed to provide users with information regarding how they h
 
 !!! warning
     The legacy constructors for calls of the type of version 0.1 will be removed in version 0.3.
-    In addition, the adjustments will not be updated in release 0.10 as potential models will be at that time most likely more than 1 year old.
+    In addition, the adjustments will not be updated in release 0.3 as potential models will be at that time most likely more than 1 year old.
 
 Starting from version 0.1.2, we introduced a discharge capacity for [`ThermalEnergyStorage`](@ref).
-As a consequence, older versions without the discharge capacity will require an adjustment to include the discharge capacity.
+As a consequence, older versions without the discharge capacity will require an adjustment to include the [`AbstractStorageParameters`](@extref EnergyModelsBase nodes-storage-phil-capacities).
+The adjustment will **not** change the behavior of the node.
 
 ```julia
 # Old structure:
