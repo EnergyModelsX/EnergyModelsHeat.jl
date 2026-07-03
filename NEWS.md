@@ -1,5 +1,21 @@
 # Release Notes
 
+## Unreleased
+
+### New thermal energy storage node
+
+* Introduced the `AbstractTES` node `LevelDependentRateTES`, the most advanced thermal energy
+  storage node, with state-of-charge dependent charge and discharge rate limits described by
+  one to three c-rate anchor points per direction (piecewise-linear with binary region
+  selection), including documentation, checks, and tests.
+  The node is restricted to `OperationalModel`.
+
+### Other changes
+
+* Added the function `visualize_c_rates` for plotting the theoretical c-rate curves, provided
+  through a `Plots` package extension (`ext/PlotsExt.jl`) so the core package keeps no hard
+  plotting dependency.
+
 ## Version 0.2.0 (2026-04-14)
 
 ### Breaking changes

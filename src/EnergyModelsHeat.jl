@@ -2,7 +2,7 @@
 Main module for `EnergyModelsHeat`:
 a framework for energy system models with thermal components.
 
-It exports the resource `ResourceHeat` and structures for DH pipe, heat pump and heat exchanger.
+It exports the resource `ResourceHeat` and structures for DH pipe, heat pump, thermal energy storage and heat exchanger.
 """
 module EnergyModelsHeat
 
@@ -22,6 +22,7 @@ include("model.jl")
 include("constraint_functions.jl")
 include("utils.jl")
 include("legacy_constructor.jl")
+include("visualization.jl")
 
 # Custom input validation
 include("checks.jl")
@@ -34,6 +35,7 @@ export DHPipe
 export HeatPump
 export PinchData
 export HeatExchanger
-export AbstractTES, ThermalEnergyStorage, BoundRateTES
+export AbstractTES, ThermalEnergyStorage, BoundRateTES, LevelDependentRateTES
+export visualize_c_rates
 
 end

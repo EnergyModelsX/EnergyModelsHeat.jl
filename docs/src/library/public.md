@@ -25,8 +25,15 @@ DHPipe
 HeatPump
 ThermalEnergyStorage
 BoundRateTES
+LevelDependentRateTES
 HeatExchanger
 EnergyModelsHeat.DirectHeatUpgrade
+```
+
+## [Functions](@id lib-pub-functions)
+
+```@docs
+EnergyModelsHeat.visualize_c_rates
 ```
 
 !!! todo "Changes"

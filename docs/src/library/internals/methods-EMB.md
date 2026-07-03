@@ -11,6 +11,7 @@ Pages = ["methods-EMB.md"]
 ```@docs
 EMB.create_link
 EMB.variables_link
+EMB.variables_node
 ```
 
 ## [Constraint methods](@id lib-int-met_emb-con)

@@ -246,7 +246,7 @@ heat losses do not occur while charging or discharging, *i.e.*, they are proport
 storage level.
 
 !!! warning "StorageBehavior"
-    `BoundRateTES` in its current implementation only supports
+    `ThermalEnergyStorage` in its current implementation only supports
     [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior
     when using [`RepresentativePeriods`](@extref TimeStruct.RepresentativePeriods).
     This input is not a required input due to the inclusion of a constructor.
@@ -262,7 +262,8 @@ storage level.
   `ThermalEnergyStorage` node. Depending on the chosen type, the discharge parameters can
   include variable OPEX, fixed OPEX, and/or a capacity.
   - **`stor_res::Resource`** is the stored [`Resource`](@extref EnergyModelsBase.Resource).
-- **`heat_loss_factor::Float64`** are the relative heat losses in percent.
+- **`heat_loss_factor::Float64`** are the relative heat losses as a fraction (in the range
+  ``[0, 1]``) of the storage level of the previous time period.
 - **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s
   with conversion value `Real`.
 - **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@extref EnergyModelsBase.Resource)s
@@ -370,7 +371,8 @@ ratio between the (dis-)charge rate and the installed storage capacity.
 - **`level::AbstractStorageParameters`** are the level parameters of the `BoundRateTES`.
   Depending on the chosen type, the level parameters can include variable OPEX and/or fixed OPEX.
 - **`stor_res::Resource`** is the stored [`Resource`](@extref EnergyModelsBase.Resource).
-- **`heat_loss_factor::Float64`** are the relative heat losses in percent.
+- **`heat_loss_factor::Float64`** are the relative heat losses as a fraction (in the range
+  ``[0, 1]``) of the storage level of the previous time period.
 - **`level_discharge::Float64`** is the ratio of maximum discharge rate and installed storage level.
 - **`level_charge::Float64`** is the ratio of maximum charge rate and installed storage level.
 - **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s
@@ -462,7 +464,163 @@ function BoundRateTES(
 end
 
 """
-    heat_loss_factor(n::ThermalEnergyStorage)
+    LevelDependentRateTES{T} <: AbstractTES{T}
+
+A `LevelDependentRateTES` that functions mostly like a [`RefStorage`](@extref EnergyModelsBase.RefStorage)
+with the additional option to include thermal losses and state-of-charge dependent charge and
+discharge rates. Heat losses are quantified through a heat loss factor that describes the
+amount of thermal energy that is lost in relation to the storage level from the previous
+time period.
+
+Charge and discharge limits can follow c-rate curves defined by one to three anchor points
+(`c_rate_points_charge` and `c_rate_points_discharge`). For charging, the curve starts at
+`(0, capacity(charge))` and interpolates through the provided points in ascending order of
+storage level. For discharging, the curve starts at `(capacity(level), capacity(discharge))`
+and interpolates through the provided points in descending order of storage level. With more
+than one anchor point, piecewise-linear constraints and binaries are introduced to select the
+active region.
+
+!!! warning "StorageBehavior"
+    `LevelDependentRateTES` in its current implementation only supports
+    [`CyclicRepresentative`](@extref EnergyModelsBase.CyclicRepresentative) as storage behavior.
+    This input is not a required input due to the utilization of an inner constructor.
+
+# Fields
+- **`id`** is the name/identifier of the node.
+- **`charge::AbstractStorageParameters`** are the charging parameters of the
+  `LevelDependentRateTES` node. Depending on the chosen type, the charge parameters can
+  include variable OPEX, fixed OPEX, and/or a capacity.
+- **`level::AbstractStorageParameters`** are the level parameters of the `LevelDependentRateTES`.
+  Depending on the chosen type, the charge parameters can include variable OPEX and/or fixed OPEX.
+- **`discharge::AbstractStorageParameters`** are the discharging parameters of the
+  `LevelDependentRateTES` node. Depending on the chosen type, the discharge parameters can
+  include variable OPEX, fixed OPEX, and/or a capacity.
+- **`stor_res::Resource`** is the stored [`Resource`](@extref EnergyModelsBase.Resource).
+- **`heat_loss_factor::Float64`** is the relative heat loss per operational period duration.
+- **`c_rate_points_charge::Vector{<:Vector{<:Real}}`** are one to three `(level, rate)` pairs
+  in ascending storage-level order describing the maximum charge rate at the previous level.
+- **`c_rate_points_discharge::Vector{<:Vector{<:Real}}`** are one to three `(level, rate)` pairs
+  in descending storage-level order describing the maximum discharge rate at the previous level.
+- **`input::Dict{<:Resource,<:Real}`** are the input [`Resource`](@extref EnergyModelsBase.Resource)s
+  with conversion value `Real`.
+- **`output::Dict{<:Resource,<:Real}`** are the generated [`Resource`](@extref EnergyModelsBase.Resource)s
+  with conversion value `Real`. Only relevant for linking and the stored
+  [`Resource`](@extref EnergyModelsBase.Resource) as the output value is not utilized in
+  the calculations.
+- **`data::Vector{<:ExtensionData}`** is the additional data (*e.g.*, for investments). The
+  field `data` is conditional through usage of a constructor.
+"""
+struct LevelDependentRateTES{T} <: AbstractTES{T}
+    id::Any
+    charge::EMB.AbstractStorageParameters
+    level::EMB.AbstractStorageParameters
+    discharge::EMB.AbstractStorageParameters
+    stor_res::Resource
+    heat_loss_factor::Float64
+    c_rate_points_charge::Vector{<:Vector{<:Real}}
+    c_rate_points_discharge::Vector{<:Vector{<:Real}}
+    input::Dict{<:Resource,<:Real}
+    output::Dict{<:Resource,<:Real}
+    data::Vector{<:ExtensionData}
+end
+
+function LevelDependentRateTES{T}(
+    id,
+    charge::EMB.AbstractStorageParameters,
+    level::EMB.AbstractStorageParameters,
+    discharge::EMB.AbstractStorageParameters,
+    stor_res::Resource,
+    heat_loss_factor::Float64,
+    c_rate_points_charge::Vector{<:Vector{<:Real}},
+    c_rate_points_discharge::Vector{<:Vector{<:Real}},
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+) where {T<:EMB.StorageBehavior}
+    return LevelDependentRateTES{T}(
+        id,
+        charge,
+        level,
+        discharge,
+        stor_res,
+        heat_loss_factor,
+        c_rate_points_charge,
+        c_rate_points_discharge,
+        input,
+        output,
+        ExtensionData[],
+    )
+end
+
+function LevelDependentRateTES(
+    id::Any,
+    charge::EMB.AbstractStorageParameters,
+    level::EMB.AbstractStorageParameters,
+    discharge::EMB.AbstractStorageParameters,
+    stor_res::Resource,
+    heat_loss_factor::Float64,
+    c_rate_points_charge::Vector{<:Vector{<:Real}},
+    c_rate_points_discharge::Vector{<:Vector{<:Real}},
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+    data::Vector{<:ExtensionData},
+)
+    return LevelDependentRateTES{CyclicRepresentative}(
+        id,
+        charge,
+        level,
+        discharge,
+        stor_res,
+        heat_loss_factor,
+        c_rate_points_charge,
+        c_rate_points_discharge,
+        input,
+        output,
+        data,
+    )
+end
+
+function LevelDependentRateTES(
+    id::Any,
+    charge::EMB.AbstractStorageParameters,
+    level::EMB.AbstractStorageParameters,
+    discharge::EMB.AbstractStorageParameters,
+    stor_res::Resource,
+    heat_loss_factor::Float64,
+    c_rate_points_charge::Vector{<:Vector{<:Real}},
+    c_rate_points_discharge::Vector{<:Vector{<:Real}},
+    input::Dict{<:Resource,<:Real},
+    output::Dict{<:Resource,<:Real},
+)
+    return LevelDependentRateTES{CyclicRepresentative}(
+        id,
+        charge,
+        level,
+        discharge,
+        stor_res,
+        heat_loss_factor,
+        c_rate_points_charge,
+        c_rate_points_discharge,
+        input,
+        output,
+        ExtensionData[],
+    )
+end
+
+"""
+    c_rate_points_charge(n::LevelDependentRateTES)
+
+Return the `(level, rate)` breakpoints that shape the charge c-rate curve.
+"""
+c_rate_points_charge(n::LevelDependentRateTES) = n.c_rate_points_charge
+"""
+    c_rate_points_discharge(n::LevelDependentRateTES)
+
+Return the `(level, rate)` breakpoints that shape the discharge c-rate curve.
+"""
+c_rate_points_discharge(n::LevelDependentRateTES) = n.c_rate_points_discharge
+
+"""
+    heat_loss_factor(n::AbstractTES)
 
 Returns the heat loss factor for storage `n`.
 """
