@@ -1,4 +1,4 @@
-    """
+"""
     EMB.constraints_capacity(m, n::HeatPump, 𝒯::TimeStructure, modeltype::EnergyModel)
 
 Method for creating the constraints on the maximum capacity of a [`HeatPump`](@ref).
