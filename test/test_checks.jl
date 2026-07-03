@@ -166,6 +166,84 @@ end
     EnergyModelsBase.TEST_ENV = false
 end
 
+# Test that the fields of a LevelDependentRateTES are correctly checked
+# - EMB.check_node(n::LevelDependentRateTES{T}, 𝒯, modeltype::EnergyModel, check_timeprofiles::Bool)
+@testitem "Checks - LevelDependentRateTES" setup = [TESTestData] begin
+    using EnergyModelsBase
+    using TimeStruct
+
+    # Set the global to true to suppress the error message
+    EnergyModelsBase.TEST_ENV = true
+
+    # Function for setting up the system for testing a `LevelDependentRateTES` node
+    check_graph = TESTestData.tes_test_case
+    type = LevelDependentRateTES
+
+    # Resources used in the analysis
+    heat = ResourceCarrier("Heat", 0.0)
+
+    # Test that a wrong capacity is caught by the checks
+    @test_throws AssertionError check_graph(; type, charge_cap = FixedProfile(-25))
+    @test_throws AssertionError check_graph(; type, level_cap = FixedProfile(-25))
+    @test_throws AssertionError check_graph(; type, discharge_cap = FixedProfile(-25))
+
+    # Test that a wrong heat loss factor is caught by the checks
+    @test_throws AssertionError check_graph(; type, heat_loss_factor = 1.2)
+    @test_throws AssertionError check_graph(; type, heat_loss_factor = -0.4)
+
+    # Test that a wrong input or output is caught by the checks
+    @test_throws AssertionError check_graph(; type, input = Dict(heat => -0.5))
+    @test_throws AssertionError check_graph(; type, output = Dict(heat => -0.5))
+
+    # Test that invalid charge anchor points are caught by the checks
+    # Too many points
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_charge = [[2.0, 10.0], [6.0, 8.0], [10.0, 6.0], [18.0, 4.0]],
+    )
+    # Levels not strictly ascending
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_charge = [[10.0, 7.0], [2.0, 10.0]],
+    )
+    # Level above the installed level capacity (20)
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_charge = [[2.0, 10.0], [25.0, 4.0]],
+    )
+    # Negative rate
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_charge = [[2.0, -10.0]],
+    )
+
+    # Test that invalid discharge anchor points are caught by the checks
+    # Levels not strictly descending
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_discharge = [[2.0, 1.0], [18.0, 5.0]],
+    )
+    # Level not below the installed level capacity (20)
+    @test_throws AssertionError check_graph(;
+        type,
+        c_rate_points_discharge = [[20.0, 5.0], [10.0, 3.0]],
+    )
+
+    # Test that the warning regarding the time structure is thrown
+    msg =
+        "Using `CyclicStrategic` with a `LevelDependentRateTES` and `RepresentativePeriods` " *
+        "results in errors for the calculation of the heat loss. It is not advised " *
+        "to utilize this `StorageBehavior`. Use instead `CyclicRepresentative`."
+    type_cs = LevelDependentRateTES{CyclicStrategic}
+    oper = RepresentativePeriods(8760, [0.5, 0.5], SimpleTimes(4, 1))
+    # `match_mode = :any` because building the node also emits the piecewise-region warning
+    # from the constraint builder; we only assert the storage-behavior warning appears.
+    @test_logs (:warn, msg) match_mode = :any check_graph(; type = type_cs, oper)
+
+    # Set the global again to false
+    EnergyModelsBase.TEST_ENV = false
+end
+
 # Test that the fields of a DHPipe are correctly checked
 # - EMB.check_link(l::DHPipe, 𝒯,  modeltype::EnergyModel, check_timeprofiles::Bool)
 @testitem "Checks - DHPipe" setup = [DHPipeTestData] begin
