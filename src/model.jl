@@ -40,3 +40,28 @@ function EMB.create_link(
     @constraint(m, [t ∈ 𝒯, p ∈ inputs(l)], m[:link_in][l, t, p] ≤ m[:link_cap_inst][l, t])
     constraints_capacity_installed(m, l, 𝒯, modeltype)
 end
+
+"""
+    EMB.variables_node(m, 𝒩::Vector{<:LevelDependentRateTES}, 𝒯, modeltype::OperationalModel)
+
+Declare the auxiliary binary variables required by [`LevelDependentRateTES`](@ref) nodes.
+
+For each node and operational period, two binaries per direction encode which of up to three
+piecewise-linear regions of the state-of-charge dependent c-rate curve is active:
+- `bin_region_charge[n, t, 1:2]` selects the active region of the charge curve.
+- `bin_region_discharge[n, t, 1:2]` selects the active region of the discharge curve.
+
+The variables are only declared for an [`OperationalModel`](@extref EnergyModelsBase.OperationalModel),
+see the note on investment models in [`EMB.constraints_capacity`](@ref).
+"""
+function EMB.variables_node(
+    m,
+    𝒩::Vector{<:LevelDependentRateTES},
+    𝒯,
+    modeltype::OperationalModel,
+)
+    # Two binaries encode the active region of the piecewise charge curve (3 regions max)
+    @variable(m, bin_region_charge[𝒩, 𝒯, 1:2], Bin)
+    # Two binaries encode the active region of the piecewise discharge curve (3 regions max)
+    @variable(m, bin_region_discharge[𝒩, 𝒯, 1:2], Bin)
+end
