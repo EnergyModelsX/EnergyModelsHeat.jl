@@ -49,6 +49,7 @@ Documenter.makedocs(
         "Nodes" => [
             "HeatPump" => "nodes/heatpump.md",
             "ThermalEnergyStorage" => "nodes/thermalenergystorage.md",
+            "LevelDependentRateTES" => "nodes/leveldependentratetes.md",
             "HeatExchanger" => "nodes/heatexchanger.md",
         ],
         "How to" => [

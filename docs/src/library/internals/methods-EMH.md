@@ -13,6 +13,8 @@ Pages = ["methods-EMH.md"]
 ## [Utility methods](@id lib-int-met-util)
 
 ```@docs
+EMH.c_rate_points_charge
+EMH.c_rate_points_discharge
 EMH.dh_fraction
 EMH.dh_upgrade
 EMH.fraction_equal_mass
