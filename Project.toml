@@ -8,8 +8,15 @@ EnergyModelsBase = "5d7e687e-f956-46f3-9045-6f5a5fd49f50"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 TimeStruct = "f9ed5ce0-9f41-4eaa-96da-f38ab8df101c"
 
+[weakdeps]
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
+[extensions]
+PlotsExt = "Plots"
+
 [compat]
 EnergyModelsBase = "0.10.0"
 JuMP = "1.23.5"
+Plots = "1"
 TimeStruct = "0.9.1"
 julia = "1.10"
