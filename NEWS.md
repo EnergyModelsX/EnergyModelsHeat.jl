@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 0.2.1 (2026-09-25)
+
+### Bugfix when using `AbstractTES` and `RepresentativePeriods`
+
+* The bug originated in that we did not update `stor_level_Δ_op` although the loss was on the operational level.
+* The bug was resolved by including the calculation of `stor_level_Δ_op` into the method `constraints_level_iterate` and provide an empty method for `constraints_level_aux`.
+* The test set was also updated to be more flexible compared to the previous version.
+
 ## Version 0.2.0 (2026-04-14)
 
 ### Breaking changes

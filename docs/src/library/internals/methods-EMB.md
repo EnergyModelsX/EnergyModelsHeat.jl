@@ -16,6 +16,7 @@ EMB.variables_link
 ## [Constraint methods](@id lib-int-met_emb-con)
 
 ```@docs
+EMB.constraints_level_aux
 EMB.constraints_level_iterate
 EMB.constraints_capacity
 EMB.constraints_flow_in
