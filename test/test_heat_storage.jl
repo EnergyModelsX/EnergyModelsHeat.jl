@@ -1,3 +1,4 @@
+#! format: off
 @testmodule TESTestData begin
     using HiGHS
     using JuMP
@@ -388,7 +389,8 @@ end
         @test all(charge[t] ≤ capacity(level(tes), t) * 0.125 + 1e-6 for t ∈ 𝒯)
         @test sum(charge[t] ≈ 0.25 for t ∈ 𝒯) == 4
 
-        @test all(discharge[t] ≤ capacity(level(tes), t) * 0.25 + 1e-6 for t ∈ 𝒯 )
+        @test all(discharge[t] ≤ capacity(level(tes), t) * 0.25 + 1e-6 for t ∈ 𝒯)
         @test sum(discharge[t] ≈ 0.5 for t ∈ 𝒯) == 2
     end
 end
+#! format: on

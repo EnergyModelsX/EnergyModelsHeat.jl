@@ -137,6 +137,8 @@ function EMB.constraints_flow_out(
     end
 end
 
+#! format: off
+
 """
     EMB.constraints_level_aux(m, n::AbstractTES, 𝒯, 𝒫, modeltype::EnergyModel)
 
@@ -196,6 +198,8 @@ function EMB.constraints_level_iterate(
         EMB.constraints_level_bounds(m, n, t, cyclic_pers, modeltype)
     end
 end
+
+#! format: on
 
 """
     EMB.constraints_capacity(
