@@ -1,10 +1,14 @@
+#! format: off
 @testmodule TESTestData begin
     using HiGHS
     using JuMP
+    using Test
 
     using EnergyModelsBase
     using EnergyModelsHeat
     using TimeStruct
+
+    const EMH = EnergyModelsHeat
 
     # Define the different resources and their emission intensity in tCO2/MWh
     power    = ResourceCarrier("Power", 0.0)
@@ -95,6 +99,69 @@
         set_optimizer(m, optimizer)
         return m, case, modeltype
     end
+
+    function test_lvl_balance(m, tes::EnergyModelsHeat.AbstractTES, 𝒯, 𝒯ˢᵘᵇ)
+        # Test that the loss is correctly included
+        # - EMB.constraints_level_iterate(m, n::AbstractThermalEnergyStor, ...)
+
+        # Reassignment of variables
+        Δ_op = value.(m[:stor_level_Δ_op][tes, :])
+        lvl = value.(m[:stor_level][tes, :])
+        charge = value.(m[:stor_charge_use][tes, :])
+        discharge = value.(m[:stor_discharge_use][tes, :])
+
+        # Test that the variable `stor_level_Δ_op` is correctly calculated
+        @test all(
+            isapprox(
+                Δ_op[t],
+                    charge[t] - discharge[t] - lvl[last(t_sub)] * EMH.heat_loss_factor(tes);
+                    atol = 1e-6
+            ) for t_sub ∈ 𝒯ˢᵘᵇ for (t_prev, t) ∈ withprev(t_sub) if isnothing(t_prev)
+        )
+        @test all(
+            isapprox(
+                Δ_op[t],
+                    charge[t] - discharge[t] - lvl[t_prev] * EMH.heat_loss_factor(tes);
+                    atol = 1e-6
+            ) for (t_prev, t) ∈ withprev(𝒯) if !isnothing(t_prev)
+        )
+
+        # Test that the level balance is correct
+        @test all(
+            isapprox(
+                lvl[t],
+                    lvl[last(t_sub)] + Δ_op[t] * duration(t);
+                atol = 1e-6
+            ) for t_sub ∈ 𝒯ˢᵘᵇ for (t_prev, t) ∈ withprev(t_sub) if isnothing(t_prev)
+        )
+        @test all(
+            isapprox(
+                lvl[t],
+                    lvl[t_prev] + Δ_op[t] * duration(t);
+                atol = 1e-6
+            ) for (t_prev, t) ∈ withprev(𝒯) if !isnothing(t_prev)
+        )
+
+        # Test that the level is at least in one period above 0
+        @test any(lvl[t] > 0 for t ∈ 𝒯)
+    end
+
+    function test_loss(m, tes, 𝒯, loss)
+        # Test set for calculation of the loss
+        𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+
+        heat_stored = sum(
+            value.(m[:stor_level][tes, t]) * scale_op_sp(t_inv, t)
+        for t_inv ∈ 𝒯ᴵⁿᵛ for t ∈ t_inv)
+        heat_in = sum(
+            value.(m[:flow_in][tes, t, heat_use]) * scale_op_sp(t_inv, t)
+        for t_inv ∈ 𝒯ᴵⁿᵛ for t ∈ t_inv)
+        heat_out = sum(
+            value.(m[:flow_out][tes, t, heat_use]) * scale_op_sp(t_inv, t)
+        for t_inv ∈ 𝒯ᴵⁿᵛ for t ∈ t_inv)
+        @test heat_stored * EMH.heat_loss_factor(tes) ≈ heat_in - heat_out
+        @test heat_in - heat_out ≈ loss atol = 1e-3
+    end
 end
 
 @testitem "ThermalEnergyStorage" setup = [TESTestData] begin
@@ -105,16 +172,15 @@ end
 
     # Create the case and modeltype
     m, case, modeltype = TESTestData.tes_test_case()
-    optimize!(m)
 
     # Extract the individual elements and resources
     tes = get_nodes(case)[2]
     heat_use = get_products(case)[2]
     𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    lvl = value.(m[:stor_level][tes, :])
 
     @testset "ThermalEnergyStorage - Utility functions" begin
+
         # Test the EMB extraction functions
         @test charge(tes) == StorCapOpexFixed(FixedProfile(10), FixedProfile(0.5))
         @test level(tes) == StorCapOpexFixed(FixedProfile(20), FixedProfile(0.8))
@@ -199,41 +265,39 @@ end
         end
     end
 
-    @testset "ThermalEnergyStorage - Constraints-level" begin
-        # Test that the loss is correctly included
-        # - EMB.constraints_level_iterate(m, n::AbstractThermalEnergyStor, ...)
-        # Test that the level balance is correct in the first periods
-        @test all(
-            isapprox(
-                lvl[t],
-                lvl[t_prev] +
-                value.(m[:stor_level_Δ_op][tes, t]) * duration(t) -
-                lvl[t_prev] * EMH.heat_loss_factor(tes) * duration(t);
-                atol = 1e-6) for
-            t_inv ∈ 𝒯ᴵⁿᵛ for (t_prev, t) ∈ withprev(t_inv) if !isnothing(t_prev)
-        )
+    @testset "ThermalEnergyStorage - Constraints-level `TwoLevel`" begin
+        # Create the case and modeltype
+        optimize!(m)
 
-        # Test that the level balance is correct in the subsequent periods
-        @test all(
-            isapprox(
-                lvl[t],
-                lvl[last(t_inv)] +
-                value.(m[:stor_level_Δ_op][tes, t]) * duration(t) -
-                lvl[last(t_inv)] * EMH.heat_loss_factor(tes) * duration(t);
-                atol = 1e-6) for
-            t_inv ∈ 𝒯ᴵⁿᵛ for (t_prev, t) ∈ withprev(t_inv) if isnothing(t_prev)
-        )
+        # Test that the loss is correctly included in the level balance
+        TESTestData.test_lvl_balance(m, tes, 𝒯, 𝒯ᴵⁿᵛ)
 
         # Test that the total loss is correct
-        heat_stored = sum(lvl[t] * duration(t) for t ∈ 𝒯)
-        heat_in = sum(value.(m[:flow_in][tes, t, heat_use]) * duration(t) for t ∈ 𝒯)
-        heat_out = sum(value.(m[:flow_out][tes, t, heat_use]) * duration(t) for t ∈ 𝒯)
-        @test heat_stored * EMH.heat_loss_factor(tes) ≈ heat_in - heat_out
-        @test heat_in - heat_out ≈ 0.83456 atol = 1e-3
+        TESTestData.test_loss(m, tes, 𝒯, 0.83456)
+    end
+
+    @testset "ThermalEnergyStorage - Constraints-level `TwoLevel{RepresentativePeriods}`" begin
+        # Create the case and modeltype
+        oper = RepresentativePeriods(2, 8, SimpleTimes(4, 2))
+        m, case, modeltype = TESTestData.tes_test_case(; oper)
+        optimize!(m)
+
+        # Extract the individual elements and resources
+        tes = get_nodes(case)[2]
+        heat_use = get_products(case)[2]
+        𝒯 = get_time_struct(case)
+        𝒯ᴵⁿᵛ = strategic_periods(𝒯)
+        lvl = value.(m[:stor_level][tes, :])
+
+        # Test that the loss is correctly included in the level balance
+        TESTestData.test_lvl_balance(m, tes, 𝒯, 𝒯ᴵⁿᵛ)
+
+        # Test that the total loss is correct
+        TESTestData.test_loss(m, tes, 𝒯, 0.83456)
     end
 end
 
-@testitem "ThermalEnergyStorage" setup = [TESTestData] begin
+@testitem "BoundRateTES" setup = [TESTestData] begin
     using JuMP
     using EnergyModelsBase
     using TimeStruct
@@ -251,7 +315,6 @@ end
     heat_use = get_products(case)[2]
     𝒯 = get_time_struct(case)
     𝒯ᴵⁿᵛ = strategic_periods(𝒯)
-    lvl = value.(m[:stor_level][tes, :])
 
     @testset "BoundRateTES - Utility functions" begin
         # Test the EMB extraction functions
@@ -307,53 +370,27 @@ end
     end
 
     @testset "BoundRateTES - Constraints-level" begin
-        # Test that the loss is correctly included
-        # - EMB.constraints_level_iterate(m, n::AbstractThermalEnergyStor, ...)
-        # Test that the level balance is correct in the first periods
-        @test all(
-            isapprox(
-                lvl[t],
-                lvl[t_prev] +
-                value.(m[:stor_level_Δ_op][tes, t]) * duration(t) -
-                lvl[t_prev] * EMH.heat_loss_factor(tes) * duration(t);
-                atol = 1e-6) for
-            t_inv ∈ 𝒯ᴵⁿᵛ for (t_prev, t) ∈ withprev(t_inv) if !isnothing(t_prev)
-        )
-
-        # Test that the level balance is correct in the subsequent periods
-        @test all(
-            isapprox(
-                lvl[t],
-                lvl[last(t_inv)] +
-                value.(m[:stor_level_Δ_op][tes, t]) * duration(t) -
-                lvl[last(t_inv)] * EMH.heat_loss_factor(tes) * duration(t);
-                atol = 1e-6) for
-            t_inv ∈ 𝒯ᴵⁿᵛ for (t_prev, t) ∈ withprev(t_inv) if isnothing(t_prev)
-        )
+        # Test that the loss is correctly included in the level balance
+        TESTestData.test_lvl_balance(m, tes, 𝒯, 𝒯ᴵⁿᵛ)
 
         # Test that the total loss is correct
-        heat_stored = sum(lvl[t] * duration(t) for t ∈ 𝒯)
-        heat_in = sum(value.(m[:flow_in][tes, t, heat_use]) * duration(t) for t ∈ 𝒯)
-        heat_out = sum(value.(m[:flow_out][tes, t, heat_use]) * duration(t) for t ∈ 𝒯)
-        @test heat_stored * EMH.heat_loss_factor(tes) ≈ heat_in - heat_out
-        @test heat_in - heat_out ≈ 0.39780 atol = 1e-3
+        TESTestData.test_loss(m, tes, 𝒯, 0.39780)
+
+        # Reassignment of variables
+        lvl = value.(m[:stor_level][tes, :])
+        charge = value.(m[:stor_charge_use][tes, :])
+        discharge = value.(m[:stor_discharge_use][tes, :])
 
         # Test that the capacity limits are enforced
         # - EMB.constraints_capacity(m, n::BoundRateTES, 𝒯::TimeStructure, modeltype::EnergyModel)
         @test all(lvl[t] ≤ capacity(level(tes), t) - 0.5 for t ∈ 𝒯)
         @test all(value.(m[:stor_level_inst][tes, t]) ≈ capacity(level(tes), t) for t ∈ 𝒯)
 
-        @test all(
-            value.(m[:stor_charge_use][tes, t]) ≤ capacity(level(tes), t) * 0.125 + 1e-6
-            for
-            t ∈ 𝒯
-        )
-        @test sum(value.(m[:stor_charge_use][tes, t]) ≈ 0.25 for t ∈ 𝒯) == 4
+        @test all(charge[t] ≤ capacity(level(tes), t) * 0.125 + 1e-6 for t ∈ 𝒯)
+        @test sum(charge[t] ≈ 0.25 for t ∈ 𝒯) == 4
 
-        @test all(
-            value.(m[:stor_discharge_use][tes, t]) ≤ capacity(level(tes), t) * 0.25 + 1e-6
-            for t ∈ 𝒯
-        )
-        @test sum(value.(m[:stor_discharge_use][tes, t]) ≈ 0.5 for t ∈ 𝒯) == 2
+        @test all(discharge[t] ≤ capacity(level(tes), t) * 0.25 + 1e-6 for t ∈ 𝒯)
+        @test sum(discharge[t] ≈ 0.5 for t ∈ 𝒯) == 2
     end
 end
+#! format: on

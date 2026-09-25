@@ -137,6 +137,18 @@ function EMB.constraints_flow_out(
     end
 end
 
+#! format: off
+
+"""
+    EMB.constraints_level_aux(m, n::AbstractTES, 𝒯, 𝒫, modeltype::EnergyModel)
+
+Method for creating the Δ constraint for the level of a generic [`AbstractTES`](@ref) node.
+The default method returns nothing as the Δ constraint is implemented in
+`constraints_level_iterate`.
+"""
+function EMB.constraints_level_aux(m, n::AbstractTES, 𝒯, 𝒫, modeltype::EnergyModel)
+end
+
 """
     EMB.constraints_level_iterate(
         m,
@@ -148,8 +160,9 @@ end
         modeltype::EnergyModel,
     )
 
-In the case of a [`AbstractTES`](@ref), the lowest level iterator is adjusted as the loss
-is dependent on the level at the beginning of the operational period.
+In the case of an [`AbstractTES`](@ref), the lowest level iterator is adjusted as the loss
+is dependent on the level at the beginning of the operational period. This also implies that
+the variable `stor_level_Δ_op` is calculated in this function, not `constraints_level_aux`.
 """
 function EMB.constraints_level_iterate(
     m,
@@ -160,7 +173,6 @@ function EMB.constraints_level_iterate(
     _::SimpleTimes,
     modeltype::EnergyModel,
 )
-
     # Iterate through the operational structure
     for (t_prev, t) ∈ withprev(per)
         prev_pers = PreviousPeriods(strat_per(prev_pers), rep_per(prev_pers), t_prev)
@@ -168,11 +180,17 @@ function EMB.constraints_level_iterate(
         # Extract the previous level
         prev_level = previous_level(m, n, prev_pers, cyclic_pers, modeltype)
 
+        # Constraint for the change in the level in a given operational period
+        @constraint(m,
+            m[:stor_level_Δ_op][n, t] ==
+                m[:stor_charge_use][n, t] - m[:stor_discharge_use][n, t] -
+                prev_level * heat_loss_factor(n)
+        )
+
         # Mass balance constraint in the storage
         @constraint(m,
             m[:stor_level][n, t] ==
-            prev_level + m[:stor_level_Δ_op][n, t] * duration(t) -
-            prev_level * heat_loss_factor(n) * duration(t)
+            prev_level + m[:stor_level_Δ_op][n, t] * duration(t)
         )
 
         # Constraint for avoiding starting below 0 if the previous operational level is
@@ -180,6 +198,8 @@ function EMB.constraints_level_iterate(
         EMB.constraints_level_bounds(m, n, t, cyclic_pers, modeltype)
     end
 end
+
+#! format: on
 
 """
     EMB.constraints_capacity(
@@ -194,7 +214,6 @@ Method for creating the constraints on the maximum capacity of a [`BoundRateTES`
 It adjusts the constraints on the capacity of a [`BoundRateTES`](@ref) to account for the
 maximum charge and discharge rates in relation to the installed storage level.
 """
-
 function EMB.constraints_capacity(
     m,
     n::BoundRateTES,
